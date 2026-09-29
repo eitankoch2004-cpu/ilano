@@ -1,0 +1,353 @@
+<title>תחקיר משקיעים ILANO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@500;700;900&family=IBM+Plex+Sans+Hebrew:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+
+<style>
+:root{
+  --paper:#F3F6F5; --surface:#FFFFFF; --sunk:#E8EEEC;
+  --ink:#101718; --ink2:#33403E; --muted:#63736F; --line:#D6E0DD;
+  --deep:#0B5F58; --mid:#12857A; --fresh:#2FAE8E; --wash:#E4F2EF;
+  --red:#A6392C; --redw:#FBEAE7; --amber:#B5611A; --amberw:#FDF0E3;
+  --gold:#8A700A; --goldw:#FBF5DC; --green:#1A7440; --greenw:#E6F2EC;
+  --shadow:0 1px 2px rgba(11,95,88,.06), 0 10px 28px -18px rgba(11,95,88,.3);
+  --serif:"Frank Ruhl Libre","Times New Roman",serif;
+  --sans:"IBM Plex Sans Hebrew","Segoe UI",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0B1112; --surface:#141D1E; --sunk:#1A2526;
+    --ink:#E8EFEC; --ink2:#C4D2CE; --muted:#8FA19C; --line:#263435;
+    --deep:#4FC2A8; --mid:#3FB79F; --fresh:#7FD9BF; --wash:#0F2C2A;
+    --red:#E08171; --redw:#331B17; --amber:#DE9A5E; --amberw:#33230F;
+    --gold:#D3B94A; --goldw:#2C2710; --green:#5FC28C; --greenw:#122C1E;
+    --shadow:0 1px 2px rgba(0,0,0,.5), 0 10px 28px -18px rgba(0,0,0,.9);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0B1112; --surface:#141D1E; --sunk:#1A2526;
+  --ink:#E8EFEC; --ink2:#C4D2CE; --muted:#8FA19C; --line:#263435;
+  --deep:#4FC2A8; --mid:#3FB79F; --fresh:#7FD9BF; --wash:#0F2C2A;
+  --red:#E08171; --redw:#331B17; --amber:#DE9A5E; --amberw:#33230F;
+  --gold:#D3B94A; --goldw:#2C2710; --green:#5FC28C; --greenw:#122C1E;
+  --shadow:0 1px 2px rgba(0,0,0,.5), 0 10px 28px -18px rgba(0,0,0,.9);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.75;-webkit-font-smoothing:antialiased}
+.doc{max-width:940px;margin:0 auto;padding:0 clamp(16px,4vw,36px) 5rem}
+
+.head{padding:clamp(2.6rem,7vw,5rem) 0 2rem;border-bottom:1px solid var(--line)}
+.eyebrow{font-family:var(--mono);font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;color:var(--mid);margin:0 0 1rem}
+h1{font-family:var(--serif);font-weight:900;font-size:clamp(2.2rem,6vw,3.4rem);line-height:1.1;margin:0;letter-spacing:-.01em;text-wrap:balance}
+.deck{font-family:var(--serif);font-weight:500;font-size:clamp(1.05rem,2.6vw,1.35rem);line-height:1.5;color:var(--ink2);margin:.9rem 0 0;max-width:44ch}
+.meta{display:flex;flex-wrap:wrap;gap:.5rem 2rem;margin-top:1.8rem;font-family:var(--mono);font-size:.72rem;color:var(--muted)}
+.meta b{display:block;color:var(--ink);font-weight:500;font-size:.82rem;margin-top:.1rem}
+
+section{margin:3.2rem 0 0;scroll-margin-top:1.5rem}
+h2{font-family:var(--serif);font-weight:700;font-size:clamp(1.5rem,4vw,2rem);line-height:1.2;margin:0 0 .9rem;text-wrap:balance}
+h2 .n{display:block;font-family:var(--mono);font-size:.7rem;letter-spacing:.14em;color:var(--mid);margin-bottom:.45rem}
+h3{font-size:1.02rem;font-weight:600;margin:1.9rem 0 .5rem}
+p{margin:0 0 1rem}
+ul,ol{margin:0 0 1.1rem;padding-inline-start:1.2rem}
+li{margin-bottom:.42rem}
+strong{font-weight:600}
+a{color:var(--mid)}
+em.t{font-style:normal;font-family:var(--mono);font-size:.86em;color:var(--mid)}
+:focus-visible{outline:2px solid var(--mid);outline-offset:3px}
+
+.hero{background:var(--wash);border-radius:3px;padding:1.6rem 1.7rem;margin:1.6rem 0 2rem;border-inline-start:5px solid var(--deep)}
+.hero .lbl{font-family:var(--mono);font-size:.66rem;letter-spacing:.15em;text-transform:uppercase;color:var(--deep);display:block;margin-bottom:.7rem}
+.hero p:last-child{margin-bottom:0}
+.hero .big{font-family:var(--serif);font-size:clamp(1.2rem,3.2vw,1.6rem);font-weight:700;line-height:1.35;color:var(--ink);margin-bottom:.8rem}
+
+.note{background:var(--surface);border:1px solid var(--line);border-radius:3px;padding:1.05rem 1.2rem;margin:0 0 1.3rem;box-shadow:var(--shadow)}
+.note.red{background:var(--redw);border-color:transparent;border-inline-start:4px solid var(--red)}
+.note.amber{background:var(--amberw);border-color:transparent;border-inline-start:4px solid var(--amber)}
+.note.gold{background:var(--goldw);border-color:transparent;border-inline-start:4px solid var(--gold)}
+.note.green{background:var(--greenw);border-color:transparent;border-inline-start:4px solid var(--green)}
+.note .tag{font-family:var(--mono);font-size:.64rem;letter-spacing:.14em;text-transform:uppercase;display:block;margin-bottom:.45rem;color:var(--muted)}
+.note.red .tag{color:var(--red)} .note.amber .tag{color:var(--amber)}
+.note.gold .tag{color:var(--gold)} .note.green .tag{color:var(--green)}
+.note p:last-child{margin-bottom:0}
+
+.scroll{overflow-x:auto;margin:0 0 1.5rem;border:1px solid var(--line);border-radius:3px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:.88rem;min-width:30rem}
+th,td{text-align:start;padding:.62rem .8rem;border-bottom:1px solid var(--line);vertical-align:top;line-height:1.55}
+thead th{font-family:var(--mono);font-size:.63rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:500;background:var(--sunk);white-space:nowrap}
+tbody tr:last-child td{border-bottom:0}
+td.n{font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap;color:var(--muted)}
+
+.pill{display:inline-block;font-family:var(--mono);font-size:.63rem;letter-spacing:.05em;padding:.12rem .45rem;border-radius:2px;white-space:nowrap}
+.p-red{background:var(--redw);color:var(--red)} .p-amber{background:var(--amberw);color:var(--amber)}
+.p-gold{background:var(--goldw);color:var(--gold)} .p-green{background:var(--greenw);color:var(--green)}
+.p-deep{background:var(--wash);color:var(--deep)}
+
+.qa{border-top:1px solid var(--line);padding:1rem 0 .3rem}
+.qa:first-of-type{border-top:0}
+.qa .q{font-weight:600;font-size:1rem;color:var(--ink);margin:0 0 .35rem;display:flex;gap:.6rem}
+.qa .q i{font-family:var(--mono);font-style:normal;font-size:.75rem;color:var(--mid);flex:none;padding-top:.22rem}
+.qa .a{margin:0 0 .2rem;color:var(--ink2);font-size:.95rem;padding-inline-start:1.85rem}
+.qa .a b{color:var(--ink)}
+
+.foot{margin-top:3.4rem;padding-top:1.4rem;border-top:1px solid var(--line);font-family:var(--mono);font-size:.7rem;color:var(--muted);line-height:1.7}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="doc" lang="he" dir="rtl">
+
+<header class="head">
+  <p class="eyebrow">תחקיר לפני מפגש משקיעים · אוגוסט 2026 · חסוי</p>
+  <h1>מה יכול לעצור את ILANO</h1>
+  <p class="deck">סקר תחרות בעולם ובישראל, בדיקת פטנטים, וכל שאלה שתישאל בחדר — עם התשובה.</p>
+  <div class="meta">
+    <div>חיפושים שבוצעו<b>9</b></div>
+    <div>הממצא המרכזי<b>חוק ניוד מידע רפואי</b></div>
+    <div>המתחרה הכי מסוכן<b>כללית</b></div>
+    <div>החולשה הכי גדולה<b>הצוות</b></div>
+  </div>
+</header>
+
+<section>
+  <h2><span class="n">00</span>שלוש שורות לפני שאתה קורא הלאה</h2>
+  <ol>
+    <li><strong>הסיכון שסימנתי כ״קיומי״ הוא כבר לא קיומי.</strong> בישראל קיים חוק שמסדיר בדיוק את מה שחשבנו שחסום — ויש בו מסלול רישוי מפורש לאפליקציות.</li>
+    <li><strong>המתחרה שלך הוא לא סטארטאפ — הוא כללית.</strong> האפליקציה שלה כבר מציגה תיק משפחתי ואף ״מציעה את הצעדים הבאים״. הבידול שלך מצטמצם, אבל הוא עדיין אמיתי.</li>
+    <li><strong>השאלה שתפיל אותך היא לא על המוצר.</strong> היא על הצוות. תכין עליה תשובה לפני שאתה נכנס לחדר.</li>
+  </ol>
+</section>
+
+<section>
+  <h2><span class="n">01</span>הממצא שמשנה את המצגת</h2>
+
+  <div class="hero">
+    <span class="lbl">חוק ניוד מידע רפואי, התשפ״ד־2024</span>
+    <p class="big">ישראל חוקקה חוק שמחייב ניוד מידע רפואי בין ארגוני בריאות — ופותח מסלול רישוי לאפליקציות לקבל את המידע.</p>
+    <p>זהו בדיוק החסם שסימנתי במסמך המוצר כ<em class="t">חוסם קיומי</em>. הוא לא נעלם, אבל יש לו עכשיו מסלול, תאריך ורגולטור.</p>
+  </div>
+
+  <div class="scroll"><table>
+    <thead><tr><th>עובדה</th><th>מה מצאתי</th></tr></thead>
+    <tbody>
+      <tr><td>פרסום</td><td>ברשומות ב-<strong>24 ביולי 2024</strong></td></tr>
+      <tr><td>מועד תחילה</td><td><strong>שלוש שנים מיום הפרסום</strong> (למעט סעיפים מסוימים) — כלומר סביב <strong>יולי 2027</strong></td></tr>
+      <tr><td>מנגנון</td><td>מערכת מרכזית של משרד הבריאות, ניוד בין קופות, בתי חולים ומרפאות פרטיות, בהסכמת המטופל</td></tr>
+      <tr><td>תקן</td><td><strong>FHIR</strong> — משרד הבריאות פרסם <strong>תכנית סרטיפיקציה</strong> עם פרופילים טכניים, זרימות הרשאה והסכמה, וכלי בדיקה</td></tr>
+      <tr><td>הרחבה</td><td>ב-1 ביולי 2025 ועדת הבריאות אישרה החלה גם על <strong>צה״ל</strong>, שב״ס, אגף השיקום, הרווחה, ביטוח לאומי ועוד</td></tr>
+      <tr><td><strong>והשורה שחשובה לך</strong></td><td>החוק פותח אפשרות ל<strong>גופים שאינם מוסדות רפואיים לקבל רישיון כמקבלי מידע — ובכללם אפליקציות רפואיות</strong></td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>מה זה עושה למצגת</h3>
+  <p>עד היום השקף היה: <em class="t">״אין גישה, ולכן בנינו מוצר שעובד בלעדיה.״</em> זו הגנה. עכשיו אפשר לומר משהו הרבה יותר חזק:</p>
+
+  <div class="note green">
+    <span class="tag">הניסוח החדש</span>
+    <p><strong>״המדינה כבר חוקקה את התשתית שאנחנו צריכים, והיא נכנסת לתוקף ב-2027. אנחנו בונים את המוצר בדיוק בחלון שלפני. עד אז הוא עובד על מסמכים ועל הנחיות ציבוריות — ולא תלוי באף אחד.״</strong></p>
+  </div>
+
+  <p>זה הופך את התזמון מבעיה ליתרון, ועונה בשורה אחת על ״למה עכשיו״ — השאלה שכל משקיע שואל ורוב היזמים נכשלים בה.</p>
+
+  <div class="note amber">
+    <span class="tag">מה עדיין לא בדוק</span>
+    <p>אני לא יודע אם ILANO תעמוד בתנאי הרישוי, מה עלותם, וכמה זמן לוקח לקבל אותם. <strong>זו שאלה לעורך דין בריאות, לא לי.</strong> אל תגיד בחדר ״אנחנו נקבל רישיון״ — תגיד ״קיים מסלול רישוי מוגדר, ואנחנו בודקים את תנאיו״.</p>
+  </div>
+</section>
+
+<section>
+  <h2><span class="n">02</span>מי כבר עושה את זה בעולם</h2>
+  <p>חילקתי לחמש קטגוריות. אף אחת לא עושה בדיוק את מה ש-ILANO מתארת — אבל כל חלק מהמוצר קיים אצל מישהו.</p>
+
+  <div class="scroll"><table>
+    <thead><tr><th>קטגוריה</th><th>שחקנים</th><th>כמה גייסו</th><th>מה חסר להם</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>הטבת סיוע למטפלים</strong><br><span class="pill p-deep">B2B2C דרך מעסיקים</span></td>
+        <td>Wellthy · Homethrive · Cariloop</td>
+        <td class="n">$78M · $58.5M · ~$43M</td>
+        <td>מיקוד בטיפול בהורים מבוגרים, לא בילדים. שירות אנושי, לא מנוע. ארה״ב בלבד</td>
+      </tr>
+      <tr>
+        <td><strong>אפליקציות תיאום משפחתי</strong></td>
+        <td>Caring Village · CircleCare · Lotsa Helping Hands</td>
+        <td class="n">קטן</td>
+        <td>תיאום בין בני משפחה — <strong>לא אינטליגנציה.</strong> מישהו עדיין צריך להקליד</td>
+      </tr>
+      <tr>
+        <td><strong>קריאת מסמכים ב-AI</strong><br><span class="pill p-amber">הכי קרוב אליך</span></td>
+        <td>Patiently · My Medical Records.ai · Filex AI</td>
+        <td class="n">מוקדם</td>
+        <td>אלה כן מחלצים מעקבים ותאריכים ותומכים בפרופילים משפחתיים. <strong>זה החלק שכבר קיים.</strong> מה שאין: ריבוי קופות, עברית, ולולאת מעקב</td>
+      </tr>
+      <tr>
+        <td><strong>היענות לתרופות</strong></td>
+        <td>Medisafe <span class="pill p-deep">ישראלי</span></td>
+        <td class="n">גדול</td>
+        <td>תרופות בלבד. מוצר בוגר ומצליח בנישה צרה</td>
+      </tr>
+      <tr>
+        <td><strong>מניעה צרכנית</strong></td>
+        <td>Neko Health · Oura</td>
+        <td class="n">$260M · גדול</td>
+        <td>ציר אחר לגמרי — חיישנים וסריקות, לא תיאום</td>
+      </tr>
+    </tbody>
+  </table></div>
+
+  <div class="note">
+    <span class="tag">המסקנה, בזהירות</span>
+    <p><strong>לא מצאתי מוצר אחד שמשלב את כל ארבעת המרכיבים:</strong> ריבוי ספקי בריאות · תצוגה משפחתית · מסמך שהופך לפעולה · ולולאת מעקב שסוגרת. הצירוף נראה פנוי.</p>
+    <p><strong>אבל:</strong> ״לא מצאתי״ אינו ״לא קיים״. ביצעתי תשעה חיפושים, והם מוטים לשוק האמריקאי. אל תגיד בחדר ״אין דבר כזה בעולם״ — <strong>תגיד ״לא מצאנו שילוב כזה, והנה מפת מי כן עושה מה״</strong>. משקיע שמכיר שחקן ששכחת יזכור את זה לרעתך.</p>
+  </div>
+</section>
+
+<section>
+  <h2><span class="n">03</span>מי כבר עושה את זה בישראל</h2>
+  <p>כאן החדשות פחות נוחות, וכדאי שתדע אותן לפני שהמשקיע ידע.</p>
+
+  <div class="note red">
+    <span class="tag">המתחרה האמיתי</span>
+    <p><strong>אפליקציית כללית כבר עושה חלק ניכר ממה שתיארת.</strong> לפי אתר כללית היא מנהלת את התיק הרפואי <strong>שלך ושל המשפחה</strong>, כוללת אבחנות, בדיקות, המלצות, אלרגיות, תרופות <strong>וחיסונים</strong>, מאפשרת בחירת בן משפחה וצפייה גם ללא אינטרנט — <strong>ו״מציעה לך את הצעדים הבאים״.</strong></p>
+    <p>גם מכבי משווקת את האפליקציה שלה כמרכזת ״את כל ניהול הבריאות שלכם <strong>ושל המשפחה</strong> במקום אחד״ — תוצאות, הודעות מהרופא, תורים, הפניות, מרשמים והמלצות.</p>
+  </div>
+
+  <h3>אז מה נשאר לך</h3>
+  <p>המילה החשובה חסרה אצלן, והיא זו: <strong>הכול בתוך הקופה עצמה.</strong></p>
+  <div class="scroll"><table>
+    <thead><tr><th></th><th>כללית / מכבי</th><th>ILANO</th></tr></thead>
+    <tbody>
+      <tr><td>תצוגה משפחתית</td><td>כן — <strong>למי שבאותה קופה</strong></td><td>חוצה קופות</td></tr>
+      <tr><td>הצעת צעדים הבאים</td><td>כן — מהנתונים שלה בלבד</td><td>גם ממסמך שצולם, גם מהנחיה ציבורית, גם מההורה</td></tr>
+      <tr><td>משפחה בשלוש קופות</td><td>שלוש אפליקציות נפרדות</td><td>מסך אחד</td></tr>
+      <tr><td>תמריץ להציג מתחרה</td><td><strong>אין ולא יהיה</strong></td><td>זו כל מהות המוצר</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="note green">
+    <span class="tag">התשובה שתשמור בכיס</span>
+    <p><strong>״כללית עושה עבודה טובה — עבור מי שכל המשפחה שלו בכללית. אין לה שום תמריץ להראות לך מה קורה אצל מכבי, ולא יהיה לה. אנחנו השכבה שמעל הקופות, וזה מקום שקופה לא יכולה להיכנס אליו מבנית.״</strong></p>
+  </div>
+
+  <h3>שחקנים ישראליים נוספים</h3>
+  <div class="scroll"><table>
+    <thead><tr><th>מי</th><th>מה</th><th>עד כמה מסוכן</th></tr></thead>
+    <tbody>
+      <tr><td><strong>MyFamily</strong></td><td>אפליקציה ישראלית לניהול טיפול בבית — תרופות, תורים, תיאום בין בני משפחה, ניהול מטפל</td><td><span class="pill p-amber">בינוני</span> ממוקד בטיפול בקשיש, לא בילדים</td></tr>
+      <tr><td><strong>Medisafe</strong></td><td>תזכורות תרופות, ישראלי, בוגר</td><td><span class="pill p-gold">נמוך</span> נישה צרה</td></tr>
+      <tr><td>קהילת <strong>FHIR-IL</strong></td><td>שיתוף של 8400, משרד הבריאות, רשות החדשנות, ישראל דיגיטלית</td><td><span class="pill p-green">הזדמנות</span> לא מתחרה — נקודת כניסה</td></tr>
+    </tbody>
+  </table></div>
+  <p class="note" style="box-shadow:none"><strong>לא מצאתי</strong> אפליקציה ישראלית שמאחדת מידע בריאותי של משפחה <strong>חוצה־קופות</strong>. זה החלל שאתה מכוון אליו, והוא נראה פתוח.</p>
+</section>
+
+<section>
+  <h2><span class="n">04</span>פטנטים</h2>
+
+  <div class="note amber">
+    <span class="tag">קרא את זה לפני הטבלה</span>
+    <p>מה שעשיתי הוא <strong>סריקת מילות מפתח ב-Google Patents</strong>. זו <strong>איננה</strong> בדיקת חופש פעולה, לא חיפוש ברשם הפטנטים הישראלי, ולא חוות דעת. בדיקה אמיתית עולה כמה אלפי שקלים אצל עו״ד פטנטים ולוקחת שבועות. <strong>אל תצהיר דבר על IP בחדר המשקיעים על סמך המסמך הזה.</strong></p>
+  </div>
+
+  <div class="scroll"><table>
+    <thead><tr><th>מספר</th><th>נושא</th><th>בעלים</th><th>הרלוונטיות אליך</th></tr></thead>
+    <tbody>
+      <tr><td class="n">US11861314B2</td><td>חילוץ מעקבים קליניים מסיכומי שחרור</td><td>ASAPP, Inc.</td><td><span class="pill p-red">גבוהה</span> זה בדיוק T1 שלך. מכוון לרופאי משפחה, לא לצרכן — אבל התחום חופף</td></tr>
+      <tr><td class="n">US11393563B2</td><td>מערכת לתיאום טיפול בתעשיית הבריאות</td><td>—</td><td><span class="pill p-amber">בינונית</span> ניסוח רחב</td></tr>
+      <tr><td class="n">US11636946B2</td><td>תיאום תקשורת בין נותני שירותי בריאות</td><td>—</td><td><span class="pill p-gold">נמוכה</span> צד הספק</td></tr>
+      <tr><td class="n">US20250118425A1</td><td>היענות לתרופות ופלטפורמת טיפול מתואם</td><td>—</td><td><span class="pill p-gold">נמוכה</span> בקשה, לא פטנט מאושר</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="note">
+    <span class="tag">ומה באמת שווה להגיד</span>
+    <p>אם משקיע ישאל ״מה החפיר שלכם״ — <strong>אל תענה ״פטנט״.</strong> הרעיון של ״לארגן בריאות משפחתית״ אינו פטנטבילי, וכל ניסיון להיאחז בזה נשמע חובבני.</p>
+    <p>החפיר האמיתי הוא שלושה דברים אחרים: <strong>הגרף המשפחתי</strong> שנצבר לאורך זמן ואי אפשר להעתיק, <strong>רישיון ניוד מוקדם</strong> אם וכאשר, ו<strong>הפצה</strong> — מי מגיע להורים לילדים 0–6 לפני כולם.</p>
+  </div>
+</section>
+
+<section>
+  <h2><span class="n">05</span>עשרים השאלות שישאלו אותך</h2>
+  <p>לפי סדר הסבירות. התשובות קצרות בכוונה — ככה עונים בחדר.</p>
+
+  <h3>שוק ותזמון</h3>
+  <div class="qa"><p class="q"><i>01</i>למה עכשיו?</p><p class="a">חוק ניוד מידע רפואי נכנס לתוקף סביב 2027, ומשרד הבריאות כבר הריץ תכנית סרטיפיקציה על FHIR. במקביל, מודלים שקוראים עברית הגיעו לבשלות. <b>יש חלון של כשנתיים לבנות לפני שהתשתית נפתחת.</b></p></div>
+  <div class="qa"><p class="q"><i>02</i>אם כללית כבר עושה את זה — למה צריך אתכם?</p><p class="a">כללית עושה את זה בתוך כללית. משפחה שמפוזרת בין שלוש קופות עדיין מחזיקה שלוש אפליקציות. <b>ולקופה אין ולא יהיה תמריץ להראות לך מה קורה אצל המתחרה.</b></p></div>
+  <div class="qa"><p class="q"><i>03</i>כמה משפחות באמת מפוזרות בין קופות?</p><p class="a"><b>אין לנו נתון, ולא נמציא אחד.</b> זו שאלת האימות מספר אחת שלנו ב-20 המשפחות. אם התשובה תהיה ״מעטות״ — הבידול נחלש ונדע מיד.</p></div>
+  <div class="qa"><p class="q"><i>04</i>השוק הישראלי קטן מדי</p><p class="a">ישראל היא זירת האימות, לא השוק. חוק הניוד הופך אותה למסלול הרצה מהיר. אירופה הולכת לאותו כיוון עם EHDS.</p></div>
+
+  <h3>מוצר</h3>
+  <div class="qa"><p class="q"><i>05</i>מה קורה אם ההורה לא מעלה כלום?</p><p class="a">אין מוצר. לכן שני מענים: הערך מגיע כבר מהמסמך הראשון, ו<b>לוח החיסונים הציבורי נותן ערך ביום הראשון בלי שההורה יעלה דבר</b> — רק תאריך לידה.</p></div>
+  <div class="qa"><p class="q"><i>06</i>איך תשיגו תדירות? בריאות אינה אירוע יומי</p><p class="a">בדיוק בשביל זה הטריז הוא הורים לילדים 0–6. משפחה עם פעוט נוגעת בבריאות כמעט מדי חודש.</p></div>
+  <div class="qa"><p class="q"><i>07</i>למה שכללית לא תבנה את זה מחר?</p><p class="a">היא יכולה — לכללית. היא לא תבנה מוצר שמציג את מכבי. <b>הבידול שלנו יושב בדיוק במקום שקופה לא יכולה להיכנס אליו מבנית.</b></p></div>
+  <div class="qa"><p class="q"><i>08</i>יש כבר אפליקציות שקוראות מסמכים רפואיים ב-AI</p><p class="a">נכון, ומצאנו אותן. אף אחת מהן לא עובדת בעברית, לא מכירה קופות, ולא סוגרת לולאת מעקב. <b>קריאת מסמך היא רכיב, לא מוצר.</b></p></div>
+
+  <h3>AI ובטיחות</h3>
+  <div class="qa"><p class="q"><i>09</i>מה קורה כשה-AI טועה ומשפחה נפגעת?</p><p class="a">כלל המקור: מותר לצטט רק את הרופא, הנחיה ציבורית, או את המשפחה. <b>אין מקור רביעי</b>, והממשק לא יודע להציג המלצה בלי שדה מקור. בנוסף — כל פעולה עוברת אישור אנושי.</p></div>
+  <div class="qa"><p class="q"><i>10</i>אתם מכשיר רפואי?</p><p class="a">אנחנו מתכננים להיות כלי ארגון, לא כלי אבחון. <b>הגבול נבדק מול עורך דין לפני ה-beta ולא אחריה.</b></p></div>
+  <div class="qa"><p class="q"><i>11</i>OCR עברי על כתב יד של רופאים באמת עובד?</p><p class="a"><b>עדיין לא בדקנו, וזו הבדיקה הזולה ביותר שיש לנו.</b> אנחנו מריצים אותה על 20 מסמכים אמיתיים לפני שנבנה סביבה שורת קוד.</p></div>
+  <div class="qa"><p class="q"><i>12</i>יש קיים פטנט על חילוץ מעקבים ממסמכים</p><p class="a">מצאנו אחד — US11861314B2 של ASAPP, מכוון לצד הרופא. <b>לא ביצענו בדיקת חופש פעולה, וזה על השולחן לפני גיוס.</b></p></div>
+
+  <h3>נתונים, פרטיות ורגולציה</h3>
+  <div class="qa"><p class="q"><i>13</i>איך תשיגו גישה לנתוני הקופות?</p><p class="a">חוק ניוד מידע רפואי מסדיר את זה, והוא כולל <b>מסלול רישוי מפורש לאפליקציות</b>. עד שייפתח — המוצר לא תלוי בו בכלל.</p></div>
+  <div class="qa"><p class="q"><i>14</i>תבקשו מהמשתמש סיסמת קופה?</p><p class="a"><b>לא, בשום שלב.</b> זו הפרת תנאי שימוש, חשיפה אבטחתית, והרס הנכס היחיד שיש לנו.</p></div>
+  <div class="qa"><p class="q"><i>15</i>מידע רפואי של קטינים — תיקון 13, חוק זכויות החולה</p><p class="a">ברירת המחדל היא ההגדרה הסגורה ביותר, מינימיזציה בכל קריאה, ולוגים שחוסמים תוכן רפואי. <b>הליווי המשפטי נכנס לפני ה-beta.</b></p></div>
+  <div class="qa"><p class="q"><i>16</i>המידע יוצא מהמכשיר כשאתם מנתחים מסמך</p><p class="a">נכון, ואנחנו אומרים את זה למשתמש במפורש במקום לנסח סביבו.</p></div>
+
+  <h3>עסקי וצוות</h3>
+  <div class="qa"><p class="q"><i>17</i>מה מודל ההכנסה?</p><p class="a">לא הוכרע במכוון. מנוי משפחתי הוא ההשערה הראשונה. <b>תמחור שנקבע לפני שמכירים את הערך הוא ניחוש.</b></p></div>
+  <div class="qa"><p class="q"><i>18</i>מה החפיר?</p><p class="a">לא פטנט. <b>הגרף המשפחתי שנצבר, רישיון ניוד מוקדם, והפצה להורים לילדים 0–6.</b></p></div>
+  <div class="qa"><p class="q"><i>19</i>כמה אתם מגייסים ולמה בדיוק?</p><p class="a"><span class="pill p-red">אין לך עדיין תשובה</span> — צריך מספר, פירוק לשימושים, ואבן דרך שהכסף קונה.</p></div>
+  <div class="qa"><p class="q"><i>20</i>מי אתם? למה דווקא אתם תבנו את זה?</p><p class="a"><span class="pill p-red">זו השאלה שתפיל אותך</span> — ראה הפרק הבא.</p></div>
+</section>
+
+<section>
+  <h2><span class="n">06</span>מה יכול לעצור אותנו</h2>
+  <p>מדורג לפי מה שבאמת יעצור, לא לפי מה שנעים לדבר עליו.</p>
+
+  <div class="scroll"><table>
+    <thead><tr><th></th><th>הסיכון</th><th>חומרה</th><th>מה עושים</th></tr></thead>
+    <tbody>
+      <tr><td class="n">1</td><td><strong>הצוות.</strong> יזם יחיד, בן 21, בשירות סדיר, בלי רקע טכנולוגי או רפואי, בלי מייסד שותף</td><td><span class="pill p-red">קריטי</span></td><td>ראה למטה. זו העבודה הכי דחופה שיש לך</td></tr>
+      <tr><td class="n">2</td><td><strong>כללית או מכבי מרחיבות לחוצה־קופות</strong> אחרי שחוק הניוד ייכנס לתוקף</td><td><span class="pill p-red">גבוה</span></td><td>להגיע לרישיון ולמשפחות לפני 2027. היתרון היחיד הוא מהירות</td></tr>
+      <tr><td class="n">3</td><td><strong>תנאי הרישוי</strong> יתבררו כבלתי עבירים לחברה קטנה</td><td><span class="pill p-amber">גבוה</span></td><td>לברר תנאים ועלויות עכשיו, לא ב-2027</td></tr>
+      <tr><td class="n">4</td><td><strong>OCR עברי לא עומד</strong> במסמכים אמיתיים</td><td><span class="pill p-amber">גבוה</span></td><td>בדיקה של יומיים. לעשות אותה השבוע</td></tr>
+      <tr><td class="n">5</td><td><strong>הורים לא מוסרים מסמכים</strong> לסטארטאפ לא מוכר</td><td><span class="pill p-amber">בינוני</span></td><td>זהו מדד האימות המרכזי ב-20 המשפחות</td></tr>
+      <tr><td class="n">6</td><td><strong>ריבוי קופות מתברר כלא־כאב</strong> — רוב המשפחות בקופה אחת</td><td><span class="pill p-gold">בינוני</span></td><td>נמדד ב-20 המשפחות. אם כן — הציר עובר לחיסונים ומסמכים</td></tr>
+      <tr><td class="n">7</td><td><strong>פטנט חוסם</strong></td><td><span class="pill p-gold">נמוך־בינוני</span></td><td>בדיקת FTO לפני גיוס משמעותי</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="note red">
+    <span class="tag">סיכון 1 — ובלי לרכך</span>
+    <p>משקיע בשלב הזה משקיע <strong>בצוות</strong>, לא במצגת. אתה תיכנס לחדר בלי מייסד טכנולוגי, בלי איש רפואה, ובלי מוצר שרץ. זו לא בעיה שמצגת יפה פותרת, והם ישאלו על זה בחמש הדקות הראשונות.</p>
+    <p><strong>שלושה דברים שמשנים את התמונה, לפי סדר:</strong></p>
+    <ol>
+      <li><strong>רופא ילדים או אחות טיפת חלב כיועץ.</strong> שם אחד בשקף מוריד חצי מהחשד סביב הגבול הרפואי. זה לא עולה כסף.</li>
+      <li><strong>מייסד־שותף טכנולוגי.</strong> החיפוש מתחיל היום, לא אחרי הגיוס.</li>
+      <li><strong>לבוא עם נתונים ולא עם רעיון.</strong> אם תיכנס עם ״דיברתי עם 12 הורים, 9 מהם שכחו משהו בשנה האחרונה, 6 הסכימו למסור מסמך״ — <strong>אתה כבר לא סטודנט עם מצגת. אתה יזם עם ממצא.</strong></li>
+    </ol>
+    <p>נקודה שלישית היא הזולה ביותר והחזקה ביותר, ואפשר להשלים אותה לפני שבוע הבא.</p>
+  </div>
+</section>
+
+<section>
+  <h2><span class="n">07</span>מה לשנות במצגת לפני שבוע הבא</h2>
+  <div class="scroll"><table>
+    <thead><tr><th></th><th>השינוי</th><th>למה</th></tr></thead>
+    <tbody>
+      <tr><td class="n">1</td><td><strong>שקף חדש: חוק ניוד מידע רפואי</strong> — עם התאריכים ומסלול הרישוי</td><td>עונה על ״למה עכשיו״ ומנטרל את החסם הגדול ביותר</td></tr>
+      <tr><td class="n">2</td><td><strong>שקף חדש: נוף התחרות</strong> — כללית, מכבי, והשחקנים בעולם</td><td>משקיע שיגלה את כללית לפניך — איבדת אותו</td></tr>
+      <tr><td class="n">3</td><td>לחדד את שקף החסמים: <strong>הצוות נכנס כחסם מספר 1</strong></td><td>כנות על החולשה קונה אמון על כל השאר</td></tr>
+      <tr><td class="n">4</td><td><strong>שקף בקשה</strong> — כמה, לאיזו תקופה, ואיזו אבן דרך</td><td>אין לך כזה. בלעדיו הפגישה נגמרת בלי המשך</td></tr>
+      <tr><td class="n">5</td><td>ממצאים מ-12 שיחות עם הורים</td><td>הופך את המצגת מהשערה לממצא</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<div class="foot">
+  ILANO · תחקיר לקראת מפגש משקיעים · אוגוסט 2026 · חסוי<br>
+  המסמך מבוסס על תשעה חיפושי אינטרנט ואיננו מחקר שוק פורמלי, חוות דעת משפטית או בדיקת חופש פעולה בפטנטים.<br>
+  אין ל-ILANO חיבור, הסכם או קשר לכללית, מכבי, מאוחדת, לאומית, צה״ל או כל גוף בריאות אחר.
+</div>
+
+</div>

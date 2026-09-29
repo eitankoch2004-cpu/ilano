@@ -1,0 +1,582 @@
+<title>מפרט המוצר של NOMA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@500;700;900&family=IBM+Plex+Sans+Hebrew:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+
+<style>
+:root{
+  --paper:#F1F3F1;
+  --surface:#FFFFFF;
+  --sunk:#E7EBE8;
+  --ink:#101718;
+  --ink-2:#33403E;
+  --muted:#63736F;
+  --line:#D3DAD6;
+  --accent:#0F6E6B;
+  --accent-wash:#E2EEEC;
+  --signal:#9E441C;
+  --signal-wash:#F5E7DF;
+  --indigo:#3A4A96;
+  --indigo-wash:#E6E8F4;
+  --shadow:0 1px 2px rgba(16,23,24,.05), 0 8px 24px -16px rgba(16,23,24,.28);
+
+  --serif:"Frank Ruhl Libre", "Times New Roman", serif;
+  --sans:"IBM Plex Sans Hebrew", "Segoe UI", system-ui, sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0C1213;
+    --surface:#141D1E;
+    --sunk:#1B2627;
+    --ink:#E7EDEA;
+    --ink-2:#C2CFCB;
+    --muted:#8FA19C;
+    --line:#283536;
+    --accent:#57B9B1;
+    --accent-wash:#12302E;
+    --signal:#DC8A5F;
+    --signal-wash:#332116;
+    --indigo:#8E9BDD;
+    --indigo-wash:#1C2340;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.8);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0C1213;
+  --surface:#141D1E;
+  --sunk:#1B2627;
+  --ink:#E7EDEA;
+  --ink-2:#C2CFCB;
+  --muted:#8FA19C;
+  --line:#283536;
+  --accent:#57B9B1;
+  --accent-wash:#12302E;
+  --signal:#DC8A5F;
+  --signal-wash:#332116;
+  --indigo:#8E9BDD;
+  --indigo-wash:#1C2340;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.8);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--sans);
+  font-size:17px;
+  line-height:1.72;
+  -webkit-font-smoothing:antialiased;
+}
+.doc{max-width:1180px;margin:0 auto;padding:0 clamp(16px,4vw,40px) 4rem}
+
+/* ---------- header ---------- */
+.masthead{padding:clamp(3rem,8vw,6rem) 0 2.5rem;border-bottom:1px solid var(--line)}
+.eyebrow{
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--accent);margin:0 0 1.4rem;display:flex;gap:.7rem;align-items:center;flex-wrap:wrap;
+}
+.eyebrow span::before{content:"·";margin-inline-end:.7rem;color:var(--line)}
+.wordmark{
+  font-family:var(--serif);font-weight:900;
+  font-size:clamp(3.4rem,11vw,6.5rem);line-height:.92;letter-spacing:-.02em;
+  margin:0;color:var(--ink);
+}
+.deck{
+  font-family:var(--serif);font-weight:500;
+  font-size:clamp(1.25rem,3.2vw,1.75rem);line-height:1.45;
+  margin:1.1rem 0 0;max-width:32ch;color:var(--ink-2);text-wrap:balance;
+}
+.meta{
+  display:flex;flex-wrap:wrap;gap:.6rem 2.2rem;margin-top:2.2rem;
+  font-family:var(--mono);font-size:.74rem;color:var(--muted);
+}
+.meta b{display:block;color:var(--ink);font-weight:500;font-size:.85rem;margin-top:.15rem;font-variant-numeric:tabular-nums}
+
+/* ---------- layout ---------- */
+.body{display:grid;grid-template-columns:1fr;gap:3rem;padding-top:3rem}
+@media(min-width:960px){
+  .body{grid-template-columns:minmax(0,1fr) 15rem;gap:4rem}
+}
+.rail{display:none}
+@media(min-width:960px){
+  .rail{display:block;align-self:start;position:sticky;top:2rem}
+}
+.rail h4{
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--muted);margin:0 0 .9rem;font-weight:500;
+}
+.rail ol{list-style:none;margin:0;padding:0;border-inline-start:1px solid var(--line)}
+.rail li{margin:0}
+.rail a{
+  display:flex;gap:.6rem;padding:.3rem 0 .3rem .9rem;
+  text-decoration:none;color:var(--muted);font-size:.83rem;line-height:1.4;
+  border-inline-start:2px solid transparent;margin-inline-start:-1px;
+}
+.rail a:hover{color:var(--accent);border-inline-start-color:var(--accent)}
+.rail a em{font-family:var(--mono);font-style:normal;opacity:.6;font-size:.72rem}
+
+.sheet{min-width:0;max-width:70ch}
+
+/* ---------- sections ---------- */
+.sheet section{padding-top:.5rem;margin-bottom:3.4rem;scroll-margin-top:1.5rem}
+h2{
+  font-family:var(--serif);font-weight:700;font-size:clamp(1.6rem,4vw,2.15rem);
+  line-height:1.2;letter-spacing:-.01em;margin:0 0 1rem;text-wrap:balance;
+}
+h2 .num{
+  font-family:var(--mono);font-size:.72rem;font-weight:500;color:var(--accent);
+  display:block;letter-spacing:.14em;margin-bottom:.5rem;
+}
+h3{
+  font-family:var(--sans);font-weight:600;font-size:1.03rem;
+  margin:2rem 0 .6rem;color:var(--ink);letter-spacing:-.005em;
+}
+p{margin:0 0 1.05rem}
+.sheet ul,.sheet ol{margin:0 0 1.15rem;padding-inline-start:1.25rem}
+.sheet li{margin-bottom:.45rem}
+strong{font-weight:600;color:var(--ink)}
+em.term{font-style:normal;font-family:var(--mono);font-size:.86em;color:var(--accent)}
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:3px}
+
+/* ---------- callouts ---------- */
+.note{
+  background:var(--surface);border:1px solid var(--line);border-radius:2px;
+  padding:1.1rem 1.25rem;margin:0 0 1.4rem;box-shadow:var(--shadow);
+}
+.note.warn{background:var(--signal-wash);border-color:transparent}
+.note.key{background:var(--accent-wash);border-color:transparent}
+.note .tag{
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--muted);display:block;margin-bottom:.5rem;
+}
+.note.warn .tag{color:var(--signal)}
+.note.key .tag{color:var(--accent)}
+.note p:last-child{margin-bottom:0}
+
+/* ---------- tables ---------- */
+.scroll{overflow-x:auto;margin:0 0 1.5rem;border:1px solid var(--line);border-radius:2px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:.9rem;min-width:30rem}
+th,td{text-align:start;padding:.62rem .85rem;border-bottom:1px solid var(--line);vertical-align:top}
+thead th{
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--muted);font-weight:500;background:var(--sunk);white-space:nowrap;
+}
+tbody tr:last-child td{border-bottom:0}
+td.n{font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap;color:var(--muted)}
+
+.pill{
+  display:inline-block;font-family:var(--mono);font-size:.66rem;letter-spacing:.06em;
+  padding:.14rem .5rem;border-radius:2px;white-space:nowrap;
+}
+.p-mvp{background:var(--accent-wash);color:var(--accent)}
+.p-later{background:var(--sunk);color:var(--muted)}
+.p-cut{background:var(--signal-wash);color:var(--signal)}
+.p-proto{background:var(--indigo-wash);color:var(--indigo)}
+
+/* ---------- loop diagram ---------- */
+.loop{display:grid;grid-template-columns:repeat(2,1fr);gap:.5rem;margin:1.4rem 0 .6rem}
+@media(min-width:700px){.loop{grid-template-columns:repeat(6,1fr)}}
+.loop > div{
+  background:var(--surface);border:1px solid var(--line);border-radius:2px;
+  padding:.7rem .6rem;text-align:center;
+}
+.loop b{display:block;font-size:.88rem;font-weight:600}
+.loop i{
+  display:block;font-style:normal;font-family:var(--mono);font-size:.6rem;
+  letter-spacing:.12em;color:var(--accent);margin-bottom:.35rem;
+}
+.loop small{display:block;font-size:.72rem;color:var(--muted);line-height:1.4;margin-top:.15rem}
+.caption{font-size:.8rem;color:var(--muted);margin:0 0 1.6rem;font-family:var(--mono)}
+
+/* ---------- persona cards ---------- */
+.cards{display:grid;gap:.8rem;margin-bottom:1.5rem}
+@media(min-width:640px){.cards{grid-template-columns:repeat(3,1fr)}}
+.card{
+  background:var(--surface);border:1px solid var(--line);border-radius:2px;
+  padding:1rem;box-shadow:var(--shadow);
+}
+.card h4{margin:0 0 .1rem;font-size:.98rem;font-weight:600;font-family:var(--sans)}
+.card .role{
+  font-family:var(--mono);font-size:.63rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--accent);display:block;margin-bottom:.5rem;
+}
+.card p{font-size:.85rem;line-height:1.6;margin:0;color:var(--ink-2)}
+
+/* ---------- footer ---------- */
+.foot{
+  margin-top:3rem;padding-top:1.6rem;border-top:1px solid var(--line);
+  font-family:var(--mono);font-size:.72rem;color:var(--muted);
+  display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="doc" lang="he" dir="rtl">
+
+<header class="masthead">
+  <p class="eyebrow">מפרט מוצר<span>גרסה 0.1</span><span>שלב 1 מתוך 12</span></p>
+  <h1 class="wordmark">NOMA</h1>
+  <p class="deck">מערכת הפעלה לבריאות המשפחה. מסמך שמגדיר מה בונים — ובעיקר מה לא.</p>
+  <div class="meta">
+    <div>תאריך<b>18.08.2026</b></div>
+    <div>סטטוס<b>לפני אימות</b></div>
+    <div>הבא בתור<b>User Flows</b></div>
+    <div>קוד שנכתב<b>0 שורות</b></div>
+  </div>
+</header>
+
+<div class="body">
+
+<div class="sheet">
+
+<section id="s0">
+  <h2><span class="num">00</span>תמצית</h2>
+  <p>NOMA היא סוכן AI שמנהל את העבודה הבריאותית של משפחה: מבין מה קרה, קובע מה צריך לקרות אחר כך, ומבצע — באישור המשתמש. החזון הוא קטגוריה חדשה. <strong>המפרט הזה קיים כדי למנוע ממנה להיבנות בבת אחת.</strong></p>
+  <p>שלוש מסקנות שהמסמך מגיע אליהן. מי שקורא פסקה אחת — שיקרא את זו:</p>
+  <ul>
+    <li><strong>הקסם של NOMA הוא לא התזכורת, אלא ההשלמה.</strong> אפליקציה שאומרת "יש לך תור" היא יומן. אפליקציה שאומרת "הביקור הסתיים, המעקב הבא הוא בנובמבר, לקבוע?" היא מוצר אחר לגמרי. כל ה-MVP צריך להיבנות סביב הרגע הזה.</li>
+    <li><strong>המשפט "המעקב הבא בעוד חצי שנה" הוא המלצה קלינית.</strong> ברגע ש-NOMA אומרת אותו מדעת עצמה — היא חצתה את הגבול הרפואי. הפתרון אינו לוותר על היכולת, אלא לחייב לכל אמירה מקור מוצהר. זהו האילוץ החזק ביותר על עיצוב ה-AI.</li>
+    <li><strong>החיבור לקופות הוא סיכון קיומי, לא משימת פיתוח.</strong> הוא לא ייכשל בגלל קוד — הוא ייכשל בגלל הרשאות וגישה. חייבים מוצר שמספק ערך <em class="term">בלי</em> חיבור, אחרת כל התוכנית תלויה בגורם שאין עליו שליטה.</li>
+  </ul>
+</section>
+
+<section id="s1">
+  <h2><span class="num">01</span>הבעיה</h2>
+  <p>בכל משפחה יש אדם אחד שמחזיק בראש את כל הבריאות של כולם. מתי הילד קיבל חיסון אחרון, איזו בדיקה הרופאה ביקשה ולא נעשתה, איפה שמור סיכום השחרור, לאיזו קופה שייך כל אחד, ומה צריך לחדש החודש.</p>
+  <p>העבודה הזו לא נכשלת בגלל חוסר מוטיבציה. היא נכשלת כי היא מפוזרת: מידע יושב אצל ארבעה ספקים שונים, בשלוש אפליקציות, בצילומי מסך, בוואטסאפ ובזיכרון. <strong>שום מערכת לא רואה את המשפחה כשלם.</strong> התוצאה היא לא רק שכחה — היא עומס מנטלי מתמשך.</p>
+  <div class="note warn">
+    <span class="tag">אזהרה</span>
+    <p>כל הפסקה שלמעלה היא <strong>השערה</strong>, לא ממצא. היא נשמעת נכונה, ולכן היא מסוכנת. שלב 6 קיים כדי לבדוק אותה, לא כדי לאשר אותה. הסימן שהבעיה אמיתית אינו "כן, זה נשמע לי מוכר", אלא <em class="term">מה שכחת בפועל בשנה האחרונה</em>.</p>
+  </div>
+</section>
+
+<section id="s2">
+  <h2><span class="num">02</span>משתמשי היעד</h2>
+  <div class="cards">
+    <div class="card">
+      <h4>המנהל.ת</h4>
+      <span class="role">משתמש ראשי</span>
+      <p>ההורה שמחזיק את הבריאות של כולם בראש. מתקין, מזין, מקבל את ההתראות. אם הוא לא מוצא ערך בשבוע הראשון — המוצר מת.</p>
+    </div>
+    <div class="card">
+      <h4>ההורה השני</h4>
+      <span class="role">משתמש משני</span>
+      <p>רוצה לדעת מה קורה בלי לנהל. נכנס פעם בשבוע. שווה זהב לצמיחה: משפחה עם שני מבוגרים פעילים כמעט לא נוטשת.</p>
+    </div>
+    <div class="card">
+      <h4>הילד הבוגר</h4>
+      <span class="role">שוק שני</span>
+      <p>מטפל בהורה מבוגר מרחוק. אותה בעיה, כאב חזק יותר, נכונות לשלם גבוהה יותר. <strong>לא ב-MVP</strong> — אבל לא לשבור את המודל עבורו.</p>
+    </div>
+  </div>
+  <p>הפרסונה שאיננה משתמשת: <strong>הילד עצמו</strong>. פרופיל של ילד הוא אובייקט שמנוהל, לא חשבון. זה נראה כמו פרט טכני — למעשה זו החלטת מוצר שמכתיבה את כל מודל ההרשאות.</p>
+</section>
+
+<section id="s3">
+  <h2><span class="num">03</span>הצעת הערך והמיצוב</h2>
+  <p><strong>"הבריאות של המשפחה שלך. מטופלת."</strong></p>
+  <p>המיצוב מוגדר בעיקר על ידי מה שהוא <em class="term">לא</em>. NOMA אינה יומן (יומן מחכה שתזין), אינה תיק רפואי (תיק שומר מידע ולא עושה איתו כלום), ואינה רופא (רופא מאבחן). NOMA היא <strong>שכבת התיאום</strong>: היא ממירה מידע בריאותי לפעולות, ומבצעת אותן.</p>
+  <div class="note key">
+    <span class="tag">מבחן לכל פיצ׳ר</span>
+    <p>האם הוא <strong>מוריד</strong> עבודה מהמשפחה, או <strong>מוסיף</strong>? מסך שדורש הזנה ידנית מוסיף עבודה, גם אם הוא יפה. פיצ׳ר שמוסיף עבודה נכנס ל-MVP רק אם הוא הכרחי כדי להזין את המנוע שמוריד עבודה בהמשך.</p>
+  </div>
+</section>
+
+<section id="s4">
+  <h2><span class="num">04</span>הליבה: הגרף והלולאה</h2>
+  <h3>הגרף הבריאותי המשפחתי</h3>
+  <p>ההבדל בין בסיס נתונים לגרף הוא שהגרף מחזיק <strong>קשרים</strong>. לא "לדניאל יש תור" ו"לדניאל יש מסמך", אלא: המסמך הזה נוצר <em class="term">בעקבות</em> הביקור ההוא, <em class="term">ממנו</em> נגזרה ההמלצה הזו, <em class="term">שטרם</em> בוצעה, ושייכת לרופא הזה, שנמצא בקופה הזו.</p>
+  <p>שש הישויות: <strong>אדם · אירוע · מסמך · המלצה · פעולה · ספק</strong>. הקשרים ביניהן הם המוצר. בלעדיהם NOMA היא רשימת מטלות.</p>
+
+  <h3>לולאת NOMA</h3>
+  <p>המנוע היחיד שמריץ את כל התרחישים:</p>
+  <div class="loop">
+    <div><i>01</i><b>אירוע</b><small>ביקור הסתיים · מסמך הועלה</small></div>
+    <div><i>02</i><b>הבנה</b><small>מה בדיוק קרה כאן</small></div>
+    <div><i>03</i><b>הצעה</b><small>מה צריך לקרות עכשיו</small></div>
+    <div><i>04</i><b>אישור</b><small>המשתמש מאשר</small></div>
+    <div><i>05</i><b>ביצוע</b><small>קביעה · תזכורת · משימה</small></div>
+    <div><i>06</i><b>מעקב</b><small>בוצע? ואם לא — למה</small></div>
+  </div>
+  <p class="caption">שלב 06 מייצר אירוע חדש ומזין את 01 ← הלולאה נסגרת.</p>
+  <p>כל חמשת התרחישים בבריף הם אותה לולאה עם קלט אחר. זו הסיבה שהמוצר בר-בנייה: <strong>מנוע אחד, לא חמישה פיצ׳רים.</strong></p>
+</section>
+
+<section id="s5">
+  <h2><span class="num">05</span>יכולות ה-AI</h2>
+  <div class="scroll"><table>
+    <thead><tr><th>דרגה</th><th>יכולת</th><th>הקושי האמיתי</th><th>סטטוס</th></tr></thead>
+    <tbody>
+      <tr><td class="n">T1</td><td>חילוץ ממסמך — תאריכים, רופא, המלצות</td><td>OCR בעברית + כתב יד. בינוני</td><td><span class="pill p-mvp">MVP</span></td></tr>
+      <tr><td class="n">T2</td><td>תזמון וחזרתיות — מתי להזכיר</td><td>לוגיקה, לא AI. קל</td><td><span class="pill p-mvp">MVP</span></td></tr>
+      <tr><td class="n">T3</td><td>תיעדוף והסבר — מה דחוף ולמה</td><td>קל טכנית, קשה לעשות טוב</td><td><span class="pill p-mvp">MVP</span></td></tr>
+      <tr><td class="n">T4</td><td>ביצוע — קביעת תור בפועל</td><td>חסום על אינטגרציות. קשה מאוד</td><td><span class="pill p-later">אחרי</span></td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>כלל המקור — האילוץ החשוב במסמך</h3>
+  <p>"הביקור הבא בעוד חצי שנה" נשמע כמו ארגון. הוא לא. זו המלצה קלינית, ומודל שפה שממציא אותה מסכן ילדים ומסכן את החברה.</p>
+  <div class="note warn">
+    <span class="tag">חוק ברזל</span>
+    <p>ל-NOMA מותר להציג המלצה משלושה מקורות בלבד, וכל הצגה נושאת את המקור על פניה:</p>
+    <p><strong>א.</strong> מה שהרופא כתב במסמך — "כתוב בסיכום מ-12.3".<br>
+    <strong>ב.</strong> הנחיה ציבורית מפורסמת, עם קישור — למשל תוכנית החיסונים של משרד הבריאות.<br>
+    <strong>ג.</strong> מה שהמשפחה עצמה הגדירה — "אתם ביקשתם להזכיר כל חצי שנה".</p>
+    <p>אין מקור רביעי. אין "לפי הידע הכללי של המודל". הפסקה הזו נכנסת גם ל-prompt של המערכת וגם ל-UI.</p>
+  </div>
+</section>
+
+<section id="s6">
+  <h2><span class="num">06</span>מפת הפיצ׳רים</h2>
+  <div class="scroll"><table>
+    <thead><tr><th>פיצ׳ר</th><th>הנימוק</th><th>סיווג</th></tr></thead>
+    <tbody>
+      <tr><td>דשבורד משפחתי</td><td>המסך היחיד שרוב המשתמשים יראו</td><td><span class="pill p-mvp">MVP</span></td></tr>
+      <tr><td>"מה NOMA מצאה" — תובנות יזומות</td><td>זהו המוצר. בלעדיו זה יומן</td><td><span class="pill p-mvp">MVP</span></td></tr>
+      <tr><td>העלאת מסמך + ניתוח</td><td>המקור העיקרי למידע בלי אינטגרציה</td><td><span class="pill p-mvp">MVP</span></td></tr>
+      <tr><td>פרופיל בן משפחה + ציר זמן</td><td>הזיכרון שהמשפחה מרגישה</td><td><span class="pill p-mvp">MVP</span></td></tr>
+      <tr><td>פעולות ומשימות</td><td>הפלט של הלולאה</td><td><span class="pill p-mvp">MVP</span></td></tr>
+      <tr><td>Ask NOMA (טקסט)</td><td>הממשק שמגדיר את הקטגוריה</td><td><span class="pill p-mvp">MVP</span></td></tr>
+      <tr><td>התראות מקומיות</td><td>מנוע החזרה למוצר</td><td><span class="pill p-mvp">MVP</span></td></tr>
+      <tr><td>ריבוי קופות — תצוגה</td><td>הבידול הישראלי. תווית בלבד, בלי חיבור</td><td><span class="pill p-mvp">MVP</span></td></tr>
+      <tr><td>לוח שנה משפחתי</td><td>נגזר מהפעולות, לא ישות נפרדת</td><td><span class="pill p-mvp">MVP</span></td></tr>
+      <tr><td>חיפוש</td><td>נדרש רק כשכבר יש הרבה מידע</td><td><span class="pill p-later">אחרי</span></td></tr>
+      <tr><td>ניהול תרופות מלא</td><td>מוצר שלם בפני עצמו</td><td><span class="pill p-later">אחרי</span></td></tr>
+      <tr><td>קביעת תור אמיתית</td><td>חסום על אינטגרציה</td><td><span class="pill p-later">אחרי</span></td></tr>
+      <tr><td>סנכרון בין מבוגרים</td><td>דורש שרת וחשבונות</td><td><span class="pill p-later">אחרי</span></td></tr>
+      <tr><td>ממשק קולי</td><td>הדגמה מרשימה, ערך יומיומי נמוך</td><td><span class="pill p-proto">Prototype בלבד</span></td></tr>
+      <tr><td>מרכז אוטומציה</td><td>מנהל מה שעוד לא קיים</td><td><span class="pill p-cut">להוריד</span></td></tr>
+      <tr><td>Health Insights וגרפים</td><td>מוסיף עומס במקום להוריד</td><td><span class="pill p-cut">להוריד</span></td></tr>
+      <tr><td>אזור מידע חירום</td><td>סיכון בטיחותי גבוה, ערך נמוך</td><td><span class="pill p-cut">להוריד</span></td></tr>
+      <tr><td>פענוח תוצאות בדיקות</td><td>הגבול הרפואי. אסור</td><td><span class="pill p-cut">להוריד</span></td></tr>
+      <tr><td>גרסת דסקטופ</td><td>הבעיה קורית בטלפון</td><td><span class="pill p-cut">להוריד</span></td></tr>
+      <tr><td>מסך Audit Log</td><td>לתעד ברקע — כן. להציג — לא</td><td><span class="pill p-cut">להוריד</span></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="s7">
+  <h2><span class="num">07</span>הגדרת ה-MVP</h2>
+  <p>ה-MVP הוא משפט אחד:</p>
+  <div class="note key">
+    <span class="tag">NOMA V1</span>
+    <p><strong>"אני מעלה מסמך, או מסמן שביקור הסתיים — ו-NOMA אומרת לי מה צריך לקרות אחר כך, ולא נותנת לזה ליפול."</strong></p>
+  </div>
+  <p>זהו. לא ניהול תרופות, לא קביעת תורים, לא קול. משפחה שחוותה את זה פעמיים ומרגישה שמשהו נתפס בשבילה — זה מוצר. משפחה שקיבלה עשרים מסכים יפים ולא חוותה את זה — זו הדגמה.</p>
+</section>
+
+<section id="s8">
+  <h2><span class="num">08</span>מה להוריד — ולמה</h2>
+  <p>זו הבקשה המפורשת בבריף, וזה החלק שהכי כדאי לריב עליו.</p>
+  <div class="scroll"><table>
+    <thead><tr><th>מה</th><th>הנימוק להורדה</th></tr></thead>
+    <tbody>
+      <tr><td><strong>ממשק קולי</strong></td><td>הורים לא מדברים לטלפון על בריאות הילדים ליד אנשים אחרים. מרשים בהדגמה, כמעט לא בשימוש. נשאר ב-prototype כתרחיש E בלבד — <em class="term">כדי לבדוק אם מישהו בכלל נוגע בו</em>.</td></tr>
+      <tr><td><strong>מרכז אוטומציה</strong></td><td>מסך שמנהל אוטומציות שעוד לא קיימות. הוא מבטיח שליטה על כוח שאין. ייבנה כשתהיה אוטומציה אחת אמיתית.</td></tr>
+      <tr><td><strong>Health Insights וגרפים</strong></td><td>סותר את עקרון היסוד. גרף דורש פרשנות, כלומר עבודה. NOMA אמורה להוריד עבודה.</td></tr>
+      <tr><td><strong>אזור מידע חירום</strong></td><td>אם משפחה תסמוך עליו והוא לא יהיה מעודכן — זה נזק אמיתי. פיצ׳ר לגרסה בוגרת עם תהליך אימות, לא ל-V1.</td></tr>
+      <tr><td><strong>פענוח תוצאות בדיקות</strong></td><td>"ההמוגלובין שלך נמוך" הוא אבחון. מותר להציג את המסמך ולחלץ ממנו את מה שהרופא <em class="term">כתב</em> לעשות — ולא לפרש מספרים.</td></tr>
+      <tr><td><strong>דסקטופ</strong></td><td>המצב שבו הבעיה קורית: יוצאים מחדר הרופא עם דף ביד. זה טלפון.</td></tr>
+      <tr><td><strong>29 המסכים</strong></td><td>29 מסכים אינם prototype לאימות — הם מוצר. חמשת התרחישים נסגרים ב-12. השאר ייגזרו אחרי שנדע מה נכון.</td></tr>
+      <tr><td><strong>אנגלית ב-prototype</strong></td><td>עשרים המשפחות דוברות עברית. תרגום עכשיו הוא עבודה כפולה על טקסטים שישתנו בכל מקרה. RTL כן מיום ראשון — הוא ארכיטקטורה. אנגלית לא.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="s9">
+  <h2><span class="num">09</span>נקודת הכניסה המומלצת</h2>
+  <p>"מערכת הפעלה לבריאות המשפחה" רחבה מכדי להיכנס איתה. צריך טריז — פלח צר שבו הכאב חד ביותר. ההמלצה:</p>
+  <div class="note key">
+    <span class="tag">הטריז</span>
+    <p><strong>הורים לילדים בגילי 0–6.</strong></p>
+  </div>
+  <p>ארבע סיבות, והרביעית היא הסיבה האמיתית:</p>
+  <ul>
+    <li>תדירות גבוהה — טיפת חלב, חיסונים, בדיקות התפתחות, מחלות. אירועים כל חודש, לא כל שנה.</li>
+    <li>שכחה מובנית — לוח החיסונים מורכב ותלוי-גיל, וההורים כבר לא ישנים.</li>
+    <li>נכונות רגשית לשלם — הורים משלמים על ביטחון עבור ילד באופן שהם לא משלמים עבור עצמם.</li>
+    <li><strong>לוח החיסונים של משרד הבריאות מפורסם בפומבי.</strong> כלומר NOMA יכולה להיות פרואקטיבית עם <em class="term">מקור מצוטט</em>, בלי להמציא ידע רפואי. הטריז הזה פותר את בעיית הבטיחות מסעיף 05 במקום להתנגש בה.</li>
+  </ul>
+  <p>המוצר עדיין נבנה כמערכת משפחתית מלאה. אבל הסיפור, הגיוס לאימות והמסך הראשון מכוונים לשם.</p>
+</section>
+
+<section id="s10">
+  <h2><span class="num">10</span>חמשת ה-Flows</h2>
+  <p>הפירוט המלא הוא שלב 2. כאן המפה, ומה כל אחד מוכיח:</p>
+  <div class="scroll"><table>
+    <thead><tr><th></th><th>Flow</th><th>מה הוא מוכיח</th><th>עומק ב-Prototype</th></tr></thead>
+    <tbody>
+      <tr><td class="n">A</td><td>ביקור הסתיים ← מעקב ← זמנים ← אישור</td><td>לולאת החזרה. מנוע ההתמדה</td><td>מלא</td></tr>
+      <tr><td class="n">B</td><td>מסמך ← ניתוח ← פעולות ← תורים</td><td>הקסם. רגע ה"וואו"</td><td>מלא</td></tr>
+      <tr><td class="n">C</td><td>ארבע קופות ← תצוגה משפחתית אחת</td><td>הבידול הישראלי</td><td>תצוגה בלבד</td></tr>
+      <tr><td class="n">D</td><td>"מה המשפחה צריכה השבוע?"</td><td>הממשק. תיעדוף עם הסבר</td><td>מלא</td></tr>
+      <tr><td class="n">E</td><td>קול: "דניאל סיים אצל השיניים"</td><td>נבדק אם בכלל רוצים אותו</td><td>מסך אחד</td></tr>
+    </tbody>
+  </table></div>
+  <div class="note warn">
+    <span class="tag">הסכנה בתרחיש B</span>
+    <p>ב-prototype, "NOMA קוראת את המסמך" היא תסריט כתוב מראש. משפחה שתתרשם מזה תיתן פידבק חיובי על יכולת <strong>שעוד לא הוכחה</strong>. לכן: תווית "הדגמה" גלויה, ומדד האימות אינו "התרשמתם?" אלא <em class="term">"תעלו את המסמך האמיתי שלכם"</em> — הנכונות למסור מסמך אמיתי היא הסיגנל.</p>
+  </div>
+</section>
+
+<section id="s11">
+  <h2><span class="num">11</span>המסכים</h2>
+  <p>שנים-עשר מסכים סוגרים את חמשת ה-Flows:</p>
+  <div class="scroll"><table>
+    <thead><tr><th></th><th>מסך</th><th>Flow</th></tr></thead>
+    <tbody>
+      <tr><td class="n">01</td><td>דשבורד משפחתי</td><td>הכול</td></tr>
+      <tr><td class="n">02</td><td>מה NOMA מצאה — תובנות יזומות</td><td>A · B</td></tr>
+      <tr><td class="n">03</td><td>Ask NOMA — שיחה</td><td>D</td></tr>
+      <tr><td class="n">04</td><td>העלאת מסמך</td><td>B</td></tr>
+      <tr><td class="n">05</td><td>ניתוח מסמך — מה נמצא</td><td>B</td></tr>
+      <tr><td class="n">06</td><td>פעולות מוצעות + מקור</td><td>A · B</td></tr>
+      <tr><td class="n">07</td><td>בחירת רופא</td><td>A · B</td></tr>
+      <tr><td class="n">08</td><td>זמנים פנויים</td><td>A · B</td></tr>
+      <tr><td class="n">09</td><td>אישור וסיכום</td><td>A · B</td></tr>
+      <tr><td class="n">10</td><td>פרופיל + ציר זמן בריאותי</td><td>A · C</td></tr>
+      <tr><td class="n">11</td><td>קופות המשפחה</td><td>C</td></tr>
+      <tr><td class="n">12</td><td>קול — מסך יחיד</td><td>E</td></tr>
+    </tbody>
+  </table></div>
+  <p>לוח שנה, חיפוש, הגדרות ופרטיות — קיימים כשלד לחיצה בלבד. הם לא מה שנבדק.</p>
+</section>
+
+<section id="s12">
+  <h2><span class="num">12</span>הרשאות</h2>
+  <p>שני מושגים שאסור לבלבל: <strong>אימות</strong> (מי אתה) נפרד לחלוטין מ<strong>הרשאה</strong> (מה מותר לך במשפחה הזו). ערבוב ביניהם הוא הבאג האבטחתי הנפוץ ביותר במוצרים משפחתיים.</p>
+  <div class="scroll"><table>
+    <thead><tr><th>תפקיד</th><th>מה מותר</th></tr></thead>
+    <tbody>
+      <tr><td>בעלים</td><td>הכול, כולל הזמנה והסרה של מבוגרים</td></tr>
+      <tr><td>אפוטרופוס</td><td>ניהול מלא של הילדים שהוא אחראי להם</td></tr>
+      <tr><td>מבוגר</td><td>הפרופיל שלו, ומה ששותף איתו במפורש</td></tr>
+      <tr><td>צופה</td><td>קריאה בלבד — למשל סבתא</td></tr>
+    </tbody>
+  </table></div>
+  <p>שתי נקודות שיישברו בשטח אם לא ייפתרו מראש: <strong>מה קורה כשילד מגיע לגיל 18</strong> — הפרופיל צריך לעבור לבעלותו; ו<strong>הורים גרושים</strong> — שני אפוטרופוסים לאותו ילד שאינם באותה משפחה. שניהם לא נבנים ב-MVP, אבל המודל חייב לאפשר אותם.</p>
+</section>
+
+<section id="s13">
+  <h2><span class="num">13</span>פרטיות ואבטחה</h2>
+  <div class="note warn">
+    <span class="tag">האמת הלא נוחה</span>
+    <p>ברגע שמסמך רפואי נשלח לניתוח AI, המידע הבריאותי <strong>יוצא מהמכשיר</strong>. אי אפשר גם לנתח מסמכים בענן וגם להבטיח "הכול נשאר אצלך". צריך לבחור ניסוח אמיתי ולעמוד בו.</p>
+  </div>
+  <ul>
+    <li><strong>מינימיזציה</strong> — הניתוח שולח את מה שנחוץ, לא את כל הפרופיל. שם המשפחה לא נדרש כדי לחלץ תאריך.</li>
+    <li><strong>הצפנה</strong> — במנוחה ובתעבורה. מסמכים בקונטיינר של האפליקציה, לא בגלריה.</li>
+    <li><strong>לוגים</strong> — לוגר עטוף שחוסם שמות ותוכן רפואי. <em class="term">print()</em> אסור בקוד.</li>
+    <li><strong>אכיפה בשכבת הנתונים</strong>, לא ב-UI. הסתרת כפתור אינה הרשאה.</li>
+    <li><strong>מחיקה וייצוא</strong> — זכות המשתמש, ופיצ׳ר שמייצר אמון. לא לדחות.</li>
+    <li><strong>ילדים</strong> — מידע על קטינים הוא הקטגוריה הרגישה ביותר בכל רגולציה. ברירת המחדל: הכי סגור.</li>
+  </ul>
+  <p><strong>לאמת מול עורך דין לפני beta, לא אחרי:</strong> חוק הגנת הפרטיות ותיקון 13, חוק זכויות החולה, וסטטוס הרגולציה של תוכנה בריאותית. אני לא יודע את התשובות ולא אנחש אותן.</p>
+</section>
+
+<section id="s14">
+  <h2><span class="num">14</span>סיכונים</h2>
+  <div class="scroll"><table>
+    <thead><tr><th>סיכון</th><th>חומרה</th><th>מענה</th></tr></thead>
+    <tbody>
+      <tr><td><strong>אין גישה לקופות</strong> — אין ממשק ציבורי למטופלים, וזו בעיה משפטית לפני שהיא הנדסית</td><td>קיומי</td><td>לבנות מוצר שעובד בלי חיבור. חיבור = בונוס, לא בסיס</td></tr>
+      <tr><td><strong>פיתוי הסקרייפינג</strong> — לבקש מהמשתמש סיסמת קופה</td><td>קיומי</td><td>לא. הפרת תנאי שימוש, סיכון אבטחה עצום, והורג את האמון</td></tr>
+      <tr><td>ה-AI ימציא מידע רפואי</td><td>גבוה</td><td>כלל המקור, סעיף 05</td></tr>
+      <tr><td>OCR בעברית ובכתב יד של רופאים</td><td>גבוה</td><td>לבדוק על 20 מסמכים אמיתיים <em class="term">לפני</em> שבונים סביבו</td></tr>
+      <tr><td>המשפחה לא מזינה כלום ← מוצר ריק</td><td>גבוה</td><td>ערך כבר מהמסמך הראשון. לא לדרוש הקמה מלאה</td></tr>
+      <tr><td>Prototype יפה מדי ← פידבק מנומס</td><td>בינוני</td><td>למדוד התנהגות, לא דעות</td></tr>
+      <tr><td>שימוש נדיר ← המוצר נשכח</td><td>בינוני</td><td>הטריז 0–6 מייצר תדירות</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="s15">
+  <h2><span class="num">15</span>מדדים</h2>
+  <p>"כמה עבודה NOMA הסירה" הוא צפון נכון אבל בלתי מדיד. התרגום המדיד:</p>
+  <div class="note key">
+    <span class="tag">North Star</span>
+    <p><strong>מספר הפעולות הבריאותיות שהמשפחה השלימה בעקבות NOMA — ולא הייתה נזכרת בהן בלעדיה.</strong> טכנית: פעולות שנוצרו על ידי NOMA, אושרו על ידי המשתמש, וסומנו כבוצעו — לשבוע, למשפחה.</p>
+  </div>
+  <div class="scroll"><table>
+    <thead><tr><th>שלב</th><th>המדד שקובע</th><th>סף</th></tr></thead>
+    <tbody>
+      <tr><td>20 משפחות</td><td>כמה הסכימו להעלות מסמך אמיתי</td><td>מעל חצי</td></tr>
+      <tr><td>Beta</td><td>משפחות פעילות בשבוע 4</td><td>מעל 40%</td></tr>
+      <tr><td>Beta</td><td>שיעור אישור הצעות NOMA</td><td>מעל 50%</td></tr>
+      <tr><td>מסחרי</td><td>המרה לתשלום</td><td>ייקבע אחרי beta</td></tr>
+    </tbody>
+  </table></div>
+  <p class="caption">הספים הם השערות פתיחה, לא בנצ׳מרק. לעדכן אחרי המדידה הראשונה.</p>
+</section>
+
+<section id="s16">
+  <h2><span class="num">16</span>המשך הדרך</h2>
+  <div class="scroll"><table>
+    <thead><tr><th></th><th>שלב</th><th>התוצר</th></tr></thead>
+    <tbody>
+      <tr><td class="n">1</td><td>Product Spec</td><td>המסמך הזה ✓</td></tr>
+      <tr><td class="n">2</td><td>User Flows</td><td>חמישה flows, מסך אחר מסך</td></tr>
+      <tr><td class="n">3</td><td>UX/UI</td><td>Design System · צבע · טיפוגרפיה · רכיבים</td></tr>
+      <tr><td class="n">4</td><td>Prototype</td><td>12 מסכים אינטראקטיביים, mock data</td></tr>
+      <tr><td class="n">5</td><td>סבב פנימי</td><td>איתן משתמש ומבקר</td></tr>
+      <tr><td class="n">6</td><td>20 משפחות</td><td>מדידה, לא הצגה</td></tr>
+      <tr><td class="n">7–12</td><td>MVP · Backend · אינטגרציות · Beta · Scale</td><td>ייגזר מהממצאים</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="s17">
+  <h2><span class="num">17</span>שאלות פתוחות</h2>
+  <p>מה שהמסמך לא יודע, ולא יעמיד פנים שהוא יודע:</p>
+  <ul>
+    <li>האם הבעיה כואבת מספיק כדי לשלם עליה, או שהיא רק מעצבנת?</li>
+    <li>האם משפחה תמסור מסמכים רפואיים לאפליקציה של סטארטאפ לא מוכר?</li>
+    <li>עד כמה OCR עברי עומד במסמכים אמיתיים? <strong>ניתן לבדיקה השבוע, בלי לבנות כלום.</strong></li>
+    <li>מי מנהל בפועל — הורה אחד או שניים? זה משנה גם את מודל ההרשאות וגם את מנוע הצמיחה.</li>
+    <li>האם ריבוי קופות הוא באמת כאב, או שרוב המשפחות נמצאות בקופה אחת?</li>
+    <li>מהו המסלול המשפטי לגישה לנתוני קופות בישראל? <strong>אינני יודע. צריך לברר, לא להניח.</strong></li>
+    <li>איפה עובר הגבול הרגולטורי בין ארגון מידע לבין מכשיר רפואי?</li>
+  </ul>
+  <div class="note key">
+    <span class="tag">ההמלצה המיידית</span>
+    <p>שתי הבדיקות הזולות ביותר במסמך לא דורשות שורת קוד: <strong>לצלם 20 מסמכים רפואיים אמיתיים ולבדוק עליהם OCR עברי</strong>, ו<strong>לשאול חמישה הורים מה הם שכחו בשנה האחרונה</strong>. שתיהן ניתנות לביצוע לפני שלב 2, ושתיהן עלולות לשנות את המסמך הזה.</p>
+  </div>
+</section>
+
+</div>
+
+<nav class="rail" aria-label="תוכן העניינים">
+  <h4>תוכן</h4>
+  <ol>
+    <li><a href="#s0"><em>00</em>תמצית</a></li>
+    <li><a href="#s1"><em>01</em>הבעיה</a></li>
+    <li><a href="#s2"><em>02</em>משתמשי היעד</a></li>
+    <li><a href="#s3"><em>03</em>הצעת הערך</a></li>
+    <li><a href="#s4"><em>04</em>הגרף והלולאה</a></li>
+    <li><a href="#s5"><em>05</em>יכולות AI</a></li>
+    <li><a href="#s6"><em>06</em>מפת הפיצ׳רים</a></li>
+    <li><a href="#s7"><em>07</em>הגדרת MVP</a></li>
+    <li><a href="#s8"><em>08</em>מה להוריד</a></li>
+    <li><a href="#s9"><em>09</em>נקודת כניסה</a></li>
+    <li><a href="#s10"><em>10</em>חמשת ה-Flows</a></li>
+    <li><a href="#s11"><em>11</em>המסכים</a></li>
+    <li><a href="#s12"><em>12</em>הרשאות</a></li>
+    <li><a href="#s13"><em>13</em>פרטיות</a></li>
+    <li><a href="#s14"><em>14</em>סיכונים</a></li>
+    <li><a href="#s15"><em>15</em>מדדים</a></li>
+    <li><a href="#s16"><em>16</em>המשך הדרך</a></li>
+    <li><a href="#s17"><em>17</em>שאלות פתוחות</a></li>
+  </ol>
+</nav>
+
+</div>
+
+<div class="foot">
+  <span>NOMA · מפרט מוצר 0.1</span>
+  <span>אין כאן מידע רפואי · אין חיבור לשום ספק בריאות</span>
+</div>
+
+</div>

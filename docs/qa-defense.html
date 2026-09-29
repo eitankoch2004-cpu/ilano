@@ -1,0 +1,255 @@
+<title>מדריך ההגנה של ILANO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@500;700;900&family=IBM+Plex+Sans+Hebrew:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+
+<style>
+:root{
+  --paper:#F3F6F5; --surface:#FFFFFF; --sunk:#E8EEEC;
+  --ink:#101718; --ink2:#33403E; --muted:#63736F; --line:#D6E0DD;
+  --deep:#0B5F58; --mid:#12857A; --fresh:#2FAE8E; --wash:#E4F2EF;
+  --red:#A6392C; --redw:#FBEAE7; --amber:#B5611A; --amberw:#FDF0E3;
+  --gold:#8A700A; --goldw:#FBF5DC; --green:#1A7440; --greenw:#E6F2EC;
+  --shadow:0 1px 2px rgba(11,95,88,.06), 0 8px 22px -16px rgba(11,95,88,.28);
+  --serif:"Frank Ruhl Libre","Times New Roman",serif;
+  --sans:"IBM Plex Sans Hebrew","Segoe UI",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0B1112; --surface:#141D1E; --sunk:#1A2526;
+    --ink:#E8EFEC; --ink2:#C4D2CE; --muted:#8FA19C; --line:#263435;
+    --deep:#4FC2A8; --mid:#3FB79F; --fresh:#7FD9BF; --wash:#0F2C2A;
+    --red:#E08171; --redw:#331B17; --amber:#DE9A5E; --amberw:#33230F;
+    --gold:#D3B94A; --goldw:#2C2710; --green:#5FC28C; --greenw:#122C1E;
+    --shadow:0 1px 2px rgba(0,0,0,.5), 0 8px 22px -16px rgba(0,0,0,.9);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0B1112; --surface:#141D1E; --sunk:#1A2526;
+  --ink:#E8EFEC; --ink2:#C4D2CE; --muted:#8FA19C; --line:#263435;
+  --deep:#4FC2A8; --mid:#3FB79F; --fresh:#7FD9BF; --wash:#0F2C2A;
+  --red:#E08171; --redw:#331B17; --amber:#DE9A5E; --amberw:#33230F;
+  --gold:#D3B94A; --goldw:#2C2710; --green:#5FC28C; --greenw:#122C1E;
+  --shadow:0 1px 2px rgba(0,0,0,.5), 0 8px 22px -16px rgba(0,0,0,.9);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.7;-webkit-font-smoothing:antialiased}
+.doc{max-width:880px;margin:0 auto;padding:0 clamp(14px,4vw,32px) 5rem}
+
+.head{padding:clamp(2.2rem,6vw,4rem) 0 1.6rem;border-bottom:1px solid var(--line)}
+.eyebrow{font-family:var(--mono);font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;color:var(--mid);margin:0 0 .9rem}
+h1{font-family:var(--serif);font-weight:900;font-size:clamp(2rem,5.5vw,3rem);line-height:1.1;margin:0;letter-spacing:-.01em}
+.deck{font-family:var(--serif);font-weight:500;font-size:clamp(1rem,2.4vw,1.25rem);line-height:1.5;color:var(--ink2);margin:.8rem 0 0;max-width:46ch}
+
+section{margin:2.8rem 0 0}
+h2{font-family:var(--serif);font-weight:700;font-size:clamp(1.35rem,3.6vw,1.8rem);line-height:1.2;margin:0 0 .7rem;text-wrap:balance}
+h2 .n{display:block;font-family:var(--mono);font-size:.68rem;letter-spacing:.14em;color:var(--mid);margin-bottom:.4rem}
+h3{font-size:1rem;font-weight:600;margin:1.7rem 0 .5rem;display:flex;align-items:baseline;gap:.6rem;flex-wrap:wrap}
+h3 .sl{font-family:var(--mono);font-size:.64rem;letter-spacing:.08em;background:var(--wash);color:var(--deep);padding:.15rem .5rem;border-radius:2px;font-weight:500;white-space:nowrap}
+p{margin:0 0 .9rem}
+ul{margin:0 0 1rem;padding-inline-start:1.15rem}
+li{margin-bottom:.35rem}
+strong{font-weight:600}
+em.t{font-style:normal;font-family:var(--mono);font-size:.86em;color:var(--mid)}
+:focus-visible{outline:2px solid var(--mid);outline-offset:3px}
+
+.qa{background:var(--surface);border:1px solid var(--line);border-radius:3px;padding:.85rem 1rem;margin:0 0 .7rem;box-shadow:var(--shadow)}
+.qa .q{font-weight:600;font-size:.98rem;margin:0 0 .4rem;color:var(--ink);display:flex;gap:.55rem}
+.qa .q i{font-style:normal;color:var(--mid);flex:none;font-family:var(--mono);font-size:.8rem;padding-top:.15rem}
+.qa .a{margin:0;color:var(--ink2);font-size:.93rem;padding-inline-start:1.5rem}
+.qa .a b{color:var(--ink)}
+.qa .no{margin:.45rem 0 0;padding-inline-start:1.5rem;font-size:.85rem;color:var(--red)}
+.qa.hard{border-inline-start:4px solid var(--red)}
+.qa.med{border-inline-start:4px solid var(--amber)}
+
+.note{border-radius:3px;padding:1rem 1.15rem;margin:0 0 1.2rem}
+.note.deep{background:var(--wash);border-inline-start:4px solid var(--deep)}
+.note.red{background:var(--redw);border-inline-start:4px solid var(--red)}
+.note.gold{background:var(--goldw);border-inline-start:4px solid var(--gold)}
+.note .tag{font-family:var(--mono);font-size:.63rem;letter-spacing:.14em;text-transform:uppercase;display:block;margin-bottom:.4rem;color:var(--muted)}
+.note.deep .tag{color:var(--deep)} .note.red .tag{color:var(--red)} .note.gold .tag{color:var(--gold)}
+.note p:last-child{margin-bottom:0}
+
+.scroll{overflow-x:auto;margin:0 0 1.3rem;border:1px solid var(--line);border-radius:3px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:.86rem;min-width:28rem}
+th,td{text-align:start;padding:.55rem .75rem;border-bottom:1px solid var(--line);vertical-align:top;line-height:1.5}
+thead th{font-family:var(--mono);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:500;background:var(--sunk);white-space:nowrap}
+tbody tr:last-child td{border-bottom:0}
+td.n{font-family:var(--mono);white-space:nowrap;color:var(--muted)}
+.pill{display:inline-block;font-family:var(--mono);font-size:.62rem;padding:.1rem .42rem;border-radius:2px;white-space:nowrap}
+.p-red{background:var(--redw);color:var(--red)} .p-amber{background:var(--amberw);color:var(--amber)}
+.p-gold{background:var(--goldw);color:var(--gold)} .p-deep{background:var(--wash);color:var(--deep)}
+
+.foot{margin-top:3rem;padding-top:1.2rem;border-top:1px solid var(--line);font-family:var(--mono);font-size:.68rem;color:var(--muted);line-height:1.7}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="doc" lang="he" dir="rtl">
+
+<header class="head">
+  <p class="eyebrow">ILANO · הכנה לפגישה · יום שני</p>
+  <h1>מדריך ההגנה</h1>
+  <p class="deck">כל שאלה שיכולים לשאול אותך, לפי השקופית שממנה היא תגיע — עם התשובה.</p>
+</header>
+
+<section>
+  <h2><span class="n">00</span>איך להשתמש בדף הזה</h2>
+  <p>לכל שאלה מסומנת <strong>השקופית</strong> שממנה היא צפויה לצוץ. כשאתה מציג שקופית — אתה כבר יודע מה עלול לבוא אחריה.</p>
+  <div class="scroll"><table>
+    <thead><tr><th>סימון</th><th>מה זה אומר</th></tr></thead>
+    <tbody>
+      <tr><td><span class="pill p-red">קשה</span></td><td>שאלה שיכולה להפיל אותך. תדע אותה בעל פה</td></tr>
+      <tr><td><span class="pill p-amber">בינונית</span></td><td>צריכה תשובה מדויקת, לא מאולתרת</td></tr>
+      <tr><td><span class="pill p-deep">קלה</span></td><td>תשובה טבעית אם אתה מכיר את המוצר</td></tr>
+    </tbody>
+  </table></div>
+  <div class="note deep">
+    <span class="tag">הכלל שמעל הכול</span>
+    <p><strong>אם אינך יודע — תגיד שאינך יודע, ומיד תגיד מתי תדע.</strong> ״אין לי את הנתון הזה. זו אחת השאלות שאני רוצה לסגור בחודשיים הקרובים.״ זו תשובה של יזם. ניחוש בביטחון הוא מה שהורג פגישות.</p>
+  </div>
+</section>
+
+<section>
+  <h2><span class="n">01</span>חמשת החסמים — לחזרה</h2>
+  <p>אלה מופיעים בשקופית 13. תדע אותם לפי הסדר, כולל המענה.</p>
+  <div class="scroll"><table>
+    <thead><tr><th></th><th>החסם</th><th>המענה שלך</th><th>מה אתה מבקש מהם</th></tr></thead>
+    <tbody>
+      <tr><td class="n">1</td><td><strong>גישה לנתוני הקופות</strong><br><span style="color:var(--muted)">חסם משפטי לפני שהוא הנדסי</span></td><td>המוצר עובד בלי חיבור — מסמכים, קלט הורה, והנחיות ציבוריות</td><td>הכוונה על תנאי הרישוי לפי חוק הניוד</td></tr>
+      <tr><td class="n">2</td><td><strong>אין רופא בצוות</strong><br><span style="color:var(--muted)">והגבול הרפואי הוא הרגיש ביותר</span></td><td>כלל המקור מגן, אבל הוא צריך מי שיאשר אותו</td><td>רופא כיועץ למוצר</td></tr>
+      <tr><td class="n">3</td><td><strong>אין נתוני אימות</strong><br><span style="color:var(--muted)">כולל הבידול עצמו</span></td><td>מוכן למדוד ולא רק להאמין</td><td>20 משפחות לאומית לפיילוט מדיד</td></tr>
+      <tr><td class="n">4</td><td><strong>חילוץ הפעולה מהסיכום</strong><br><span style="color:var(--muted)">הקריאה כמעט פתורה — הרופאים מדפיסים</span></td><td>בדיקה של ימים, לא חודשים</td><td>סיכומים אנונימיים לבדיקה אמיתית</td></tr>
+      <tr><td class="n">5</td><td><strong>הגבול הרגולטורי</strong><br><span style="color:var(--muted)">כלי ארגון או מכשיר רפואי?</span></td><td>נבדק לפני beta ולא אחריה</td><td>ליווי רגולטורי והלסינקי</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section>
+  <h2><span class="n">02</span>שאלות לפי שקופית</h2>
+
+  <h3>שקופית 1 — השער <span class="sl">שקופית 1</span></h3>
+  <div class="qa"><p class="q"><i>Q</i>למה קוראים לזה ILANO?</p><p class="a">אילן — עץ. <b>כל משפחה היא עץ, ועד היום אף אחד לא ראה אותו שלם.</b> ארבע הנקודות בלוגו הן בני המשפחה.</p></div>
+  <div class="qa"><p class="q"><i>Q</i>מה זה בעצם, במשפט אחד?</p><p class="a">שכבה אחת שמחזיקה את הבריאות של כל המשפחה — גם כשהם בקופות שונות — <b>וממירה מסמך רפואי לפעולה שלא נופלת.</b></p></div>
+  <div class="qa"><p class="q"><i>Q</i>למה כתוב ״ארבע קופות״? מאיפה המספר?</p><p class="a">מהמשפחה בדוגמה. בשקופית 3 תראו ששישה אנשים מתחלקים על פני ארבע קופות. <b>המספר הזה משתנה ממשפחה למשפחה — וזו בדיוק הבעיה.</b></p></div>
+
+  <h3>שקופית 2 — משפחת לוי <span class="sl">שקופית 2</span></h3>
+  <div class="qa hard"><p class="q"><i>Q</i>כמה משפחות באמת מפוזרות בין קופות? <span class="pill p-red">קשה</span></p><p class="a"><b>אין נתון פומבי, וחיפשתי.</b> זו הנחת היסוד של המוצר, וזו שאלת האימות מספר אחת שלי. <b>ולכם יש את המספר הזה.</b></p><p class="no">אל תמציא אחוז. זו בדיוק השאלה שמפילה יזמים.</p></div>
+  <div class="qa"><p class="q"><i>Q</i>המשפחה הזו אמיתית?</p><p class="a">לא, והיא מסומנת ככזו בכל שקופית. <b>בנויה כדי להמחיש, לא כדי להטעות.</b></p></div>
+  <div class="qa med"><p class="q"><i>Q</i>ואם רוב המשפחות דווקא בקופה אחת? <span class="pill p-amber">בינונית</span></p><p class="a">אז הבידול נחלש — ואני מעדיף לדעת את זה בעוד חודשיים ולא בעוד שנתיים. <b>במקרה כזה הציר עובר לחיסונים ולמסמכים, והקופות הופכות מבידול לבונוס.</b></p></div>
+
+  <h3>שקופית 3 — דור הסנדוויץ׳ <span class="sl">שקופית 3</span></h3>
+  <div class="qa"><p class="q"><i>Q</i>אז אתם לילדים או לקשישים?</p><p class="a"><b>נכנסים דרך הורים לילדים 0–6</b> — שם התדירות הכי גבוהה. ההורים המבוגרים הם ההרחבה הטבעית, ואותו מנוע משרת את שניהם.</p></div>
+  <div class="qa hard"><p class="q"><i>Q</i>איך בת רואה את התיק של אמא בת 78? זה לא חוקי סתם ככה <span class="pill p-red">קשה</span></p><p class="a"><b>היא לא ״רואה״ — אמא נותנת.</b> חנה היא בעלת הפרופיל, היא מאשרת מה רונית רואה, והיא יכולה לבטל בכל רגע. זה גם בדיוק העיקרון של חוק הניוד: <b>הזכות היא של המטופל.</b></p></div>
+  <div class="qa"><p class="q"><i>Q</i>ואם הקשיש לא יודע להפעיל אפליקציה?</p><p class="a">הוא לא צריך. <b>הוא נותן אישור פעם אחת.</b> אחרי זה הוא לא נוגע בכלום.</p></div>
+  <div class="qa med"><p class="q"><i>Q</i>Wellthy ו-Homethrive כבר עושים את זה <span class="pill p-amber">בינונית</span></p><p class="a">נכון, ומצאתי אותם. <b>הם שירות אנושי לארה״ב, ממוקד בקשישים, ונמכר דרך מעסיקים.</b> לא ילדים, לא ישראל, ולא מנוע.</p></div>
+
+  <h3>שקופית 4 — השנה שנפלה <span class="sl">שקופית 4</span></h3>
+  <div class="qa med"><p class="q"><i>Q</i>זו לא פשוט אחריות של ההורה? <span class="pill p-amber">בינונית</span></p><p class="a">בדיוק. <b>וזו הנקודה — כולם עשו את שלהם ועדיין זה נפל.</b> כשמערכת שלמה עובדת כראוי והתוצאה עדיין נכשלת, זו לא בעיה של אנשים. זו בעיה של ארכיטקטורה.</p></div>
+  <div class="qa"><p class="q"><i>Q</i>אבל הקופה שולחת SMS תזכורות</p><p class="a">על מה שהיא יודעת, ולמי שאצלה. <b>היא לא יודעת מה רופאת שיניים פרטית כתבה בפתק, ולא רואה את שאר המשפחה.</b></p></div>
+  <div class="qa"><p class="q"><i>Q</i>למה שלא ישימו תזכורת ביומן?</p><p class="a">רונית ניסתה — שקופית 4, אפריל. <b>יומן דורש שתזכור להזין. ILANO קוראת את מה שכבר קיים.</b></p></div>
+
+  <h3>שקופית 5 — הוויז׳ן <span class="sl">שקופית 5</span></h3>
+  <div class="qa hard"><p class="q"><i>Q</i>זה בנוי? זה עובד? <span class="pill p-red">קשה</span></p><p class="a"><b>לא. זו הדמיה, וכתוב את זה על השקופית.</b> אין שורת קוד מוצר, ולא נכתבה בכוונה — אני רוצה קודם לדעת שיש כאן מוצר.</p><p class="no">לעולם אל תיתן להם לחשוב שזה רץ. אם יתפסו אותך — נגמר.</p></div>
+  <div class="qa"><p class="q"><i>Q</i>כמה זמן ייקח לבנות את זה?</p><p class="a">Prototype אינטראקטיבי — שבועות. מוצר עם backend ואבטחה — <b>אחרי שאדע מה בדיוק לבנות</b>, וזה תלוי ב-20 המשפחות.</p></div>
+  <div class="qa"><p class="q"><i>Q</i>מי עיצב את זה?</p><p class="a">אני, עם כלי AI. <b>וזה חלק מהתשובה — יזם יחיד יכול היום להגיע לרמת מוצר שלפני שלוש שנים דרשה צוות.</b></p></div>
+
+  <h3>שקופית 6 — הלולאה <span class="sl">שקופית 6</span></h3>
+  <div class="qa hard"><p class="q"><i>Q</i>מה קורה כשה-AI טועה ומשפחה נפגעת? <span class="pill p-red">קשה</span></p><p class="a"><b>כלל המקור:</b> מותר לצטט רק את הרופא, הנחיה ציבורית, או את המשפחה עצמה. <b>אין מקור רביעי.</b> והממשק לא יודע להציג המלצה בלי שדה מקור — אין דרך בקוד לעקוף את זה. <b>ומעל הכול, שלב 04: ההורה מאשר.</b></p></div>
+  <div class="qa"><p class="q"><i>Q</i>למה לא לאוטומט לגמרי? זה מה שירתק משתמשים</p><p class="a">אוטומציה מלאה בבריאות שוברת אמון ברגע שהיא טועה פעם אחת. <b>האישור האנושי הוא מה שמאפשר לי להיות אגרסיבי בזיהוי</b> — כי ההורה תמיד השער האחרון.</p></div>
+  <div class="qa med"><p class="q"><i>Q</i>מה אם ההורה מאשר בלי לקרוא? <span class="pill p-amber">בינונית</span></p><p class="a">שאלה טובה, ואין לי עליה נתון. <b>לכן שיעור אישור ההצעות הוא אחד המדדים בשקופית 12</b> — אם הוא 100%, זה סימן רע ולא טוב.</p></div>
+
+  <h3>שקופית 7 — הרשאות ואוטומציות <span class="sl">שקופית 7</span></h3>
+  <div class="qa hard"><p class="q"><i>Q</i>איפה המידע נשמר ומי יכול לגשת אליו? <span class="pill p-red">קשה</span></p><p class="a">מוצפן במנוחה ובתעבורה, מסמכים בקונטיינר של האפליקציה ולא בגלריה, <b>וההרשאות נאכפות בשכבת הנתונים ולא בהסתרת כפתור.</b> הלוגים חוסמים תוכן רפואי.</p></div>
+  <div class="qa hard"><p class="q"><i>Q</i>אתם שולחים מידע רפואי של ילדים למודל חיצוני? <span class="pill p-red">קשה</span></p><p class="a"><b>כן, ברגע שמנתחים מסמך — והמידע יוצא מהמכשיר.</b> אני אומר את זה למשתמש במפורש במקום לנסח סביבו. מינימיזציה: הניתוח מקבל את מה שנחוץ, לא את כל הפרופיל.</p><p class="no">אל תנסה למכור ״הכול נשאר אצלך״. זה לא נכון, והם ידעו.</p></div>
+  <div class="qa"><p class="q"><i>Q</i>מה קורה בגירושים? שני הורים לאותו ילד</p><p class="a">מקרה קצה אמיתי שלא נבנה ב-V1, <b>אבל המודל מאפשר שני אפוטרופוסים לאותו פרופיל.</b> הליווי המשפטי צריך לסגור אותו.</p></div>
+  <div class="qa"><p class="q"><i>Q</i>ובגיל 18?</p><p class="a">הפרופיל עובר לבעלות הילד. <b>זה כתוב בשקופית.</b></p></div>
+
+  <h3>שקופית 8 — האוטומציה והארכיטקטורה <span class="sl">שקופית 8</span></h3>
+  <div class="qa"><p class="q"><i>Q</i>אתם מחוברים לקופות?</p><p class="a"><b>לא, לאף אחת, ואין לנו הסכם עם אף גוף.</b> כתוב בתחתית השקופית.</p></div>
+  <div class="qa med"><p class="q"><i>Q</i>אז מאיפה המידע מגיע היום? <span class="pill p-amber">בינונית</span></p><p class="a">שלושה מקורות: <b>מסמך שההורה מצלם, קלט ידני, ולוח החיסונים הציבורי של משרד הבריאות</b> — שעובד ביום הראשון בלי שההורה יעלה דבר, רק מתאריך לידה.</p></div>
+  <div class="qa"><p class="q"><i>Q</i>למה לא לגרד את אתר הקופה עם הסיסמה של המשתמש?</p><p class="a"><b>לא, בשום שלב.</b> הפרת תנאי שימוש, חשיפה אבטחתית, והרס הנכס היחיד שיש לי — האמון.</p></div>
+
+  <h3>שקופית 9 — חוק הניוד <span class="sl">שקופית 9</span></h3>
+  <div class="qa med"><p class="q"><i>Q</i>אתם בטוחים שתקבלו רישיון? <span class="pill p-amber">בינונית</span></p><p class="a"><b>לא, ואני לא טוען את זה.</b> אני יודע שקיים מסלול רישוי מוגדר לגופים שאינם מוסדות רפואיים. <b>מה בדיוק הוא דורש — זו אחת משלוש הבקשות שלי מכם.</b></p></div>
+  <div class="qa hard"><p class="q"><i>Q</i>ואם החוק יידחה? <span class="pill p-red">קשה</span></p><p class="a"><b>המוצר לא תלוי בו.</b> הוא עובד היום על מסמכים והנחיות ציבוריות. החוק מכפיל ערך — הוא לא תנאי לקיום. <b>ולכן בניתי אותו ככה מלכתחילה.</b></p></div>
+  <div class="qa"><p class="q"><i>Q</i>מה זה FHIR?</p><p class="a">תקן בינלאומי — <b>שפה משותפת למידע רפואי.</b> כמו שכל שקע חשמל בישראל זהה, כך כל מערכת יכולה לדבר עם כל מערכת. ישראל אימצה אותו.</p></div>
+  <div class="qa"><p class="q"><i>Q</i>מה זו סרטיפיקציה?</p><p class="a">מבחן. <b>כמו טסט לרכב, רק למערכות מחשב.</b> משרד הבריאות פרסם פרופילים טכניים, זרימות הסכמה, וכלי בדיקה שארגון מריץ על עצמו.</p></div>
+  <div class="qa med"><p class="q"><i>Q</i>וכשהחוק ייכנס — כל אחד יוכל לעשות את זה <span class="pill p-amber">בינונית</span></p><p class="a">נכון, וזו בדיוק הסיבה שיש חלון של שנתיים. <b>מי שיגיע ל-2027 עם משפחות, גרף נתונים ורישיון — מתחיל מנקודה אחרת לגמרי.</b></p></div>
+
+  <h3>שקופית 10 — הבידול <span class="sl">שקופית 10</span></h3>
+  <div class="qa hard"><p class="q"><i>Q</i>כללית כבר עושה את זה. למה צריך אתכם? <span class="pill p-red">קשה</span></p><p class="a"><b>כללית עושה את זה בתוך כללית</b> — וכתוב באתר שלהם: ״אם גם אתה וגם הילד שלך בכללית״. משפחה בשלוש קופות עדיין מחזיקה שלוש אפליקציות. <b>ולקופה אין ולא יהיה תמריץ להראות לך מה קורה אצל המתחרה.</b></p></div>
+  <div class="qa hard"><p class="q"><i>Q</i>אז מה מונע מכללית לבנות את זה מחר? <span class="pill p-red">קשה</span></p><p class="a">שום דבר טכני. <b>אבל היא לא תבנה מוצר שמציג את מכבי.</b> הבידול שלי יושב בדיוק במקום שקופה לא יכולה להיכנס אליו מבנית — וזו לא בעיה של יכולת, אלא של אינטרס.</p></div>
+  <div class="qa med"><p class="q"><i>Q</i>ומה עם b.well? הם כבר בנו את זה <span class="pill p-amber">בינונית</span></p><p class="a">נכון, ומצאתי אותם בעצמי. <b>b.well ו-Seqster בנו את שכבת האיחוד בארה״ב על FHIR, כולל מעגל משפחתי — וזה מוכיח שהקטגוריה אמיתית ושמוסדות קונים אותה.</b> מה שאין: עברית, קופות ישראליות, ולולאת מעקב. הם מאחדים מידע. אני הופך אותו לפעולה.</p></div>
+
+  <h3>שקופית 11 — למה לאומית <span class="sl">שקופית 11</span></h3>
+  <div class="qa med"><p class="q"><i>Q</i>מה יוצא לנו מזה? <span class="pill p-amber">בינונית</span></p><p class="a">ILANO הופכת את לאומית לאפליקציה שמחזיקה את <b>כל</b> המשפחה — כולל את מי שלא חבר בה. <b>זה כלי שימור וכלי גיוס.</b></p></div>
+  <div class="qa"><p class="q"><i>Q</i>אתם מדברים גם עם כללית ומכבי?</p><p class="a">לא. <b>ובאתי דווקא ללאומית כי החישוב מצביע עליה</b> — לקופה הקטנה יש הכי הרבה מה להרוויח משכבה חוצת־קופות.</p></div>
+  <div class="qa"><p class="q"><i>Q</i>זה בלעדי?</p><p class="a">אני פתוח לדבר על זה — <b>אבל בשלב הזה אני מבקש פיילוט, לא הסכם.</b></p></div>
+
+  <h3>שקופית 12 — מה בדקנו <span class="sl">שקופית 12</span></h3>
+  <div class="qa"><p class="q"><i>Q</i>איך בדקת את התחרות?</p><p class="a">תשעה חיפושים ממוקדים, מיפוי לפי קטגוריות, וקריאה של מה שכללית ומכבי מפרסמות בעצמן. <b>לא סקר שוק פורמלי — ואני אומר את זה.</b></p></div>
+  <div class="qa med"><p class="q"><i>Q</i>אז בעצם עוד לא בדקת כלום מהותי <span class="pill p-amber">בינונית</span></p><p class="a"><b>נכון — ולכן אני כאן ולא בחדר של VC.</b> באתי לסגור שלוש שאלות, לא לגייס על סמך הבטחות.</p></div>
+  <div class="qa"><p class="q"><i>Q</i>יש פטנטים חוסמים?</p><p class="a">מצאתי אחד קרוב — <b>US11861314B2</b>, חילוץ מעקבים מסיכומי שחרור, מכוון לצד הרופא. <b>לא ביצעתי בדיקת חופש פעולה, וזה על השולחן לפני גיוס משמעותי.</b></p></div>
+
+  <h3>שקופית 13 — החסמים <span class="sl">שקופית 13</span></h3>
+  <div class="qa"><p class="q"><i>Q</i>למה שמת את החסמים במצגת? זה מחליש אותך</p><p class="a"><b>ההפך.</b> אתם תמצאו אותם ממילא תוך שבוע. עדיף שתשמעו אותם ממני, עם המענה — <b>ותדעו שאני מבין את השטח.</b></p></div>
+  <div class="qa"><p class="q"><i>Q</i>מה החסם שהכי מדאיג אותך?</p><p class="a"><b>לא הטכנולוגיה. הצוות.</b> אני לבד, בלי רקע רפואי ובלי מייסד־שותף טכנולוגי. ואני יודע את זה, ולכן באתי לכאן.</p></div>
+
+  <h3>שקופית 14 — הבקשה <span class="sl">שקופית 14</span></h3>
+  <div class="qa hard"><p class="q"><i>Q</i>מי אתה בכלל? למה דווקא אתה תבנה את זה? <span class="pill p-red">קשה</span></p><p class="a">אני בן 21, בשירות סדיר, בלי רקע טכנולוגי פורמלי. <b>מה שיש לי זה שהגעתי לכאן עם חוק שבדקתי, תחרות שמיפיתי, וחמישה חסמים שאני יודע לנקוב בשמם.</b> את השאר אני צריך לבנות — ובשביל זה באתי.</p><p class="no">אל תתנצל ואל תתפתל. תגיד את זה בקול יציב וישר.</p></div>
+  <div class="qa hard"><p class="q"><i>Q</i>כמה כסף אתה מבקש? <span class="pill p-red">קשה</span></p><p class="a"><b>בשלב הזה — לא כסף.</b> רופא, עשרים משפחות, והכוונה על הרישוי. אם השלושה יעבדו, נדע תוך שישים יום אם יש כאן מוצר — <b>ואז נדבר על מספרים שמבוססים על משהו.</b></p></div>
+  <div class="qa med"><p class="q"><i>Q</i>מה מודל ההכנסה? <span class="pill p-amber">בינונית</span></p><p class="a">לא הוכרע במכוון. <b>מנוי משפחתי הוא ההשערה הראשונה, ו-B2B2C דרך קופה או מעסיק הוא השני.</b> תמחור שנקבע לפני שמכירים את הערך הוא ניחוש.</p></div>
+  <div class="qa"><p class="q"><i>Q</i>מה תעשה אם נגיד לא?</p><p class="a">אריץ את שתי הבדיקות הזולות בעצמי — <b>OCR על מסמכים אמיתיים, ושיחות עם הורים</b> — ואחזור עם נתונים.</p></div>
+</section>
+
+<section>
+  <h2><span class="n">03</span>שאלות שמגיעות משום מקום</h2>
+  <p>אלה לא קשורות לשקופית מסוימת. הן נזרקות באמצע.</p>
+  <div class="qa"><p class="q"><i>Q</i>כמה זמן אתה על זה?</p><p class="a">תגיד את האמת. <b>״כמה שבועות, שעה וחצי ביום.״</b> ומיד: ״ובזמן הזה סגרתי את החוק, את התחרות ואת גבול הבטיחות.״</p></div>
+  <div class="qa"><p class="q"><i>Q</i>יש לך חברה רשומה?</p><p class="a">אם לא — <b>״עוד לא. לא רציתי לפתוח חברה לפני שאני יודע שיש מוצר.״</b> זו תשובה טובה, לא חלשה.</p></div>
+  <div class="qa"><p class="q"><i>Q</i>מי עוד ראה את זה?</p><p class="a">תהיה מדויק. אם זו הפגישה הראשונה — <b>תגיד שזו הראשונה.</b> זה מחמיא להם.</p></div>
+  <div class="qa"><p class="q"><i>Q</i>למה שלא תעבוד על זה בתוך קופה כשכיר?</p><p class="a"><b>כי בתוך קופה אי אפשר לבנות מוצר חוצה־קופות.</b> זו בדיוק הנקודה.</p></div>
+  <div class="qa med"><p class="q"><i>Q</i>מה אם מחר תצא אפליקציה של משרד הבריאות שעושה את זה? <span class="pill p-amber">בינונית</span></p><p class="a">אפשרי, וזה סיכון אמיתי. <b>אבל מדינה בונה תשתית, לא חוויית מוצר.</b> וגם אם כן — אני מעדיף לגלות את זה עכשיו.</p></div>
+</section>
+
+<section>
+  <h2><span class="n">04</span>ארבעה סוגי תוקפים</h2>
+  <div class="scroll"><table>
+    <thead><tr><th>מי בחדר</th><th>מאיפה יתקוף</th><th>איפה להתכונן</th></tr></thead>
+    <tbody>
+      <tr><td><strong>רופא</strong></td><td>אחריות רפואית, אבחון, מה קורה כשטועים</td><td>שקופיות 6, 7 · כלל המקור בעל פה</td></tr>
+      <tr><td><strong>איש מערכות מידע</strong></td><td>FHIR, רישוי, אבטחה, איפה המידע יושב</td><td>שקופיות 8, 9 · תדע מה זה סרטיפיקציה</td></tr>
+      <tr><td><strong>איש עסקים</strong></td><td>מודל הכנסה, שוק, מתחרים, מה יוצא ללאומית</td><td>שקופיות 10, 11, 14</td></tr>
+      <tr><td><strong>עורך דין</strong></td><td>פרטיות, קטינים, מכשיר רפואי, תיקון 13</td><td>שקופית 7 · ״נבדק לפני beta, לא אחריה״</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section>
+  <h2><span class="n">05</span>שלושה משפטים שמצילים כל מצב</h2>
+  <div class="note deep">
+    <span class="tag">כשאתה לא יודע</span>
+    <p><strong>״אין לי את הנתון הזה. זו אחת השאלות שאני רוצה לסגור בחודשיים הקרובים.״</strong></p>
+  </div>
+  <div class="note deep">
+    <span class="tag">כשתוקפים את הבידול</span>
+    <p><strong>״לקופה אין ולא יהיה תמריץ להראות לך מה קורה אצל המתחרה. שם אני נכנס.״</strong></p>
+  </div>
+  <div class="note deep">
+    <span class="tag">כשתוקפים אותך אישית</span>
+    <p><strong>״אני יודע מה חסר לי. בדיוק בשביל זה באתי לכאן.״</strong></p>
+  </div>
+  <div class="note gold">
+    <span class="tag">ומה לא לעשות</span>
+    <p>אל תמציא מספרים. אל תבטיח רישיון. אל תגיד ״אין דבר כזה בעולם״. ואל תיתן להם לחשוב שהמוצר בנוי.</p>
+    <p><strong>שלוש שקרים קטנים יעלו לך יותר מכל החולשות שיש לך באמת.</strong></p>
+  </div>
+</section>
+
+<div class="foot">
+  ILANO · מדריך הגנה לפגישה · אוגוסט 2026 · חסוי<br>
+  אין ל-ILANO חיבור, הסכם או קשר לכללית, מכבי, מאוחדת, לאומית, צה״ל או כל גוף בריאות אחר.
+</div>
+
+</div>
