@@ -1,0 +1,119 @@
+<!DOCTYPE html><html lang="he" dir="rtl"><head><meta charset="utf-8">
+<title>עלה ירוק על כחול — ILANO</title><style>
+body{font-family:system-ui;background:#0A1E38;color:#fff;padding:28px 20px;margin:0;text-align:center}
+h1{font-size:21px;margin:0 0 6px;letter-spacing:-.02em}
+.sub{color:#8FD9D4;font-size:13px;margin:0 0 30px;line-height:1.6}
+.row{display:flex;gap:22px;justify-content:center;flex-wrap:wrap;max-width:1250px;margin:0 auto}
+.opt{background:rgba(255,255,255,.05);border:1px solid rgba(143,217,212,.18);
+border-radius:20px;padding:20px 18px;width:210px}
+.opt h3{font-size:15px;margin:15px 0 7px;color:#7FE6A8}
+.opt p{font-size:11.5px;color:#9FB4CC;margin:0;line-height:1.6}
+canvas{border-radius:22.5%;box-shadow:0 12px 28px -8px rgba(0,0,0,.75);display:block;margin:0 auto}
+.small{margin-top:12px;display:flex;gap:9px;justify-content:center;align-items:flex-end}
+.small canvas{border-radius:22.5%}
+.tag{display:inline-block;background:rgba(127,230,168,.16);color:#7FE6A8;
+font-size:10px;font-weight:700;padding:3px 9px;border-radius:99px;margin-top:9px}
+</style></head><body>
+<h1>עלה ירוק · רקע כחול</h1>
+<p class="sub">חמש וריאציות. תגיד לי מספר — או מה לשנות.</p>
+<div class="row" id="row"></div>
+<script>
+var G = `
+<linearGradient id="green" x1="0" y1="1" x2="1" y2="0">
+<stop offset="0" stop-color="#2E9E5B"/><stop offset="1" stop-color="#7FE6A8"/></linearGradient>
+<linearGradient id="greenFlat" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0" stop-color="#43B86C"/><stop offset="1" stop-color="#43B86C"/></linearGradient>
+<linearGradient id="navyBg" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0" stop-color="#1D4A7A"/><stop offset="1" stop-color="#0A1E38"/></linearGradient>
+<linearGradient id="blueBg" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0" stop-color="#2E86AB"/><stop offset="1" stop-color="#14365F"/></linearGradient>
+<linearGradient id="deepBg" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0" stop-color="#14365F"/><stop offset="1" stop-color="#0A1E38"/></linearGradient>
+<radialGradient id="soft" cx="50%" cy="40%" r="58%">
+<stop offset="0" stop-color="#7FE6A8" stop-opacity=".2"/>
+<stop offset="1" stop-color="#7FE6A8" stop-opacity="0"/></radialGradient>`;
+
+/* עלה קלאסי: קצה עליון מחודד, בסיס עגול, גיד מרכזי */
+var LEAF =
+`<path d="M256 96c86 46 128 112 128 178 0 74-58 130-128 130s-128-56-128-130c0-66 42-132 128-178z"/>`;
+
+var OPTS = [
+{n:"1 · העלה הנקי", tag:"הכי פשוט",
+ d:"עלה ירוק מלא עם גיד לבן. רקע נייבי עמוק. קריא בכל גודל.",
+ svg:`<rect width="512" height="512" fill="url(#navyBg)"/>
+ <g fill="url(#green)">${LEAF}</g>
+ <path d="M256 118v274" stroke="#0A1E38" stroke-width="9" opacity=".35" stroke-linecap="round"/>
+ <path d="M256 200c-38 18-60 42-70 70M256 200c38 18 60 42 70 70
+          M256 280c-30 14-48 32-56 54M256 280c30 14 48 32 56 54"
+       stroke="#0A1E38" stroke-width="6" fill="none" opacity=".25" stroke-linecap="round"/>`},
+
+{n:"2 · עם גבעול", tag:"",
+ d:"אותו עלה עם גבעול קצר למטה. נראה יותר כמו עלה אמיתי.",
+ svg:`<rect width="512" height="512" fill="url(#navyBg)"/>
+ <circle cx="256" cy="240" r="180" fill="url(#soft)"/>
+ <path d="M256 404v54" stroke="#2E9E5B" stroke-width="15" stroke-linecap="round"/>
+ <g fill="url(#green)" transform="translate(0,-26)">${LEAF}</g>
+ <path d="M256 92v272" stroke="#0A1E38" stroke-width="9" opacity=".32" stroke-linecap="round"/>
+ <path d="M256 174c-38 18-60 42-70 70M256 174c38 18 60 42 70 70
+          M256 254c-30 14-48 32-56 54M256 254c30 14 48 32 56 54"
+       stroke="#0A1E38" stroke-width="6" fill="none" opacity=".22" stroke-linecap="round"/>`},
+
+{n:"3 · רקע כחול בהיר", tag:"",
+ d:"אותו עלה, אבל הרקע כחול־טורקיז בהיר יותר. בולט יותר במסך.",
+ svg:`<rect width="512" height="512" fill="url(#blueBg)"/>
+ <g fill="url(#green)">${LEAF}</g>
+ <path d="M256 118v274" stroke="#14365F" stroke-width="9" opacity=".4" stroke-linecap="round"/>
+ <path d="M256 200c-38 18-60 42-70 70M256 200c38 18 60 42 70 70
+          M256 280c-30 14-48 32-56 54M256 280c30 14 48 32 56 54"
+       stroke="#14365F" stroke-width="6" fill="none" opacity=".28" stroke-linecap="round"/>`},
+
+{n:"4 · עלה בתוך עיגול", tag:"",
+ d:"העלה יושב בתוך טבעת כחולה בהירה. מרגיש מסודר ורגוע.",
+ svg:`<rect width="512" height="512" fill="url(#deepBg)"/>
+ <circle cx="256" cy="256" r="172" fill="rgba(46,134,171,.22)" stroke="#2E86AB" stroke-width="8"/>
+ <g fill="url(#green)" transform="translate(256,256) scale(.74) translate(-256,-256)">${LEAF}</g>
+ <path d="M256 168v204" stroke="#0A1E38" stroke-width="8" opacity=".3" stroke-linecap="round"/>
+ <path d="M256 228c-28 14-45 32-52 52M256 228c28 14 45 32 52 52"
+       stroke="#0A1E38" stroke-width="5" fill="none" opacity=".22" stroke-linecap="round"/>`},
+
+{n:"5 · שני עלים", tag:"",
+ d:"עלה גדול ועלה קטן — רומז על שני דורות, בלי לאבד את הפשטות.",
+ svg:`<rect width="512" height="512" fill="url(#navyBg)"/>
+ <circle cx="256" cy="240" r="180" fill="url(#soft)"/>
+ <g fill="#2E9E5B" opacity=".9" transform="translate(196,300) scale(.42) translate(-256,-256)">${LEAF}</g>
+ <g fill="url(#green)" transform="translate(276,230) scale(.82) translate(-256,-256)">${LEAF}</g>
+ <path d="M276 108v250" stroke="#0A1E38" stroke-width="8" opacity=".3" stroke-linecap="round"/>
+ <path d="M256 430c0-40 8-72 28-98" stroke="#2E9E5B" stroke-width="13" fill="none" stroke-linecap="round"/>`}
+];
+
+function make(svg, size){
+  return new Promise(function(res){
+    var full = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><defs>'+G+'</defs>'+svg+'</svg>';
+    var img = new Image();
+    var url = URL.createObjectURL(new Blob([full],{type:"image/svg+xml"}));
+    img.onload = function(){
+      var c = document.createElement("canvas");
+      c.width = size; c.height = size;
+      c.getContext("2d").drawImage(img,0,0,size,size);
+      URL.revokeObjectURL(url); res(c);
+    };
+    img.src = url;
+  });
+}
+(async function(){
+  var row = document.getElementById("row");
+  for (var i=0;i<OPTS.length;i++){
+    var o = OPTS[i];
+    var d = document.createElement("div"); d.className="opt";
+    d.appendChild(await make(o.svg, 168));
+    var h = document.createElement("h3"); h.textContent = o.n; d.appendChild(h);
+    if (o.tag){ var t=document.createElement("div"); t.className="tag"; t.textContent=o.tag; d.appendChild(t); }
+    var p = document.createElement("p"); p.textContent = o.d; d.appendChild(p);
+    var sm = document.createElement("div"); sm.className="small";
+    sm.appendChild(await make(o.svg, 58));
+    sm.appendChild(await make(o.svg, 38));
+    d.appendChild(sm);
+    row.appendChild(d);
+  }
+})();
+</script></body></html>

@@ -1,0 +1,112 @@
+<!DOCTYPE html><html lang="he" dir="rtl"><head><meta charset="utf-8">
+<title>עץ ירוק על כחול — ILANO</title><style>
+body{font-family:system-ui;background:#0A1E38;color:#fff;padding:28px 20px;margin:0;text-align:center}
+h1{font-size:21px;margin:0 0 6px;letter-spacing:-.02em}
+.sub{color:#8FD9D4;font-size:13px;margin:0 0 30px;line-height:1.6}
+.row{display:flex;gap:22px;justify-content:center;flex-wrap:wrap;max-width:1250px;margin:0 auto}
+.opt{background:rgba(255,255,255,.05);border:1px solid rgba(143,217,212,.18);
+border-radius:20px;padding:20px 18px;width:210px}
+.opt h3{font-size:15px;margin:15px 0 7px;color:#7FE6A8}
+.opt p{font-size:11.5px;color:#9FB4CC;margin:0;line-height:1.6}
+canvas{border-radius:22.5%;box-shadow:0 12px 28px -8px rgba(0,0,0,.75);display:block;margin:0 auto}
+.small{margin-top:12px;display:flex;gap:9px;justify-content:center;align-items:flex-end}
+.small canvas{border-radius:22.5%}
+.tag{display:inline-block;background:rgba(127,230,168,.16);color:#7FE6A8;
+font-size:10px;font-weight:700;padding:3px 9px;border-radius:99px;margin-top:9px}
+</style></head><body>
+<h1>עץ ירוק · רקע כחול</h1>
+<p class="sub">חמש וריאציות של עץ. תגיד לי מספר — או מה לשנות.</p>
+<div class="row" id="row"></div>
+<script>
+var G = `
+<linearGradient id="green" x1="0" y1="1" x2="1" y2="0">
+<stop offset="0" stop-color="#2E9E5B"/><stop offset="1" stop-color="#7FE6A8"/></linearGradient>
+<linearGradient id="greenDeep" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0" stop-color="#43B86C"/><stop offset="1" stop-color="#2E9E5B"/></linearGradient>
+<linearGradient id="navyBg" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0" stop-color="#1D4A7A"/><stop offset="1" stop-color="#0A1E38"/></linearGradient>
+<linearGradient id="blueBg" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0" stop-color="#2E86AB"/><stop offset="1" stop-color="#14365F"/></linearGradient>
+<linearGradient id="deepBg" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0" stop-color="#14365F"/><stop offset="1" stop-color="#0A1E38"/></linearGradient>
+<radialGradient id="soft" cx="50%" cy="38%" r="58%">
+<stop offset="0" stop-color="#7FE6A8" stop-opacity=".22"/>
+<stop offset="1" stop-color="#7FE6A8" stop-opacity="0"/></radialGradient>`;
+
+var OPTS = [
+{n:"1 · העץ הקלאסי", tag:"הכי פשוט",
+ d:"נוף עגול מלא וגזע ישר. הצורה שכולם מזהים כעץ, בכל גודל.",
+ svg:`<rect width="512" height="512" fill="url(#navyBg)"/>
+ <path d="M256 430V282" stroke="#2E9E5B" stroke-width="30" stroke-linecap="round"/>
+ <circle cx="256" cy="212" r="126" fill="url(#green)"/>`},
+
+{n:"2 · עץ עם שורשים", tag:"המומלץ",
+ d:"נוף מלא, גזע, ושורשים שמתפצלים. השורשים רומזים על דורות — בלי לסבך.",
+ svg:`<rect width="512" height="512" fill="url(#navyBg)"/>
+ <circle cx="256" cy="220" r="180" fill="url(#soft)"/>
+ <path d="M256 400V268" stroke="#2E9E5B" stroke-width="28" stroke-linecap="round"/>
+ <path d="M256 372c-34-26-62-28-88-18M256 372c34-26 62-28 88-18"
+       stroke="#2E9E5B" stroke-width="17" fill="none" stroke-linecap="round"/>
+ <circle cx="256" cy="200" r="118" fill="url(#green)"/>`},
+
+{n:"3 · עץ מענפים", tag:"",
+ d:"שלושה אשכולות עלים במקום עיגול אחד. נראה יותר כמו עץ אמיתי.",
+ svg:`<rect width="512" height="512" fill="url(#navyBg)"/>
+ <path d="M256 424V276" stroke="#2E9E5B" stroke-width="26" stroke-linecap="round"/>
+ <path d="M256 330 L178 272 M256 330 L334 272"
+       stroke="#2E9E5B" stroke-width="16" stroke-linecap="round"/>
+ <circle cx="256" cy="180" r="86" fill="url(#green)"/>
+ <circle cx="166" cy="248" r="62" fill="#43B86C"/>
+ <circle cx="346" cy="248" r="62" fill="#43B86C"/>
+ <circle cx="204" cy="140" r="44" fill="#7FE6A8" opacity=".85"/>
+ <circle cx="312" cy="148" r="38" fill="#7FE6A8" opacity=".8"/>`},
+
+{n:"4 · רקע כחול בהיר", tag:"",
+ d:"אותו עץ עם שורשים, על רקע כחול־טורקיז בהיר. בולט יותר במסך.",
+ svg:`<rect width="512" height="512" fill="url(#blueBg)"/>
+ <path d="M256 400V268" stroke="#2E9E5B" stroke-width="28" stroke-linecap="round"/>
+ <path d="M256 372c-34-26-62-28-88-18M256 372c34-26 62-28 88-18"
+       stroke="#2E9E5B" stroke-width="17" fill="none" stroke-linecap="round"/>
+ <circle cx="256" cy="200" r="118" fill="url(#green)"/>`},
+
+{n:"5 · עץ בעיגול", tag:"",
+ d:"העץ יושב בתוך טבעת כחולה. מרגיש מסודר ורגוע.",
+ svg:`<rect width="512" height="512" fill="url(#deepBg)"/>
+ <circle cx="256" cy="256" r="174" fill="rgba(46,134,171,.2)" stroke="#2E86AB" stroke-width="8"/>
+ <path d="M256 378V280" stroke="#2E9E5B" stroke-width="24" stroke-linecap="round"/>
+ <path d="M256 356c-26-20-48-22-68-14M256 356c26-20 48-22 68-14"
+       stroke="#2E9E5B" stroke-width="13" fill="none" stroke-linecap="round"/>
+ <circle cx="256" cy="220" r="94" fill="url(#green)"/>`}
+];
+
+function make(svg, size){
+  return new Promise(function(res){
+    var full = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><defs>'+G+'</defs>'+svg+'</svg>';
+    var img = new Image();
+    var url = URL.createObjectURL(new Blob([full],{type:"image/svg+xml"}));
+    img.onload = function(){
+      var c = document.createElement("canvas");
+      c.width = size; c.height = size;
+      c.getContext("2d").drawImage(img,0,0,size,size);
+      URL.revokeObjectURL(url); res(c);
+    };
+    img.src = url;
+  });
+}
+(async function(){
+  var row = document.getElementById("row");
+  for (var i=0;i<OPTS.length;i++){
+    var o = OPTS[i];
+    var d = document.createElement("div"); d.className="opt";
+    d.appendChild(await make(o.svg, 168));
+    var h = document.createElement("h3"); h.textContent = o.n; d.appendChild(h);
+    if (o.tag){ var t=document.createElement("div"); t.className="tag"; t.textContent=o.tag; d.appendChild(t); }
+    var p = document.createElement("p"); p.textContent = o.d; d.appendChild(p);
+    var sm = document.createElement("div"); sm.className="small";
+    sm.appendChild(await make(o.svg, 58));
+    sm.appendChild(await make(o.svg, 38));
+    d.appendChild(sm);
+    row.appendChild(d);
+  }
+})();
+</script></body></html>

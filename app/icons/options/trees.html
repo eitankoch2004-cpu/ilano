@@ -1,0 +1,121 @@
+<!DOCTYPE html><html lang="he" dir="rtl"><head><meta charset="utf-8">
+<title>אייקוני עץ — ILANO</title><style>
+body{font-family:system-ui;background:#0A1E38;color:#fff;padding:28px 20px;margin:0;text-align:center}
+h1{font-size:21px;margin:0 0 6px;letter-spacing:-.02em}
+.sub{color:#8FD9D4;font-size:13px;margin:0 0 30px}
+.row{display:flex;gap:22px;justify-content:center;flex-wrap:wrap;max-width:1200px;margin:0 auto}
+.opt{background:rgba(255,255,255,.05);border:1px solid rgba(143,217,212,.18);
+border-radius:20px;padding:20px 18px;width:215px}
+.opt h3{font-size:15px;margin:15px 0 7px;color:#6FD4C4}
+.opt p{font-size:11.5px;color:#9FB4CC;margin:0;line-height:1.6}
+canvas{border-radius:22.5%;box-shadow:0 12px 28px -8px rgba(0,0,0,.75);display:block;margin:0 auto}
+.small{margin-top:12px;display:flex;gap:9px;justify-content:center;align-items:flex-end}
+.small canvas{border-radius:22.5%}
+.tag{display:inline-block;background:rgba(111,212,196,.15);color:#6FD4C4;
+font-size:10px;font-weight:700;padding:3px 9px;border-radius:99px;margin-top:9px}
+</style></head><body>
+<h1>חמישה עצים</h1>
+<p class="sub">ILANO = אילן. כל אחד מוצג בגדול ובגודל אמיתי במסך הבית.</p>
+<div class="row" id="row"></div>
+<script>
+var G = `<linearGradient id="lf" x1="0" y1="1" x2="1" y2="0">
+<stop offset="0" stop-color="#2E86AB"/><stop offset="1" stop-color="#6FD4C4"/></linearGradient>
+<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0" stop-color="#1D4A7A"/><stop offset="1" stop-color="#0A1E38"/></linearGradient>
+<linearGradient id="bg2" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0" stop-color="#F4F7FA"/><stop offset="1" stop-color="#DCE7F0"/></linearGradient>
+<radialGradient id="glow" cx="50%" cy="38%" r="55%">
+<stop offset="0" stop-color="#6FD4C4" stop-opacity=".28"/>
+<stop offset="1" stop-color="#6FD4C4" stop-opacity="0"/></radialGradient>`;
+
+var OPTS = [
+{n:"א · אילן הדורות", tag:"המומלץ",
+ d:"עץ שהענפים שלו הם שלושה דורות. חמש נקודות — בני המשפחה. הכי קרוב למשמעות של השם.",
+ svg:`<rect width="512" height="512" fill="url(#bg)"/>
+ <circle cx="256" cy="230" r="180" fill="url(#glow)"/>
+ <path d="M256 430V250" stroke="#6FD4C4" stroke-width="17" stroke-linecap="round"/>
+ <path d="M256 320 L170 250 M256 320 L342 250" stroke="#4FB3C9" stroke-width="12" stroke-linecap="round" opacity=".75"/>
+ <path d="M256 258 L196 196 M256 258 L316 196" stroke="#4FB3C9" stroke-width="11" stroke-linecap="round" opacity=".6"/>
+ <path d="M256 448c-30-18-52-18-76-6M256 448c30-18 52-18 76-6" stroke="#2E86AB" stroke-width="10" fill="none" stroke-linecap="round" opacity=".55"/>
+ <circle cx="256" cy="152" r="46" fill="url(#lf)"/>
+ <circle cx="180" cy="208" r="34" fill="#4FB3C9"/>
+ <circle cx="332" cy="208" r="34" fill="#4FB3C9"/>
+ <circle cx="160" cy="250" r="26" fill="#8FD9D4"/>
+ <circle cx="352" cy="250" r="26" fill="#8FD9D4"/>`},
+
+{n:"ב · העלה המוגן", tag:"",
+ d:"עלה בתוך צורת מגן. אומר בריאות ושמירה יחד — בלי להיראות כמו אפליקציית אבטחה.",
+ svg:`<rect width="512" height="512" fill="url(#bg)"/>
+ <path d="M256 78 L400 136v128c0 96-62 168-144 192-82-24-144-96-144-192V136z" fill="rgba(111,212,196,.13)" stroke="#4FB3C9" stroke-width="7"/>
+ <path d="M256 370V236" stroke="#6FD4C4" stroke-width="15" stroke-linecap="round"/>
+ <path d="M250 262c-58-6-92-58-92-58s54-26 92 10c30 28 0 48 0 48z" fill="url(#lf)"/>
+ <path d="M262 246c50-16 74-72 74-72s-58-14-88 28c-22 32 14 44 14 44z" fill="#6FD4C4" opacity=".9"/>`},
+
+{n:"ג · עץ החיים", tag:"",
+ d:"עץ עגול ומלא, בסגנון איור. חם ואנושי יותר — פחות טכנולוגי, יותר משפחתי.",
+ svg:`<rect width="512" height="512" fill="url(#bg2)"/>
+ <circle cx="256" cy="220" r="150" fill="url(#lf)" opacity=".16"/>
+ <circle cx="256" cy="196" r="96" fill="#2E86AB"/>
+ <circle cx="172" cy="238" r="62" fill="#4FB3C9"/>
+ <circle cx="340" cy="238" r="62" fill="#4FB3C9"/>
+ <circle cx="214" cy="140" r="50" fill="#6FD4C4"/>
+ <circle cx="300" cy="146" r="44" fill="#6FD4C4"/>
+ <circle cx="198" cy="212" r="15" fill="#F4F7FA" opacity=".8"/>
+ <circle cx="292" cy="186" r="13" fill="#F4F7FA" opacity=".75"/>
+ <circle cx="248" cy="252" r="11" fill="#F4F7FA" opacity=".7"/>
+ <path d="M256 430V286" stroke="#14365F" stroke-width="26" stroke-linecap="round"/>
+ <path d="M256 340c-26-22-48-24-70-16M256 366c26-22 48-24 70-16" stroke="#14365F" stroke-width="15" fill="none" stroke-linecap="round"/>`},
+
+{n:"ד · אילן הדופק", tag:"",
+ d:"העץ והגל מהלוגו נפגשים. הגל הוא גם דופק וגם שורשים — רפואה ומשפחה באותו קו.",
+ svg:`<rect width="512" height="512" fill="url(#bg)"/>
+ <circle cx="256" cy="220" r="170" fill="url(#glow)"/>
+ <path d="M256 392V244" stroke="#8FD9D4" stroke-width="16" stroke-linecap="round"/>
+ <path d="M256 300 L184 244 M256 300 L328 244" stroke="#4FB3C9" stroke-width="11" stroke-linecap="round" opacity=".7"/>
+ <circle cx="256" cy="162" r="52" fill="url(#lf)"/>
+ <circle cx="174" cy="216" r="38" fill="#4FB3C9"/>
+ <circle cx="338" cy="216" r="38" fill="#4FB3C9"/>
+ <path d="M96 418h72l26-46 34 78 30-58 24 26h134" stroke="#6FD4C4" stroke-width="15" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`},
+
+{n:"ה · הנץ", tag:"",
+ d:"נבט צעיר שיוצא מהאדמה. רך, אופטימי, ומתאים למותג שרק מתחיל.",
+ svg:`<rect width="512" height="512" fill="url(#bg2)"/>
+ <path d="M96 400h320" stroke="#14365F" stroke-width="13" stroke-linecap="round" opacity=".28"/>
+ <path d="M256 400V196" stroke="#2E86AB" stroke-width="19" stroke-linecap="round"/>
+ <path d="M248 264c-72-4-116-72-116-72s68-34 116 12c38 36 0 60 0 60z" fill="url(#lf)"/>
+ <path d="M264 216c62-20 92-88 92-88s-72-18-110 34c-28 40 18 54 18 54z" fill="#6FD4C4"/>
+ <path d="M340 146c-42 30-66 62-80 100" stroke="#F4F7FA" stroke-width="7" fill="none" opacity=".5" stroke-linecap="round"/>
+ <circle cx="256" cy="176" r="19" fill="#14365F"/>`}
+];
+
+function make(svg, size){
+  return new Promise(function(res){
+    var full = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><defs>'+G+'</defs>'+svg+'</svg>';
+    var img = new Image();
+    var url = URL.createObjectURL(new Blob([full],{type:"image/svg+xml"}));
+    img.onload = function(){
+      var c = document.createElement("canvas");
+      c.width = size; c.height = size;
+      c.getContext("2d").drawImage(img,0,0,size,size);
+      URL.revokeObjectURL(url); res(c);
+    };
+    img.src = url;
+  });
+}
+(async function(){
+  var row = document.getElementById("row");
+  for (var i=0;i<OPTS.length;i++){
+    var o = OPTS[i];
+    var d = document.createElement("div"); d.className="opt";
+    d.appendChild(await make(o.svg, 168));
+    var h = document.createElement("h3"); h.textContent = o.n; d.appendChild(h);
+    if (o.tag){ var t = document.createElement("div"); t.className="tag"; t.textContent=o.tag; d.appendChild(t); }
+    var p = document.createElement("p"); p.textContent = o.d; d.appendChild(p);
+    var sm = document.createElement("div"); sm.className="small";
+    sm.appendChild(await make(o.svg, 58));
+    sm.appendChild(await make(o.svg, 38));
+    d.appendChild(sm);
+    row.appendChild(d);
+  }
+})();
+</script></body></html>

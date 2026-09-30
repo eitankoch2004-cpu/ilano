@@ -1,0 +1,82 @@
+<!DOCTYPE html><html lang="he" dir="rtl"><head><meta charset="utf-8">
+<title>בחירת אייקון</title><style>
+body{font-family:system-ui;background:#0A1E38;color:#fff;padding:26px;margin:0;text-align:center}
+h1{font-size:20px;margin:0 0 6px}
+p{color:#8FD9D4;font-size:13px;margin:0 0 26px}
+.row{display:flex;gap:26px;justify-content:center;flex-wrap:wrap}
+.opt{background:rgba(255,255,255,.05);border:1px solid rgba(143,217,212,.2);
+border-radius:18px;padding:20px;width:230px}
+.opt h3{font-size:15px;margin:14px 0 6px}
+.opt p{font-size:11.5px;color:#9FB4CC;margin:0;line-height:1.6}
+canvas{border-radius:22%;box-shadow:0 10px 26px -8px rgba(0,0,0,.7)}
+.small{margin-top:10px;display:flex;gap:8px;justify-content:center;align-items:flex-end}
+.small canvas{border-radius:22%}
+b{color:#6FD4C4}
+</style></head><body>
+<h1>שלוש הצעות לאייקון</h1>
+<p>כל אחד מוצג בגדול ובגודל אמיתי במסך הבית</p>
+<div class="row" id="row"></div>
+<script>
+var OPTS = [
+ {n:"א · העלה", d:"סמל הלוגו נקי על נייבי. הכי נאמן למותג — מי שראה את הלוגו יזהה מיד.",
+  svg:`<defs><linearGradient id="g1" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#2E86AB"/><stop offset="1" stop-color="#6FD4C4"/></linearGradient>
+  <linearGradient id="b1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1D4A7A"/><stop offset="1" stop-color="#0A1E38"/></linearGradient></defs>
+  <rect width="512" height="512" fill="url(#b1)"/>
+  <path d="M232 300C232 196 252 132 252 132s28 72 14 128c-10 40-34 40-34 40z" fill="url(#g1)"/>
+  <path d="M268 296c78-14 134-72 134-72s-14 82-64 110c-40 22-70-38-70-38z" fill="url(#g1)" opacity=".94"/>
+  <path d="M392 236c-52 46-90 86-112 142" stroke="#fff" stroke-width="9" fill="none" opacity=".45" stroke-linecap="round"/>
+  <path d="M150 392c42-42 84-42 126 0s84 42 126 0" stroke="url(#g1)" stroke-width="30" fill="none" stroke-linecap="round"/>`},
+
+ {n:"ב · שלושה דורות", d:"שלוש נקודות מחוברות — סבא, הורה, ילד. מספר מה האפליקציה עושה, לא רק מי היא.",
+  svg:`<defs><linearGradient id="b2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#14365F"/><stop offset="1" stop-color="#0A1E38"/></linearGradient>
+  <linearGradient id="g2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6FD4C4"/><stop offset="1" stop-color="#2E86AB"/></linearGradient></defs>
+  <rect width="512" height="512" fill="url(#b2)"/>
+  <path d="M256 150 L256 256 M256 256 L170 356 M256 256 L342 356" stroke="#4FB3C9" stroke-width="16" stroke-linecap="round" opacity=".55" fill="none"/>
+  <circle cx="256" cy="150" r="52" fill="url(#g2)"/>
+  <circle cx="170" cy="362" r="42" fill="#4FB3C9"/>
+  <circle cx="342" cy="362" r="42" fill="#4FB3C9"/>
+  <circle cx="256" cy="256" r="34" fill="#8FD9D4"/>`},
+
+ {n:"ג · הדף שהופך לפעולה", d:"מסמך עם וי ירוק. אומר בדיוק מה ILANO עושה: מסמך נכנס, פעולה יוצאת.",
+  svg:`<defs><linearGradient id="b3" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1D4A7A"/><stop offset="1" stop-color="#0A1E38"/></linearGradient></defs>
+  <rect width="512" height="512" fill="url(#b3)"/>
+  <rect x="148" y="112" width="188" height="248" rx="20" fill="#F4F7FA"/>
+  <rect x="180" y="158" width="124" height="13" rx="6" fill="#9FB4CC"/>
+  <rect x="180" y="192" width="98" height="13" rx="6" fill="#C3D2E0"/>
+  <rect x="180" y="226" width="116" height="13" rx="6" fill="#C3D2E0"/>
+  <circle cx="330" cy="352" r="74" fill="#1FA890"/>
+  <path d="M300 352 l22 24 l40 -48" stroke="#fff" stroke-width="20" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`}
+];
+
+function make(svg, size, radius){
+  return new Promise(function(res){
+    var full = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">'+svg+'</svg>';
+    var img = new Image();
+    var url = URL.createObjectURL(new Blob([full],{type:"image/svg+xml"}));
+    img.onload = function(){
+      var c = document.createElement("canvas");
+      c.width = size; c.height = size;
+      c.getContext("2d").drawImage(img,0,0,size,size);
+      URL.revokeObjectURL(url); res(c);
+    };
+    img.src = url;
+  });
+}
+(async function(){
+  var row = document.getElementById("row");
+  for (var i=0;i<OPTS.length;i++){
+    var o = OPTS[i];
+    var d = document.createElement("div"); d.className="opt";
+    var big = await make(o.svg, 180);
+    var s1  = await make(o.svg, 60);
+    var s2  = await make(o.svg, 40);
+    d.appendChild(big);
+    var h = document.createElement("h3"); h.textContent = o.n; d.appendChild(h);
+    var p = document.createElement("p"); p.textContent = o.d; d.appendChild(p);
+    var sm = document.createElement("div"); sm.className="small";
+    sm.appendChild(s1); sm.appendChild(s2);
+    d.appendChild(sm);
+    row.appendChild(d);
+  }
+})();
+</script></body></html>

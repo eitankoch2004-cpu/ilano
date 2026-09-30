@@ -252,18 +252,6 @@ button{font-family:inherit;border:0;background:none;color:inherit;cursor:pointer
 }
 
 /* ---------- טפסים ---------- */
-/* קוד הזמנה */
-.codebox{
-  background:linear-gradient(140deg,var(--navy-800),var(--navy-900));
-  color:#fff;border-radius:var(--r-md);
-  padding:20px;margin-top:16px;text-align:center;
-  font-size:36px;font-weight:900;letter-spacing:.24em;
-  font-family:Consolas,"Courier New",monospace;
-  box-shadow:var(--sh-2);
-  border:1px solid rgba(143,217,212,.24);
-  direction:ltr;
-}
-
 /* צ'יפים מהירים — מתי */
 .chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:7px}
 .chip2{
@@ -558,121 +546,6 @@ button{font-family:inherit;border:0;background:none;color:inherit;cursor:pointer
   text-align:center;
   padding:7px 14px;
   position:relative;z-index:25;
-}
-
-/* ============================================================
-   מצב לילה
-   ------------------------------------------------------------
-   ⚠️ הכלל: כל צבע מוגדר פעם אחת ב-:root, והמצב הכהה
-   מחליף רק את הערכים. אסור להגדיר צבע רק בתוך
-   בלוק כהה — אחרת הוא לא קיים במצב יום.
-   ============================================================ */
-:root[data-theme="dark"]{
-  --paper:#0B1622;
-  --card:#152234;
-  --card-raised:#1B2B41;
-  --ink:#E8EEF6;
-  --ink-mid:#A8BACE;
-  --ink-soft:#7189A3;
-  --line:rgba(232,238,246,.14);
-  --line-soft:rgba(232,238,246,.07);
-
-  --brand-deep:#8FD9D4;
-  --brand:#4FB3C9;
-  --brand-light:#6FD4C4;
-  --brand-mist:#B8E8E4;
-
-  --navy-900:#060D16;
-  --navy-800:#0F1B2A;
-  --navy-700:#16283D;
-
-  --clalit:#6BA6E0;
-  --maccabi:#E89855;
-  --meuhedet:#B089E0;
-  --leumit:#4FC4B4;
-
-  --todo:#8DA2BA;
-  --sched:#6BA6E0;
-  --done:#4FC4A8;
-  --late:#E8776A;
-  --warn:#E8B04A;
-
-  --sh-1:0 2px 8px -4px rgba(0,0,0,.5);
-  --sh-2:0 8px 24px -12px rgba(0,0,0,.65);
-  --sh-3:0 20px 50px -20px rgba(0,0,0,.8);
-}
-
-/* המסגרת מסביב לטלפון, במצב כהה */
-:root[data-theme="dark"] body{background:#05090F}
-:root[data-theme="dark"] .room{
-  background:
-    radial-gradient(ellipse 60% 50% at 50% 18%,rgba(79,179,201,.10),transparent 62%),
-    linear-gradient(170deg,#0A121C,#05090F);
-}
-:root[data-theme="dark"] .nav{background:rgba(11,22,34,.94)}
-:root[data-theme="dark"] .brandbar{background:var(--paper)}
-/* הלוגו כהה על רקע כהה — מבהירים אותו */
-:root[data-theme="dark"] .brandbar__logo{filter:brightness(1.9) saturate(1.15)}
-:root[data-theme="dark"] .side__panel{background:var(--paper)}
-:root[data-theme="dark"] .gate__box{background:var(--card)}
-:root[data-theme="dark"] .quiz__box{background:var(--card)}
-:root[data-theme="dark"] .quiz__o{background:var(--card-raised)}
-:root[data-theme="dark"] .sheet__in{background:var(--paper)}
-:root[data-theme="dark"] .fld__i,
-:root[data-theme="dark"] .fld__s,
-:root[data-theme="dark"] .read,
-:root[data-theme="dark"] .gate__i{background:var(--card-raised);color:var(--ink)}
-:root[data-theme="dark"] .pk{background:var(--card-raised)}
-:root[data-theme="dark"] .slot{background:var(--card-raised)}
-:root[data-theme="dark"] .chip2{background:var(--card-raised)}
-:root[data-theme="dark"] .win{background:var(--paper)}
-:root[data-theme="dark"] .toast{background:#1B2B41}
-
-/* מעבר רך בין המצבים */
-body,.device,.nav,.brandbar,.card,.act,.box,.side__panel{
-  transition:background-color .3s var(--ease), color .3s var(--ease);
-}
-
-/* ---------- מתג ההגדרות ---------- */
-.set{
-  display:flex;align-items:center;gap:12px;
-  background:var(--card);
-  border:1px solid var(--line-soft);
-  border-radius:var(--r-md);
-  padding:14px;
-  box-shadow:var(--sh-1);
-  width:100%;
-  margin-bottom:9px;
-}
-.set__ic{
-  width:36px;height:36px;flex:none;border-radius:10px;
-  display:grid;place-items:center;font-size:17px;
-  background:rgba(46,134,171,.11);
-}
-.set__t{flex:1;min-width:0;text-align:start}
-.set__n{font-size:13.5px;font-weight:800;color:var(--ink);line-height:1.3}
-.set__d{font-size:10.5px;color:var(--ink-soft);font-weight:500;margin-top:3px;line-height:1.5}
-
-/* ---------- הודעת ההסתייגות ---------- */
-.disclaim{
-  background:rgba(224,148,25,.08);
-  border:1px solid rgba(224,148,25,.26);
-  border-radius:var(--r-md);
-  padding:13px 14px;
-  margin-bottom:12px;
-}
-.disclaim__t{
-  font-size:12.5px;font-weight:800;color:var(--warn);
-  display:flex;align-items:center;gap:7px;line-height:1.4;
-}
-.disclaim__b{
-  font-size:11.5px;color:var(--ink-mid);font-weight:500;
-  line-height:1.65;margin-top:7px;
-}
-/* שורה קטנה שחוזרת בתחתית מסכים */
-.rec{
-  font-size:10px;color:var(--ink-soft);font-weight:600;
-  text-align:center;padding:10px 12px 2px;line-height:1.6;
 }
 
 /* ---------- 3. PARTS ---------- */
@@ -1277,7 +1150,6 @@ body,.device,.nav,.brandbar,.card,.act,.box,.side__panel{
     <div class="gate__err" id="gateErr" hidden></div>
     <button class="btn" id="gateGo">כניסה</button>
     <button class="btn btn--ghost" id="gateSwap">אין לי חשבון — הרשמה</button>
-    <button class="quiz__skip" id="gateJoin" style="margin-top:2px">קיבלתי קוד הזמנה מהמשפחה</button>
     <p class="gate__fine">ILANO אינה מאבחנת ואינה מספקת ייעוץ רפואי.<br>היא מציעה — האדם מאשר.</p>
   </div>
 </div>
@@ -1291,9 +1163,6 @@ body,.device,.nav,.brandbar,.card,.act,.box,.side__panel{
     </button>
     <span class="brandbar__sp"></span>
     <span class="brandbar__tag" id="brandTag"></span>
-    <button class="burger" id="searchBtn" aria-label="חיפוש">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
-    </button>
   </div>
 
   <div class="viewport">
@@ -1313,7 +1182,7 @@ body,.device,.nav,.brandbar,.card,.act,.box,.side__panel{
           <div class="focus__n" id="openN">3</div>
           <div class="focus__txt">דברים דורשים את ההחלטה שלך</div>
         </div>
-        <div class="focus__sub">לא רשימה אינסופית — רק מה שבאמת פתוח היום.<br><b style="color:#fff;font-weight:700">כל מה שמופיע כאן הוא תזכורת, לא הוראה רפואית.</b></div>
+        <div class="focus__sub">לא רשימה אינסופית — רק מה שבאמת פתוח היום.</div>
       </div>
 
       <div class="sect">דורש החלטה<span class="sect__n" id="openN2">3</span></div>
@@ -1413,7 +1282,6 @@ body,.device,.nav,.brandbar,.card,.act,.box,.side__panel{
         <p style="font-size:10.5px;color:var(--ink-soft);font-weight:500;margin-top:6px;line-height:1.5" id="aSrcNote"></p>
       </div>
       <div id="aExtra"></div>
-      <p class="rec">⚠️ תזכורת בלבד. ILANO אינה מאבחנת ואינה מחליפה רופא.</p>
       <div class="stack" style="margin-top:14px" id="aBtns"></div>
     </section>
 
@@ -1461,19 +1329,6 @@ body,.device,.nav,.brandbar,.card,.act,.box,.side__panel{
     </section>
 
     <button class="fab" id="fabAdd" aria-label="הוספה">+</button>
-    <!-- ========== הגדרות ========== -->
-    <section class="screen" id="scSet" aria-label="הגדרות">
-      <button class="back" id="setBack">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
-        <span>חזרה</span>
-      </button>
-      <div class="head">
-        <div class="head__k">הגדרות</div>
-        <h2 class="head__t">איך ILANO<br>תתנהג.</h2>
-      </div>
-      <div id="setBody"></div>
-    </section>
-
     <!-- ========== סרגל צדדי ========== -->
     <div class="side" id="side">
       <div class="side__panel">
@@ -1499,10 +1354,6 @@ body,.device,.nav,.brandbar,.card,.act,.box,.side__panel{
 
           <div class="side__sep"></div>
 
-          <button class="side__i" data-page="settings">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1A1.6 1.6 0 0 0 9 19.4a1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1A1.6 1.6 0 0 0 4.6 9a1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3H9a1.6 1.6 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V9a1.6 1.6 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/></svg>
-            <span>הגדרות</span>
-          </button>
           <button class="side__i" data-page="how">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.7"/><path d="M12 17h.01"/></svg>
             <span>איך זה עובד</span>
@@ -1950,193 +1801,6 @@ async function loadCloud(){
   return true;
 }
 
-
-/* ============================================================
-   יומן והתראות
-   ------------------------------------------------------------
-   שתי דרכים להזכיר:
-   1. קובץ .ics — נכנס ליומן של הטלפון (Google/Apple/Outlook)
-   2. התראת דפדפן — האפליקציה מצפצפת בעצמה
-
-   ⚠️ באייפון התראות עובדות רק כשהאפליקציה מותקנת
-      במסך הבית. בדפדפן רגיל — לא.
-   ============================================================ */
-
-/* ---------- תאריך מטקסט חופשי ---------- */
-/* "ראשון 12.10 · 08:15" → אובייקט Date */
-function parseWhen(txt){
-  if (!txt) return null;
-  var s = String(txt);
-
-  /* תאריך מפורש: 12.10 או 12.10.2026 */
-  var dm = s.match(/(\d{1,2})\.(\d{1,2})(?:\.(\d{2,4}))?/);
-  /* שעה: 08:15 */
-  var tm = s.match(/(\d{1,2}):(\d{2})/);
-
-  var now = new Date();
-  var d;
-
-  if (dm){
-    var day = +dm[1], mon = +dm[2] - 1;
-    var yr = dm[3] ? (dm[3].length === 2 ? 2000 + (+dm[3]) : +dm[3]) : now.getFullYear();
-    d = new Date(yr, mon, day);
-    /* תאריך שעבר בלי שנה מפורשת — כנראה שנה הבאה */
-    if (!dm[3] && d < now) d.setFullYear(yr + 1);
-  } else {
-    /* ביטויים יחסיים */
-    d = new Date(now);
-    var rel = s.match(/בעוד\s*(\d+)\s*(ימים|יום|שבוע|שבועות|חודש|חודשים|שנה|שנים)/);
-    if (rel){
-      var n = +rel[1], unit = rel[2];
-      if (/יום|ימים/.test(unit))        d.setDate(d.getDate() + n);
-      else if (/שבוע/.test(unit))       d.setDate(d.getDate() + n * 7);
-      else if (/חודש/.test(unit))       d.setMonth(d.getMonth() + n);
-      else if (/שנ/.test(unit))         d.setFullYear(d.getFullYear() + n);
-    }
-    else if (/שבועיים/.test(s))  d.setDate(d.getDate() + 14);
-    else if (/חודשיים/.test(s))  d.setMonth(d.getMonth() + 2);
-    else if (/השבוע/.test(s))    d.setDate(d.getDate() + 3);
-    else if (/בהקדם|דחוף/.test(s)) d.setDate(d.getDate() + 2);
-    else return null;   /* ⚠️ לא הצלחנו לפענח — עדיף כלום מאשר תאריך שגוי */
-  }
-
-  if (tm){ d.setHours(+tm[1], +tm[2], 0, 0); }
-  else   { d.setHours(9, 0, 0, 0); }
-  return d;
-}
-
-/* ---------- קובץ יומן ---------- */
-function icsStamp(d){
-  function p(n){ return (n < 10 ? "0" : "") + n; }
-  return d.getUTCFullYear() + p(d.getUTCMonth()+1) + p(d.getUTCDate()) +
-         "T" + p(d.getUTCHours()) + p(d.getUTCMinutes()) + "00Z";
-}
-function icsEscape(s){
-  return String(s || "").replace(/\\/g,"\\\\").replace(/;/g,"\\;")
-                        .replace(/,/g,"\\,").replace(/\n/g,"\\n");
-}
-
-function makeICS(act){
-  var p = person(act.who);
-  var start = parseWhen(act.booked || act.due);
-  if (!start) return null;
-
-  var end = new Date(start.getTime() + 60 * 60 * 1000);
-  var title = act.title + " · " + (p ? p.name : "");
-  var body = [];
-  if (act.place) body.push(act.place);
-  if (act.src)   body.push("מקור: " + act.src);
-  body.push("— נוצר ב-ILANO. המלצה בלבד, לא ייעוץ רפואי.");
-
-  var ics = [
-    "BEGIN:VCALENDAR",
-    "VERSION:2.0",
-    "PRODID:-//ILANO//HE",
-    "CALSCALE:GREGORIAN",
-    "METHOD:PUBLISH",
-    "BEGIN:VEVENT",
-    "UID:ilano-" + act.id + "@ilano",
-    "DTSTAMP:" + icsStamp(new Date()),
-    "DTSTART:" + icsStamp(start),
-    "DTEND:" + icsStamp(end),
-    "SUMMARY:" + icsEscape(title),
-    "DESCRIPTION:" + icsEscape(body.join("\n")),
-    act.place ? "LOCATION:" + icsEscape(act.place) : "",
-    /* תזכורת יום לפני */
-    "BEGIN:VALARM",
-    "TRIGGER:-P1D",
-    "ACTION:DISPLAY",
-    "DESCRIPTION:" + icsEscape(title),
-    "END:VALARM",
-    "END:VEVENT",
-    "END:VCALENDAR"
-  ].filter(Boolean).join("\r\n");
-
-  return ics;
-}
-
-function addToCalendar(act){
-  var ics = makeICS(act);
-  if (!ics){
-    toast("לא הצלחתי לפענח את התאריך");
-    return;
-  }
-  var blob = new Blob([ics], {type:"text/calendar;charset=utf-8"});
-  var url = URL.createObjectURL(blob);
-  var a = document.createElement("a");
-  a.href = url;
-  a.download = "ilano-" + act.id + ".ics";
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
-  toast("הקובץ ירד — פתחו אותו כדי להוסיף ליומן");
-}
-
-/* ---------- התראות הדפדפן ---------- */
-function notifState(){
-  if (!("Notification" in window)) return "none";
-  return Notification.permission;   /* granted · denied · default */
-}
-
-async function askNotif(){
-  if (!("Notification" in window)){
-    toast("הדפדפן הזה לא תומך בהתראות");
-    return false;
-  }
-  var r = await Notification.requestPermission();
-  if (r === "granted"){
-    toast("התראות הופעלו");
-    scheduleAll();
-    return true;
-  }
-  toast(r === "denied" ? "ההתראות נחסמו בהגדרות הדפדפן" : "ההתראות לא הופעלו");
-  return false;
-}
-
-/* ⚠️ setTimeout חי רק כל עוד הדף פתוח. זו הגבלה אמיתית —
-   התראה שנקבעה למחר לא תגיע אם האפליקציה נסגרה.
-   לכן בכל פתיחה אנחנו קובעים מחדש, ומה שקרוב (עד 24 שעות)
-   באמת יגיע. לטווח ארוך — קובץ היומן הוא הפתרון. */
-var notifTimers = [];
-
-function scheduleAll(){
-  notifTimers.forEach(function(t){ clearTimeout(t); });
-  notifTimers = [];
-  if (notifState() !== "granted") return;
-
-  var now = Date.now();
-  var LIMIT = 24 * 60 * 60 * 1000;   /* 24 שעות קדימה */
-
-  S.acts.forEach(function(a){
-    if (a.status === "done") return;
-    var when = parseWhen(a.booked || a.due);
-    if (!when) return;
-
-    /* יום לפני, בתשע בבוקר */
-    var fire = new Date(when.getTime() - 24 * 60 * 60 * 1000);
-    fire.setHours(9, 0, 0, 0);
-    var delay = fire.getTime() - now;
-
-    /* אם היום הוא כבר היום של התזכורת — עוד 10 שניות */
-    if (delay < 0 && when.getTime() > now) delay = 10000;
-    if (delay < 0 || delay > LIMIT) return;
-
-    var p = person(a.who);
-    var t = setTimeout(function(){
-      try{
-        new Notification("ILANO · " + (p ? p.name : ""), {
-          body: a.title + "\n" + (a.booked || a.due),
-          icon: "icons/icon-192.png",
-          badge: "icons/icon-192.png",
-          tag: "ilano-" + a.id
-        });
-      }catch(e){}
-    }, delay);
-    notifTimers.push(t);
-  });
-}
-
 function buildTimeline(){
   return S.acts.filter(function(a){ return a.due; }).slice(0,10)
     .map(function(a){
@@ -2217,7 +1881,7 @@ function actCard(a){
 /* שם המסך הנוכחי — מופיע בשורת המותג */
 var SCREEN_TAG = {
   scHome:"מסך הבית", scFam:"ניהול משפחתי", scPerson:"בן משפחה",
-  scAct:"פעולה", scDoc:"מסמך חדש", scTime:"ציר הזמן", scPerm:"פרטיות והסכמה", scSet:"הגדרות"
+  scAct:"פעולה", scDoc:"מסמך חדש", scTime:"ציר הזמן", scPerm:"פרטיות והסכמה"
 };
 
 function show(id, deep){
@@ -2567,19 +2231,6 @@ function openPerson(id){
   /* הסרת בן בית — רק אם אינו בעל החשבון */
   var oldRm = document.getElementById("pRemove");
   if (oldRm) oldRm.remove();
-  /* הזמנה — רק למי שאין לו עדיין חשבון */
-  var oldInv = document.getElementById("pInvite");
-  if (oldInv) oldInv.remove();
-  if (p.id !== S.me && !p.user_id){
-    var invBtn = document.createElement("button");
-    invBtn.id = "pInvite";
-    invBtn.className = "btn btn--ghost";
-    invBtn.style.marginTop = "10px";
-    invBtn.textContent = "👤 הזמנת " + p.name + " לחשבון משלו";
-    invBtn.addEventListener("click", function(){ openInvite(p); });
-    $("#pDocs").parentNode.appendChild(invBtn);
-  }
-
   if (p.id !== S.me){
     var rmBtn = document.createElement("button");
     rmBtn.id = "pRemove";
@@ -2656,15 +2307,6 @@ function openAct(id){
 
   $("#aExtra").innerHTML = extra;
   $("#aBtns").innerHTML = btns;
-
-  /* הוספה ליומן — רק אם אפשר לפענח תאריך */
-  if (a.status !== "done" && parseWhen(a.booked || a.due)){
-    var cal = document.createElement("button");
-    cal.className = "btn btn--ghost";
-    cal.innerHTML = "📅 הוספה ליומן האישי";
-    cal.addEventListener("click", function(){ addToCalendar(a); });
-    $("#aBtns").appendChild(cal);
-  }
 
   $$("[data-slot]").forEach(function(b){
     b.addEventListener("click", function(){
@@ -3344,11 +2986,7 @@ function tick(){
   $("#greet").textContent = me ? (g+", "+me.name) : g;
 }
 
-function drawAll(){
-  drawHome(); drawFam(); drawTree(); drawTime(); drawPerm();
-  /* קובעים מחדש את ההתראות הקרובות */
-  if (typeof scheduleAll === "function") scheduleAll();
-}
+function drawAll(){ drawHome(); drawFam(); drawTree(); drawTime(); drawPerm(); }
 
 /* ============================================================
    כניסה והפעלה
@@ -3366,13 +3004,6 @@ function gateBusy(on){
   $("#gateGo").textContent = on ? "רגע…" : (gateMode==="in" ? "כניסה" : "הרשמה");
 }
 
-$("#gateJoin").addEventListener("click", function(){
-  gateErr("קודם צריך לפתוח חשבון או להיכנס — ואז להזין את הקוד.");
-  gateMode = "up";
-  $("#gateT").textContent = "פתיחת חשבון";
-  $("#gateGo").textContent = "הרשמה";
-  $("#gateSwap").textContent = "כבר יש לי חשבון — כניסה";
-});
 $("#gateSwap").addEventListener("click", function(){
   gateMode = (gateMode==="in" ? "up" : "in");
   gateErr(null);
@@ -3414,26 +3045,8 @@ async function doGate(){
 }
 
 async function enter(){
-  /* ⚠️ הגיע עם קוד הזמנה? ממשים אותו לפני שטוענים,
-     אחרת לא יהיו לו בני בית והמסך ייראה ריק. */
-  var j = (location.search.match(/[?&]join=([A-Z0-9]{6})/i) || [])[1];
-  if (j && !DEMO){
-    var rj = await redeemCode(j.toUpperCase());
-    if (rj.ok){
-      toast("הצטרפת כ" + rj.name);
-      history.replaceState(null, "", location.pathname);
-    }
-  }
-
   var ok = await loadCloud();
-  if (!ok){
-    /* אין בני בית — אולי הוא הוזמן ולא הזין קוד */
-    $("#gate").classList.add("off");
-    document.getElementById("brandTag").textContent = SCREEN_TAG.scHome;
-    drawAll(); drawDoc(); show("scHome");
-    setTimeout(function(){ openJoin(j || ""); }, 400);
-    return;
-  }
+  if (!ok){ gateErr("התחברת, אבל לא נמצאו בני בית."); return; }
   $("#gate").classList.add("off");
   document.getElementById("brandTag").textContent = SCREEN_TAG.scHome;
   drawAll(); drawDoc(); show("scHome");
@@ -3586,161 +3199,6 @@ function syncFab(id){
 /* ---------- הוספת בן בית ---------- */
 
 /* ---------- הסרת בן בית ---------- */
-
-/* ============================================================
-   הזמנת בן משפחה
-   ------------------------------------------------------------
-   רונית מייצרת קוד → שולחת בוואטסאפ → גדי נרשם ומזין אותו.
-
-   🔴 ההזמנה מחברת אותו לחשבון. היא לא נותנת לרונית
-      גישה אליו — רק הוא יכול לאשר את זה.
-   ============================================================ */
-
-function makeCode(){
-  /* ⚠️ בלי 0/O ו-1/I — מבלבלים כשמקריאים בטלפון */
-  var abc = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-  var s = "";
-  for (var i = 0; i < 6; i++) s += abc[Math.floor(Math.random() * abc.length)];
-  return s;
-}
-
-async function openInvite(p){
-  if (DEMO){
-    $("#sheetIn").innerHTML =
-      '<div class="sheet__grab"></div>' +
-      '<div class="sheet__t">הזמנת ' + esc(p.name) + '</div>' +
-      '<div class="sheet__s">במצב הדגמה אי אפשר לשלוח הזמנות אמיתיות.</div>' +
-      '<div class="stack" style="margin-top:16px">' +
-        '<button class="btn btn--ghost" id="invClose">סגירה</button></div>';
-    $("#sheet").classList.add("on");
-    $("#invClose").addEventListener("click", closeSheet);
-    return;
-  }
-
-  $("#sheetIn").innerHTML =
-    '<div class="sheet__grab"></div>' +
-    '<div class="sheet__t">הזמנת ' + esc(p.name) + '</div>' +
-    '<div class="sheet__s">מייצר קוד…</div>';
-  $("#sheet").classList.add("on");
-
-  var code = makeCode();
-  var u = await sb.auth.getUser();
-  var r = await sb.from("invites").insert({
-    household_id: S.household.id,
-    member_id: p.id,
-    code: code,
-    created_by: u.data.user.id
-  }).select().single();
-
-  if (r.error){
-    $("#sheetIn").innerHTML =
-      '<div class="sheet__grab"></div>' +
-      '<div class="fld__err">' + esc(heb(r.error)) + '</div>' +
-      '<div class="stack" style="margin-top:14px">' +
-        '<button class="btn btn--ghost" id="invClose">סגירה</button></div>';
-    $("#invClose").addEventListener("click", closeSheet);
-    return;
-  }
-
-  var link = location.origin + location.pathname + "?join=" + code;
-  var msg = "היי " + p.name + ", הוספתי אותך ל-ILANO — " +
-            "האפליקציה שמנהלת את הבריאות של המשפחה.\n\n" +
-            "הקוד שלך: " + code + "\n" + link;
-
-  $("#sheetIn").innerHTML =
-    '<div class="sheet__grab"></div>' +
-    '<div class="sheet__t">הזמנת ' + esc(p.name) + '</div>' +
-    '<div class="sheet__s">שלחו לו את הקוד. תקף שבועיים.</div>' +
-
-    '<div class="codebox">' + esc(code) + '</div>' +
-
-    '<div class="stack" style="margin-top:14px">' +
-      '<a class="btn" id="invWa" href="https://wa.me/?text=' +
-        encodeURIComponent(msg) + '" target="_blank" rel="noopener">' +
-        'שליחה בוואטסאפ</a>' +
-      '<button class="btn btn--ghost" id="invCopy">העתקת הקוד</button>' +
-      '<button class="btn btn--ghost" id="invClose">סגירה</button>' +
-    '</div>' +
-
-    '<div class="box" style="padding:13px;margin-top:14px">' +
-      '<p style="font-size:11.5px;color:var(--ink-mid);font-weight:500;line-height:1.7">' +
-        '<b style="color:var(--ink);font-weight:800">מה יקרה אחר כך:</b><br>' +
-        esc(p.name) + ' ייכנס לקישור, יפתח חשבון, ויזין את הקוד. ' +
-        'הוא יתחבר לכרטיס שכבר קיים כאן.<br><br>' +
-        '🔴 <b style="color:var(--ink)">ההזמנה לא נותנת לך גישה אליו.</b> ' +
-        'רק הוא יכול להחליט מה לשתף איתך — במסך הפרטיות שלו.' +
-      '</p>' +
-    '</div>';
-
-  $("#invClose").addEventListener("click", closeSheet);
-  $("#invCopy").addEventListener("click", function(){
-    var ta = document.createElement("textarea");
-    ta.value = code;
-    ta.style.position = "fixed";
-    ta.style.opacity = "0";
-    document.body.appendChild(ta);
-    ta.select();
-    try{ document.execCommand("copy"); toast("הקוד הועתק"); }
-    catch(e){ toast("לא הצלחתי להעתיק"); }
-    document.body.removeChild(ta);
-  });
-}
-
-/* ---------- מימוש קוד ---------- */
-async function redeemCode(code){
-  var r = await sb.rpc("redeem_invite", {p_code: code});
-  if (r.error) return {ok:false, why:heb(r.error)};
-  return r.data || {ok:false, why:"לא התקבלה תשובה"};
-}
-
-function openJoin(preCode){
-  $("#sheetIn").innerHTML =
-    '<div class="sheet__grab"></div>' +
-    '<div class="sheet__t">הצטרפות למשפחה</div>' +
-    '<div class="sheet__s">מישהו מהמשפחה שלח לך קוד? הזינו אותו כאן.</div>' +
-    '<div id="joinErr"></div>' +
-    '<div class="fld" style="margin-top:16px">' +
-      '<label class="fld__l" for="joinCode">קוד ההזמנה</label>' +
-      '<input class="fld__i" id="joinCode" type="text" dir="ltr" ' +
-        'placeholder="ABC123" maxlength="6" autocomplete="off" ' +
-        'style="text-align:center;font-size:22px;font-weight:900;letter-spacing:.22em" ' +
-        'value="' + esc(preCode || "") + '">' +
-    '</div>' +
-    '<div class="stack" style="margin-top:16px">' +
-      '<button class="btn" id="joinGo">הצטרפות</button>' +
-      '<button class="btn btn--ghost" id="joinCancel">ביטול</button>' +
-    '</div>';
-
-  $("#sheet").classList.add("on");
-  $("#joinCancel").addEventListener("click", closeSheet);
-
-  $("#joinCode").addEventListener("input", function(){
-    this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, "");
-  });
-
-  $("#joinGo").addEventListener("click", async function(){
-    var code = $("#joinCode").value.trim();
-    if (code.length !== 6) return formErr("joinErr", "הקוד הוא שישה תווים");
-
-    var btn = $("#joinGo");
-    btn.disabled = true;
-    btn.textContent = "בודק…";
-
-    var r = await redeemCode(code);
-    if (!r.ok){
-      btn.disabled = false;
-      btn.textContent = "הצטרפות";
-      return formErr("joinErr", r.why);
-    }
-
-    closeSheet();
-    toast("הצטרפת כ" + r.name);
-    await loadCloud();
-    drawAll();
-    show("scHome");
-  });
-}
-
 function confirmRemoveMember(p){
   var mine = S.acts.filter(function(a){ return a.who === p.id; });
   var docs = S.docs.filter(function(d){ return d.who === p.id; });
@@ -3921,65 +3379,36 @@ function openAddMember(){
 /* ---------- קטלוג הפעולות ----------
    ⭐ רשימה סגורה של תורים ובדיקות נפוצים.
    להוסיף סוג = לערוך כאן בלבד. */
-/* ---------- קטלוג הפעולות ----------
-   ⭐ רשימה סגורה של תורים, בדיקות וטיפולים.
-   להוסיף סוג = לערוך כאן בלבד.
-
-   🔴 זו רשימה לבחירה, לא המלצה. ILANO אינה קובעת
-      מה מתאים למי — היא רק מציעה ממה לבחור. */
 var CATALOG = [
-  {g:"רופאים מומחים", items:[
+  {g:"רופאים", items:[
     "תור לרופא משפחה","תור לקרדיולוג","תור לרופא עור","תור לאורתופד",
-    "תור לנוירולוג","תור לגסטרואנטרולוג","תור לאורולוג","תור לגינקולוג",
+    "תור לנוירולוג","תור לגסטרו","תור לאורולוג","תור לגינקולוג",
     "תור לאנדוקרינולוג","תור לראומטולוג","תור לרופא ריאות","תור לרופא כליות",
-    "תור לאונקולוג","תור לרופא ילדים","תור לגריאטר","תור להמטולוג",
-    "תור לאלרגולוג","תור לכירורג","תור לרופא כאב","תור לרופא תעסוקתי"
-  ]},
-  {g:"נפש ורגש", items:[
-    "תור לפסיכיאטר","טיפול פסיכולוגי","טיפול זוגי","טיפול משפחתי",
-    "עובד סוציאלי","קבוצת תמיכה","ייעוץ הורי"
+    "תור לאונקולוג","תור לרופא ילדים","תור לגריאטר","תור לפסיכיאטר"
   ]},
   {g:"עיניים · שיניים · אוזניים", items:[
-    "תור לרופא עיניים","בדיקת ראייה אצל אופטומטריסט","בדיקת לחץ תוך־עיני",
-    "תור לרופא שיניים","תור לשיננית","טיפול שורש","סתימה","עקירה",
-    "תור ליישור שיניים","תור לאף אוזן גרון","בדיקת שמיעה","התאמת מכשיר שמיעה"
+    "תור לרופא עיניים","בדיקת ראייה אצל אופטומטריסט",
+    "תור לרופא שיניים","תור לשיננית","טיפול שורש","סתימה",
+    "תור לאף אוזן גרון","בדיקת שמיעה","התאמת מכשיר שמיעה"
   ]},
-  {g:"בדיקות דם ומעבדה", items:[
-    "בדיקות דם","ספירת דם מלאה","בדיקת שומנים בדם","בדיקת סוכר",
-    "המוגלובין מסוכרר","תפקודי כליות","תפקודי כבד","תפקודי בלוטת התריס",
-    "ויטמין D","ויטמין B12","ברזל ופריטין","בדיקת שתן","תרבית שתן",
-    "סמני דלקת","בדיקה גנטית"
+  {g:"בדיקות", items:[
+    "בדיקות דם","בדיקת שתן","בדיקת אקו לב","א.ק.ג",
+    "מבחן מאמץ","הולטר","צילום רנטגן","אולטרסאונד",
+    "CT","MRI","ממוגרפיה","בדיקת צפיפות עצם",
+    "קולונוסקופיה","גסטרוסקופיה","תפקודי ריאות","בדיקת סוכר"
   ]},
-  {g:"הדמיה ובדיקות", items:[
-    "בדיקת אקו לב","א.ק.ג","מבחן מאמץ","הולטר לב","הולטר לחץ דם",
-    "צילום רנטגן","אולטרסאונד","CT","MRI","מיפוי","ממוגרפיה",
-    "בדיקת צפיפות עצם","קולונוסקופיה","גסטרוסקופיה","תפקודי ריאות",
-    "אק״ג מאמץ","דופלר עורקים","בדיקת שינה"
-  ]},
-  {g:"טיפולים ושיקום", items:[
-    "פיזיותרפיה","ריפוי בעיסוק","קלינאית תקשורת","הידרותרפיה",
-    "שיקום לב","שיקום ריאות","טיפול בכף רגל","חבישות ומעקב פצע",
-    "עיסוי רפואי","אימון כוח מותאם"
-  ]},
-  {g:"רפואה משלימה", items:[
-    "דיקור סיני","רפואה סינית","נטורופתיה","הומאופתיה",
-    "רפלקסולוגיה","שיאצו","אוסטאופתיה","כירופרקטיקה",
-    "טיפול בצמחי מרפא","אייורוודה","ביופידבק","מדיטציה מודרכת",
-    "יוגה טיפולית","פלדנקרייז","שיטת אלכסנדר","ארומתרפיה"
-  ]},
-  {g:"תזונה ואורח חיים", items:[
-    "תור לדיאטנית","ייעוץ תזונה קליני","תוכנית ירידה במשקל",
-    "ייעוץ תזונה לסוכרת","ייעוץ פעילות גופנית","גמילה מעישון"
+  {g:"טיפולים", items:[
+    "פיזיותרפיה","ריפוי בעיסוק","קלינאית תקשורת","דיקור סיני",
+    "כירופרקט","עיסוי רפואי","טיפול פסיכולוגי","דיאטנית",
+    "טיפול בכף רגל","הידרותרפיה"
   ]},
   {g:"תרופות וחיסונים", items:[
-    "חידוש מרשם","איסוף תרופה מבית המרקחת","סידור קופסת תרופות",
-    "בדיקת התאמת תרופות","חיסון שפעת","חיסון שגרתי","חיסון קורונה",
-    "חיסון דלקת ריאות","חיסון שלבקת חוגרת"
+    "חידוש מרשם","איסוף תרופה מבית המרקחת","חיסון שפעת",
+    "חיסון שגרתי","חיסון קורונה","בדיקת התאמת תרופות"
   ]},
-  {g:"מעקב וניהול", items:[
+  {g:"אחר", items:[
     "מעקב אצל רופא המשפחה","חידוש אישור רפואי","ועדה רפואית",
-    "מעבר לרפואת מבוגרים","בירור מול הקופה","בקשת הפניה",
-    "קבלת תוצאות","העברת מסמכים","אחר — אכתוב בעצמי"
+    "מעבר לרפואת מבוגרים","בירור מול הקופה","אחר — אכתוב בעצמי"
   ]}
 ];
 
@@ -4142,7 +3571,6 @@ function openAddAction(preWho){
 /* ============================================================
    סרגל צדדי
    ============================================================ */
-$("#searchBtn").addEventListener("click", openSearch);
 $("#burger").addEventListener("click", openSide);
 $("#side").addEventListener("click", function(e){
   if (e.target === $("#side")) closeSide();
@@ -4178,7 +3606,6 @@ $$("[data-page]").forEach(function(b){
     closeSide();
     if (p === "family")  { show("scFam");  return; }
     if (p === "privacy") { show("scPerm"); return; }
-    if (p === "settings"){ drawSettings(); show("scSet"); return; }
     setTimeout(function(){ openInfo(p); }, 260);
   });
 });
@@ -4188,126 +3615,6 @@ $("#sideOut").addEventListener("click", function(){
 });
 
 /* ---------- דפי מידע ---------- */
-
-/* ============================================================
-   הגדרות · מצב יום ולילה
-   ============================================================ */
-function getTheme(){
-  try{ return localStorage.getItem("ilano-theme") || "auto"; }
-  catch(e){ return "auto"; }
-}
-function applyTheme(t){
-  var root = document.documentElement;
-  if (t === "dark")       root.setAttribute("data-theme", "dark");
-  else if (t === "light") root.setAttribute("data-theme", "light");
-  else {
-    /* auto — לפי הגדרת המכשיר */
-    root.removeAttribute("data-theme");
-    if (matchMedia("(prefers-color-scheme: dark)").matches)
-      root.setAttribute("data-theme", "dark");
-  }
-  /* צבע שורת המערכת בטלפון */
-  var m = document.querySelector('meta[name="theme-color"]');
-  if (m) m.setAttribute("content", isDark() ? "#0B1622" : "#14365F");
-}
-function isDark(){
-  return document.documentElement.getAttribute("data-theme") === "dark";
-}
-function setTheme(t){
-  try{ localStorage.setItem("ilano-theme", t); }catch(e){}
-  applyTheme(t);
-  drawSettings();
-}
-
-/* מיישמים מיד, לפני שהמסך נצבע */
-applyTheme(getTheme());
-
-/* אם המכשיר מחליף מצב ואנחנו ב-auto — עוקבים אחריו */
-matchMedia("(prefers-color-scheme: dark)").addEventListener("change", function(){
-  if (getTheme() === "auto") applyTheme("auto");
-});
-
-/* ---------- מסך ההגדרות ---------- */
-function drawSettings(){
-  var t = getTheme();
-  var n = notifState();
-
-  var notifRow;
-  if (n === "granted"){
-    notifRow = '<div class="set"><span class="set__ic">🔔</span>' +
-      '<span class="set__t"><span class="set__n">התראות פעילות</span>' +
-      '<span class="set__d">ILANO תזכיר יום לפני כל תור</span></span>' +
-      '<span class="chip chip--done">פעיל</span></div>';
-  } else if (n === "denied"){
-    notifRow = '<div class="set"><span class="set__ic">🔕</span>' +
-      '<span class="set__t"><span class="set__n">התראות חסומות</span>' +
-      '<span class="set__d">לשנות בהגדרות הדפדפן, בקטע ההרשאות של האתר</span></span></div>';
-  } else {
-    notifRow = '<button class="set" id="setNotif"><span class="set__ic">🔔</span>' +
-      '<span class="set__t"><span class="set__n">הפעלת התראות</span>' +
-      '<span class="set__d">ILANO תזכיר יום לפני כל תור</span></span>' +
-      '<span class="chip chip--todo">כבוי</span></button>';
-  }
-
-  $("#setBody").innerHTML =
-    '<div class="sect" style="margin-top:0">מראה</div>' +
-    '<div class="pick3" id="themePick">' +
-      '<button class="pk' + (t==="light"?" on":"") + '" data-theme="light">' +
-        '☀️<span class="pk__sub">מצב יום</span></button>' +
-      '<button class="pk' + (t==="dark"?" on":"") + '" data-theme="dark">' +
-        '🌙<span class="pk__sub">מצב לילה</span></button>' +
-      '<button class="pk' + (t==="auto"?" on":"") + '" data-theme="auto">' +
-        '⚙️<span class="pk__sub">לפי המכשיר</span></button>' +
-    '</div>' +
-
-    '<div class="sect">תזכורות</div>' +
-    notifRow +
-    '<div class="box" style="padding:13px;margin-top:4px">' +
-      '<p style="font-size:11.5px;color:var(--ink-mid);font-weight:500;line-height:1.65">' +
-        '<b style="color:var(--ink);font-weight:800">שתי דרכים לזכור:</b><br>' +
-        '<b>ביומן האישי</b> — בכל פעולה יש כפתור "הוספה ליומן". ' +
-        'התור נכנס ליומן של הטלפון עם תזכורת יום לפני.<br><br>' +
-        '<b>התראה מ-ILANO</b> — האפליקציה מצפצפת בעצמה. ' +
-        'עובד כשהאפליקציה מותקנת במסך הבית.' +
-      '</p>' +
-    '</div>' +
-
-    '<div class="sect">מידע</div>' +
-    '<button class="set" data-info="how"><span class="set__ic">💡</span>' +
-      '<span class="set__t"><span class="set__n">איך זה עובד</span></span>' +
-      '<span class="act__go">‹</span></button>' +
-    '<button class="set" data-info="about"><span class="set__ic">🌱</span>' +
-      '<span class="set__t"><span class="set__n">אודות ILANO</span></span>' +
-      '<span class="act__go">‹</span></button>' +
-    '<button class="set" data-info="limits"><span class="set__ic">⚠️</span>' +
-      '<span class="set__t"><span class="set__n">מה ILANO לא עושה</span></span>' +
-      '<span class="act__go">‹</span></button>' +
-
-    '<div class="disclaim" style="margin-top:20px">' +
-      '<div class="disclaim__t">⚠️ הכול בגדר המלצה בלבד</div>' +
-      '<div class="disclaim__b">' +
-        'ILANO אינה מאבחנת, אינה רושמת תרופות, ואינה מחליפה רופא. ' +
-        'כל פעולה שמופיעה כאן היא תזכורת למשהו שכבר נאמר לכם — ' +
-        'לא הוראה חדשה.<br><br>' +
-        'בכל שאלה רפואית, ובכל החלטה על טיפול — ' +
-        '<b style="color:var(--ink)">פנו לרופא</b>.' +
-      '</div>' +
-    '</div>' +
-
-    '<p class="fine">ILANO · גרסה 0.5<br>' +
-      'כל אמירה מצטטת מקור: הרופא, הנחיה ציבורית, או המשפחה.</p>';
-
-  $$("[data-theme]").forEach(function(b){
-    b.addEventListener("click", function(){ setTheme(b.dataset.theme); });
-  });
-  $$("[data-info]").forEach(function(b){
-    b.addEventListener("click", function(){ openInfo(b.dataset.info); });
-  });
-  if ($("#setNotif")) $("#setNotif").addEventListener("click", askNotif);
-}
-
-$("#setBack").addEventListener("click", function(){ show("scHome"); });
-
 var PAGES = {
   how: {
     t: "איך זה עובד",
@@ -4354,119 +3661,6 @@ var PAGES = {
        'שפתח את החשבון.</p>'
   }
 };
-
-
-/* ============================================================
-   חיפוש
-   ------------------------------------------------------------
-   מחפש בפעולות, בבני הבית ובמסמכים.
-   ⚠️ רק במה שההרשאות מאפשרות לראות.
-   ============================================================ */
-function openSearch(){
-  $("#sheetIn").innerHTML =
-    '<div class="sheet__grab"></div>' +
-    '<div class="fld" style="margin-bottom:6px">' +
-      '<input class="fld__i" id="sqIn" type="search" ' +
-        'placeholder="חיפוש פעולה, בן בית או מסמך…" autocomplete="off">' +
-    '</div>' +
-    '<div id="sqOut"></div>';
-
-  $("#sheet").classList.add("on");
-  setTimeout(function(){ var el = $("#sqIn"); if (el) el.focus(); }, 320);
-
-  $("#sqIn").addEventListener("input", function(){
-    runSearch(this.value.trim());
-  });
-  runSearch("");
-}
-
-function runSearch(q){
-  var out = $("#sqOut");
-  if (!q){
-    out.innerHTML =
-      '<p class="fld__h" style="text-align:center;padding:24px 10px;line-height:1.7">' +
-        'הקלידו כדי לחפש.<br>' +
-        'אפשר לחפש לפי שם, סוג בדיקה, או שם מסמך.' +
-      '</p>';
-    return;
-  }
-
-  var lc = q.toLowerCase();
-  var hit = function(s){ return s && String(s).toLowerCase().indexOf(lc) > -1; };
-
-  var people = S.people.filter(visible).filter(function(p){
-    return hit(p.name) || hit(p.rel) || hit(p.sub);
-  });
-  var acts = visibleActs().filter(function(a){
-    var p = person(a.who);
-    return hit(a.title) || hit(a.due) || hit(a.src) ||
-           hit(a.note) || (p && hit(p.name));
-  });
-  var docs = S.docs.filter(function(d){
-    var p = person(d.who);
-    return (p && visible(p)) && (hit(d.name) || hit(d.date) || (p && hit(p.name)));
-  });
-
-  var total = people.length + acts.length + docs.length;
-  if (!total){
-    out.innerHTML =
-      '<div class="empty" style="padding:30px 16px">' +
-        '<span class="empty__i">🔍</span>' +
-        '<div class="empty__t">לא נמצא כלום</div>' +
-        '<div class="empty__s">אפשר לנסות מילה אחרת</div>' +
-      '</div>';
-    return;
-  }
-
-  var html = "";
-  if (people.length){
-    html += '<div class="sect">בני בית<span class="sect__n">' + people.length + '</span></div>' +
-      '<div class="stack">' + people.map(function(p){
-        var n = visibleActs().filter(function(a){
-          return a.who === p.id && a.status !== "done"; }).length;
-        return '<button class="kin" data-sqp="' + p.id + '">' +
-          avaHTML(p, "m") +
-          '<span class="kin__t"><span class="kin__top">' +
-            '<span class="kin__n">' + esc(p.name) + '</span>' + hmoTag(p) +
-          '</span><span class="kin__r">' + esc(p.rel) + '</span></span>' +
-          '<span class="kin__b' + (n ? "" : " calm") + '">' + n + '</span>' +
-        '</button>';
-      }).join("") + '</div>';
-  }
-  if (acts.length){
-    html += '<div class="sect">פעולות<span class="sect__n">' + acts.length + '</span></div>' +
-      '<div class="stack">' + acts.slice(0, 20).map(actCard).join("") + '</div>';
-  }
-  if (docs.length){
-    html += '<div class="sect">מסמכים<span class="sect__n">' + docs.length + '</span></div>' +
-      '<div class="stack">' + docs.map(function(d){
-        var p = person(d.who);
-        return '<div class="box" style="padding:11px 12px;display:flex;align-items:center;gap:10px">' +
-          '<span style="font-size:18px">📄</span>' +
-          '<span style="flex:1;min-width:0">' +
-            '<span style="display:block;font-size:12.5px;font-weight:800;line-height:1.35">' +
-              esc(d.name) + '</span>' +
-            '<span style="display:block;font-size:10.5px;color:var(--ink-soft);font-weight:600;margin-top:2px">' +
-              esc(d.date) + (p ? ' · ' + esc(p.name) : '') + '</span>' +
-          '</span></div>';
-      }).join("") + '</div>';
-  }
-
-  out.innerHTML = html;
-
-  $$("[data-sqp]").forEach(function(b){
-    b.addEventListener("click", function(){
-      closeSheet();
-      setTimeout(function(){ openPerson(b.dataset.sqp); }, 240);
-    });
-  });
-  $$("#sqOut [data-act]").forEach(function(b){
-    b.addEventListener("click", function(){
-      closeSheet();
-      setTimeout(function(){ openAct(b.dataset.act); }, 240);
-    });
-  });
-}
 
 function openInfo(key){
   var p = PAGES[key];
