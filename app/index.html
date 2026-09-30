@@ -259,6 +259,64 @@ button{font-family:inherit;border:0;background:none;color:inherit;cursor:pointer
   display:grid;place-items:center;
 }
 
+/* ---------- טפסים ---------- */
+.fab{
+  position:absolute;
+  inset-block-end:calc(var(--nav-h) + 16px);
+  inset-inline-start:16px;
+  z-index:40;
+  width:52px;height:52px;border-radius:50%;
+  background:linear-gradient(140deg,var(--brand),var(--brand-deep));
+  color:#fff;font-size:26px;font-weight:300;line-height:1;
+  display:grid;place-items:center;
+  box-shadow:0 10px 24px -8px rgba(46,134,171,.7);
+  transition:transform .2s var(--ease);
+}
+.fab:active{transform:scale(.92)}
+
+.fld{display:flex;flex-direction:column;gap:6px;margin-bottom:13px}
+.fld__l{font-size:11.5px;font-weight:800;color:var(--ink-mid)}
+.fld__i,.fld__s{
+  border:1.5px solid var(--line);border-radius:10px;
+  padding:12px 13px;font-size:14px;font-weight:600;
+  background:var(--card);color:var(--ink);
+  font-family:inherit;width:100%;
+  transition:border-color .2s var(--ease);
+}
+.fld__i:focus,.fld__s:focus{
+  outline:none;border-color:var(--brand);
+  box-shadow:0 0 0 3px rgba(46,134,171,.12);
+}
+.fld__h{font-size:10.5px;color:var(--ink-soft);font-weight:500;line-height:1.5}
+.fld__err{
+  font-size:11px;color:var(--late);font-weight:700;
+  background:rgba(209,74,60,.08);
+  border-radius:8px;padding:9px 11px;margin-bottom:12px;
+  line-height:1.5;
+}
+
+/* בחירה בלחיצה — קופסאות במקום select */
+.pick2{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}
+.pick3{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.pk{
+  border:1.5px solid var(--line);border-radius:10px;
+  padding:11px 6px;text-align:center;background:var(--card);
+  font-size:12.5px;font-weight:700;color:var(--ink-mid);
+  transition:all .2s var(--ease);
+}
+.pk:active{transform:scale(.97)}
+.pk.on{
+  border-color:var(--brand);background:rgba(46,134,171,.09);
+  color:var(--brand-deep);
+  box-shadow:0 0 0 3px rgba(46,134,171,.12);
+}
+.pk__sub{display:block;font-size:9.5px;color:var(--ink-soft);font-weight:600;margin-top:3px}
+/* תגי קופה בטופס */
+.pk--clalit.on{border-color:var(--clalit);color:var(--clalit);box-shadow:0 0 0 3px rgba(46,124,196,.12);background:rgba(46,124,196,.07)}
+.pk--maccabi.on{border-color:var(--maccabi);color:var(--maccabi);box-shadow:0 0 0 3px rgba(217,120,46,.12);background:rgba(217,120,46,.07)}
+.pk--meuhedet.on{border-color:var(--meuhedet);color:var(--meuhedet);box-shadow:0 0 0 3px rgba(139,92,196,.12);background:rgba(139,92,196,.07)}
+.pk--leumit.on{border-color:var(--leumit);color:var(--leumit);box-shadow:0 0 0 3px rgba(25,155,142,.12);background:rgba(25,155,142,.07)}
+
 /* ---------- 3. PARTS ---------- */
 .head{flex:none;padding:8px 0 14px}
 .head__k{font-size:10px;font-weight:800;letter-spacing:.14em;color:var(--brand-deep);margin-bottom:5px}
@@ -1037,6 +1095,7 @@ button{font-family:inherit;border:0;background:none;color:inherit;cursor:pointer
       <p class="fine">המידע נשמר בענן. אפשר להתחבר מכל מכשיר עם אותו אימייל.</p>
     </section>
 
+    <button class="fab" id="fabAdd" aria-label="הוספה">+</button>
     <div class="sheet" id="sheet"><div class="sheet__in" id="sheetIn"></div></div>
     <div class="win" id="win">
       <div class="win__r">✓</div>
@@ -1418,6 +1477,7 @@ function show(id, deep){
   $$(".nav__b").forEach(function(b){ b.classList.toggle("on", b.dataset.tab === id); });
   var tg = document.getElementById("brandTag");
   if (tg) tg.textContent = SCREEN_TAG[id] || "";
+  if (typeof syncFab === "function") syncFab(id);
 }
 $$(".nav__b").forEach(function(b){
   b.addEventListener("click", function(){
@@ -1741,6 +1801,16 @@ function openPerson(id){
     }).join("")
     : '<div class="empty" style="padding:20px"><div class="empty__s">אין מסמכים.</div></div>';
 
+  /* קיצור: להוסיף פעולה ישירות לבן הבית הזה */
+  var old = document.getElementById("pAddAct");
+  if (old) old.remove();
+  var addBtn = document.createElement("button");
+  addBtn.id = "pAddAct";
+  addBtn.className = "btn btn--ghost";
+  addBtn.style.marginTop = "14px";
+  addBtn.textContent = "+ הוספת פעולה ל" + p.name;
+  addBtn.addEventListener("click", function(){ openAddAction(p.id); });
+  $("#pActs").parentNode.insertBefore(addBtn, $("#pActs").nextSibling);
   bindActs();
   show("scPerson", true);
 }
@@ -2251,6 +2321,259 @@ function showInstall(){
     });
   }, 3000);
 })();
+
+/* ============================================================
+   הוספה — בן בית ופעולה
+   ============================================================ */
+var HMOS = [
+  {id:"clalit",   name:"כללית"},
+  {id:"maccabi",  name:"מכבי"},
+  {id:"meuhedet", name:"מאוחדת"},
+  {id:"leumit",   name:"לאומית"}
+];
+var RELS = [
+  {r:"סבא", g:1}, {r:"סבתא", g:1},
+  {r:"אבא", g:1}, {r:"אמא", g:1},
+  {r:"בן זוג", g:2}, {r:"אח", g:2}, {r:"אחות", g:2},
+  {r:"בן", g:3}, {r:"בת", g:3}
+];
+
+function closeSheet(){ $("#sheet").classList.remove("on"); }
+
+function formErr(id, msg){
+  var e = document.getElementById(id);
+  if (e) e.innerHTML = '<div class="fld__err">' + esc(msg) + '</div>';
+}
+
+/* כפתור ה-+ — מה שהוא מציע תלוי במסך שפתוח */
+$("#fabAdd").addEventListener("click", function(){
+  var cur = $(".screen.on");
+  var id = cur ? cur.id : "scHome";
+  if (id === "scFam") openAddMember();
+  else openAddAction(null);
+});
+
+/* מציגים את הכפתור רק במסכים שבהם הוא רלוונטי */
+function syncFab(id){
+  var f = $("#fabAdd");
+  if (!f) return;
+  var show = (id === "scHome" || id === "scFam");
+  f.style.display = show ? "grid" : "none";
+  f.setAttribute("aria-label", id === "scFam" ? "הוספת בן בית" : "הוספת פעולה");
+}
+
+/* ---------- הוספת בן בית ---------- */
+function openAddMember(){
+  var sel = {rel:null, gen:null, hmo:null};
+
+  $("#sheetIn").innerHTML =
+    '<div class="sheet__grab"></div>' +
+    '<div class="sheet__t">הוספת בן בית</div>' +
+    '<div class="sheet__s">מי עוד במשפחה שאת מנהלת?</div>' +
+    '<div id="mErr"></div>' +
+    '<div class="fld" style="margin-top:16px">' +
+      '<label class="fld__l" for="mName">שם</label>' +
+      '<input class="fld__i" id="mName" type="text" placeholder="לדוגמה: רחל" autocomplete="off">' +
+    '</div>' +
+    '<div class="fld">' +
+      '<span class="fld__l">הקשר אליך</span>' +
+      '<div class="pick3" id="mRel">' +
+        RELS.map(function(x, i){
+          return '<button class="pk" data-rel="' + i + '">' + esc(x.r) + '</button>';
+        }).join("") +
+      '</div>' +
+    '</div>' +
+    '<div class="fld">' +
+      '<label class="fld__l" for="mYear">שנת לידה</label>' +
+      '<input class="fld__i" id="mYear" type="number" inputmode="numeric" placeholder="1955" min="1900" max="2026">' +
+      '<span class="fld__h">משמש לחישוב הגיל בלבד</span>' +
+    '</div>' +
+    '<div class="fld">' +
+      '<span class="fld__l">קופת חולים</span>' +
+      '<div class="pick2" id="mHmo">' +
+        HMOS.map(function(h){
+          return '<button class="pk pk--' + h.id + '" data-hmo="' + h.id + '">' + esc(h.name) + '</button>';
+        }).join("") +
+      '</div>' +
+      '<span class="fld__h">כדי לדעת לאן לפנות. ILANO אינה מחוברת לאף קופה.</span>' +
+    '</div>' +
+    '<div class="stack" style="margin-top:18px">' +
+      '<button class="btn" id="mSave">הוספה</button>' +
+      '<button class="btn btn--ghost" id="mCancel">ביטול</button>' +
+    '</div>';
+
+  $("#sheet").classList.add("on");
+
+  $$("[data-rel]").forEach(function(b){
+    b.addEventListener("click", function(){
+      $$("[data-rel]").forEach(function(x){ x.classList.remove("on"); });
+      b.classList.add("on");
+      var x = RELS[+b.dataset.rel];
+      sel.rel = x.r;
+      sel.gen = x.g;
+    });
+  });
+  $$("[data-hmo]").forEach(function(b){
+    b.addEventListener("click", function(){
+      $$("[data-hmo]").forEach(function(x){ x.classList.remove("on"); });
+      b.classList.add("on");
+      sel.hmo = b.dataset.hmo;
+    });
+  });
+  $("#mCancel").addEventListener("click", closeSheet);
+
+  $("#mSave").addEventListener("click", async function(){
+    var name = $("#mName").value.trim();
+    var year = parseInt($("#mYear").value, 10);
+
+    if (!name)    return formErr("mErr", "צריך למלא שם");
+    if (!sel.rel) return formErr("mErr", "צריך לבחור קשר");
+    if (!sel.hmo) return formErr("mErr", "צריך לבחור קופה");
+    if (!year || year < 1900 || year > 2026)
+      return formErr("mErr", "שנת לידה לא תקינה");
+    if (!S.household) return formErr("mErr", "לא נמצא משק בית");
+
+    var btn = $("#mSave");
+    btn.disabled = true;
+    btn.textContent = "שומר…";
+
+    var r = await sb.from("members").insert({
+      household_id: S.household.id,
+      name: name,
+      relation: sel.rel,
+      birth_year: year,
+      generation: sel.gen,
+      hmo: sel.hmo
+    }).select().single();
+
+    if (r.error){
+      btn.disabled = false;
+      btn.textContent = "הוספה";
+      return formErr("mErr", heb(r.error));
+    }
+
+    /* ⚠️ בן בית בלי חשבון משלו חייב שורת הרשאה מפורשת,
+       אחרת ה-RLS לא יחזיר אותו בטעינה הבאה. */
+    var u = await sb.auth.getUser();
+    await sb.from("consents").insert({
+      household_id: S.household.id,
+      subject_id: r.data.id,
+      viewer_id: u.data.user.id
+    });
+
+    closeSheet();
+    toast(name + " נוסף למשפחה");
+    await loadCloud();
+    drawAll();
+  });
+}
+
+/* ---------- הוספת פעולה ---------- */
+function openAddAction(preWho){
+  var sel = {who: preWho || null, kind: "confirm"};
+  var vis = S.people.filter(visible);
+
+  $("#sheetIn").innerHTML =
+    '<div class="sheet__grab"></div>' +
+    '<div class="sheet__t">הוספת פעולה</div>' +
+    '<div class="sheet__s">מה צריך לקרות, למי, ומאיפה זה ידוע?</div>' +
+    '<div id="aErr"></div>' +
+    '<div class="fld" style="margin-top:16px">' +
+      '<span class="fld__l">למי</span>' +
+      '<div class="pick3" id="aWhoPick">' +
+        vis.map(function(p){
+          return '<button class="pk' + (p.id === preWho ? " on" : "") + '" data-who="' + p.id + '">' +
+            esc(p.name) + '<span class="pk__sub">' + esc(p.rel) + '</span></button>';
+        }).join("") +
+      '</div>' +
+    '</div>' +
+    '<div class="fld">' +
+      '<label class="fld__l" for="aTitleIn">מה צריך לעשות</label>' +
+      '<input class="fld__i" id="aTitleIn" type="text" placeholder="לדוגמה: לקבוע תור לרופא עור" autocomplete="off">' +
+    '</div>' +
+    '<div class="fld">' +
+      '<label class="fld__l" for="aDue">מתי</label>' +
+      '<input class="fld__i" id="aDue" type="text" placeholder="לדוגמה: בתוך חודש" autocomplete="off">' +
+    '</div>' +
+    '<div class="fld">' +
+      '<label class="fld__l" for="aSrcIn">🔴 מאיפה זה ידוע</label>' +
+      '<input class="fld__i" id="aSrcIn" type="text" placeholder="לדוגמה: כתוב בסיכום הביקור מ־3.9" autocomplete="off">' +
+      '<span class="fld__h">חובה. ILANO לא מציגה פעולה בלי מקור — רק הרופא, הנחיה ציבורית, או המשפחה.</span>' +
+    '</div>' +
+    '<div class="fld">' +
+      '<span class="fld__l">סוג</span>' +
+      '<div class="pick3" id="aKind">' +
+        '<button class="pk" data-kind="book">קביעת תור</button>' +
+        '<button class="pk on" data-kind="confirm">לבצע</button>' +
+        '<button class="pk" data-kind="read">לזכור</button>' +
+      '</div>' +
+    '</div>' +
+    '<div class="stack" style="margin-top:18px">' +
+      '<button class="btn" id="aSave">הוספה</button>' +
+      '<button class="btn btn--ghost" id="aCancel">ביטול</button>' +
+    '</div>';
+
+  $("#sheet").classList.add("on");
+
+  $$("[data-who]").forEach(function(b){
+    b.addEventListener("click", function(){
+      $$("[data-who]").forEach(function(x){ x.classList.remove("on"); });
+      b.classList.add("on");
+      sel.who = b.dataset.who;
+    });
+  });
+  $$("[data-kind]").forEach(function(b){
+    b.addEventListener("click", function(){
+      $$("[data-kind]").forEach(function(x){ x.classList.remove("on"); });
+      b.classList.add("on");
+      sel.kind = b.dataset.kind;
+    });
+  });
+  $("#aCancel").addEventListener("click", closeSheet);
+
+  $("#aSave").addEventListener("click", async function(){
+    var title = $("#aTitleIn").value.trim();
+    var due   = $("#aDue").value.trim();
+    var src   = $("#aSrcIn").value.trim();
+
+    if (!sel.who) return formErr("aErr", "צריך לבחור למי");
+    if (!title)   return formErr("aErr", "צריך למלא מה צריך לעשות");
+    if (!due)     return formErr("aErr", "צריך למלא מתי");
+    /* 🔴 כלל המקור — נחסם כאן וגם בבסיס הנתונים */
+    if (!src)     return formErr("aErr", "חובה למלא מקור. בלי מקור ILANO לא מציגה פעולה.");
+
+    var btn = $("#aSave");
+    btn.disabled = true;
+    btn.textContent = "שומר…";
+
+    var u = await sb.auth.getUser();
+    var r = await sb.from("actions").insert({
+      household_id: S.household.id,
+      member_id: sel.who,
+      title: title,
+      due_text: due,
+      status: "todo",
+      kind: sel.kind,
+      is_focus: false,
+      source_text: src,
+      source_note: "נוסף ידנית",
+      origin: "manual",
+      approved_by: u.data.user.id,
+      approved_at: new Date().toISOString()
+    }).select().single();
+
+    if (r.error){
+      btn.disabled = false;
+      btn.textContent = "הוספה";
+      return formErr("aErr", heb(r.error));
+    }
+
+    closeSheet();
+    toast("הפעולה נוספה · " + person(sel.who).name);
+    await loadCloud();
+    drawAll();
+  });
+}
 })();
 </script>
 </body>
