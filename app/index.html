@@ -317,6 +317,84 @@ button{font-family:inherit;border:0;background:none;color:inherit;cursor:pointer
 .pk--meuhedet.on{border-color:var(--meuhedet);color:var(--meuhedet);box-shadow:0 0 0 3px rgba(139,92,196,.12);background:rgba(139,92,196,.07)}
 .pk--leumit.on{border-color:var(--leumit);color:var(--leumit);box-shadow:0 0 0 3px rgba(25,155,142,.12);background:rgba(25,155,142,.07)}
 
+/* ---------- סורק מסמכים ---------- */
+.shot{
+  position:relative;
+  border-radius:var(--r-lg);
+  overflow:hidden;
+  background:var(--navy-900);
+  aspect-ratio:3/4;
+  display:grid;place-items:center;
+}
+.shot__v,.shot__img{
+  width:100%;height:100%;object-fit:cover;display:block;
+}
+.shot__hint{
+  position:absolute;inset-block-end:12px;inset-inline:12px;
+  background:rgba(10,30,56,.78);
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  color:#fff;border-radius:10px;padding:9px 12px;
+  font-size:11.5px;font-weight:600;line-height:1.45;text-align:center;
+}
+/* מסגרת יישור — עוזרת למקם את הדף */
+.shot__guide{
+  position:absolute;inset:9%;
+  border:2px dashed rgba(143,217,212,.5);
+  border-radius:10px;pointer-events:none;
+}
+.shot__guide::before,.shot__guide::after{
+  content:"";position:absolute;width:26px;height:26px;
+  border:3px solid var(--brand-glow);
+}
+.shot__guide::before{inset-block-start:-3px;inset-inline-start:-3px;border-inline-end:0;border-block-end:0;border-start-start-radius:8px}
+.shot__guide::after{inset-block-end:-3px;inset-inline-end:-3px;border-inline-start:0;border-block-start:0;border-end-end-radius:8px}
+
+.shutter{
+  display:flex;align-items:center;justify-content:center;gap:14px;
+  margin-top:14px;
+}
+.shutter__b{
+  width:62px;height:62px;border-radius:50%;
+  background:#fff;
+  border:4px solid var(--brand);
+  box-shadow:0 6px 18px -6px rgba(46,134,171,.6);
+  transition:transform .15s var(--ease);
+}
+.shutter__b:active{transform:scale(.9)}
+.shutter__s{
+  width:44px;height:44px;border-radius:50%;
+  background:var(--card);border:1.5px solid var(--line);
+  display:grid;place-items:center;font-size:19px;
+}
+
+/* התקדמות הקריאה */
+.ocr{
+  background:var(--card);border:1px solid var(--line-soft);
+  border-radius:var(--r-md);padding:14px;margin-top:12px;
+  box-shadow:var(--sh-1);
+}
+.ocr__bar{
+  height:5px;border-radius:99px;background:var(--line);
+  overflow:hidden;margin-top:9px;
+}
+.ocr__fill{
+  height:100%;width:0;border-radius:99px;
+  background:linear-gradient(90deg,var(--brand),var(--brand-glow));
+  transition:width .3s var(--ease);
+}
+.ocr__t{font-size:12.5px;font-weight:700;color:var(--ink)}
+.ocr__s{font-size:10.5px;color:var(--ink-soft);font-weight:500;margin-top:3px}
+
+/* הטקסט שנקרא — ניתן לעריכה */
+.read{
+  width:100%;min-height:150px;
+  border:1.5px solid var(--line);border-radius:10px;
+  padding:12px;font-size:13px;line-height:1.7;
+  background:var(--card);color:var(--ink);
+  font-family:inherit;resize:vertical;
+}
+.read:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px rgba(46,134,171,.12)}
+
 /* ---------- 3. PARTS ---------- */
 .head{flex:none;padding:8px 0 14px}
 .head__k{font-size:10px;font-weight:800;letter-spacing:.14em;color:var(--brand-deep);margin-bottom:5px}
@@ -1946,124 +2024,301 @@ async function doUndo(){
 /* ============================================================
    מסמך — בחירת בן בית, ואז סריקה
    ============================================================ */
-var scanWho = null;
 
+
+/* ============================================================
+   סורק מסמכים
+   ------------------------------------------------------------
+   צילום → העלאה לשרת → קריאת טקסט → המשתמש מאשר.
+
+   🔴 ILANO אף פעם לא יוצרת פעולה לבד. היא קוראת,
+      מציעה, והאדם מאשר. שלב האישור לא ניתן לדילוג.
+   ============================================================ */
+
+var scanWho2 = null;      /* למי שייך המסמך */
+var scanBlob = null;      /* התמונה שצולמה */
+var scanStream = null;    /* המצלמה הפעילה */
+var scanText = "";        /* הטקסט שנקרא */
+
+/* ---------- מסך 1: בחירת בן בית ---------- */
 function drawDoc(){
-  scanWho = null;
-  var opts = Object.keys(SEED.scans);
-  $("#docStage").innerHTML =
-    '<div class="sect" style="margin-top:0">למי שייך המסמך?</div>'+
-    '<div class="pick" id="pick">'+
-      opts.map(function(id){
-        var p = person(id);
-        if (!p) return "";
-        return '<button class="pickB" data-who="'+id+'">'+avaHTML(p,"s")+
-          '<span class="pickB__n">'+esc(p.name)+'</span>'+hmoTag(p)+'</button>';
-      }).join("")+
-    '</div>'+
-    '<div style="margin-top:14px" id="dropWrap"></div>';
+  scanWho2 = null;
+  stopCam();
+  var vis = S.people.filter(visible);
 
-  $$("[data-who]").forEach(function(b){
+  $("#docStage").innerHTML =
+    '<div class="sect" style="margin-top:0">למי שייך המסמך?</div>' +
+    '<div class="pick3" id="dWho">' +
+      vis.map(function(p){
+        return '<button class="pk" data-dwho="' + p.id + '">' +
+          esc(p.name) + '<span class="pk__sub">' + esc(p.rel) + '</span></button>';
+      }).join("") +
+    '</div>' +
+    '<div id="dNext" style="margin-top:16px"></div>';
+
+  $$("[data-dwho]").forEach(function(b){
     b.addEventListener("click", function(){
-      $$(".pickB").forEach(function(x){ x.classList.remove("on"); });
+      $$("[data-dwho]").forEach(function(x){ x.classList.remove("on"); });
       b.classList.add("on");
-      scanWho = b.dataset.who;
-      var p = person(scanWho);
-      $("#dropWrap").innerHTML =
-        '<button class="drop" id="drop">'+
-          '<span class="drop__ic">📷</span>'+
-          '<span class="drop__t">צילום מסמך של '+esc(p.name)+'</span>'+
-          '<span class="drop__s">סיכום ביקור · מכתב שחרור · מרשם<br>לחיצה כאן להדמיה</span>'+
-        '</button>';
-      $("#drop").addEventListener("click", runScan);
+      scanWho2 = b.dataset.dwho;
+      showCapture();
     });
   });
 }
 
-async function runScan(){
-  if (!scanWho) return;
-  var sc = SEED.scans[scanWho];
-  var p = person(scanWho);
+/* ---------- מסך 2: צילום או בחירת קובץ ---------- */
+function showCapture(){
+  var p = person(scanWho2);
+  $("#dNext").innerHTML =
+    '<div class="sect">צילום המסמך</div>' +
+    '<div class="shot" id="shotBox">' +
+      '<video class="shot__v" id="cam" playsinline muted autoplay></video>' +
+      '<div class="shot__guide"></div>' +
+      '<div class="shot__hint">הניחו את הדף על משטח מואר,<br>ומלאו איתו את המסגרת</div>' +
+    '</div>' +
+    '<div class="shutter">' +
+      '<button class="shutter__s" id="pickFile" aria-label="בחירת קובץ">🖼</button>' +
+      '<button class="shutter__b" id="snap" aria-label="צילום"></button>' +
+      '<button class="shutter__s" id="flipCam" aria-label="החלפת מצלמה">⟳</button>' +
+    '</div>' +
+    '<input type="file" id="fileIn" accept="image/*" capture="environment" hidden>' +
+    '<p class="fine">התמונה נשמרת בתיק של ' + esc(p.name) + ' בלבד. ' +
+      'אף אחד אחר לא רואה אותה בלי אישורו.</p>';
 
-  $("#docStage").innerHTML =
-    '<div class="box" style="padding:11px 12px;margin-bottom:12px;display:flex;align-items:center;gap:10px">'+
-      avaHTML(p,"s")+
-      '<span style="flex:1;min-width:0">'+
-        '<span style="display:block;font-size:12px;font-weight:800">'+whoLabel(p)+'</span>'+
-        '<span style="display:block;font-size:10.5px;color:var(--ink-soft);font-weight:600;margin-top:2px">כל הפעולות יירשמו על שמו</span>'+
-      '</span>'+hmoTag(p)+
-    '</div>'+
-    '<div class="paper busy" id="paper">'+
-      '<div class="paper__scan"></div>'+
-      '<div class="paper__h"><span class="paper__t">'+esc(sc.title)+'</span><span class="paper__d">'+esc(sc.date)+'</span></div>'+
-      sc.lines.map(function(l,i){ return '<span class="paper__l" data-l="'+i+'">'+esc(l.t)+'</span>'; }).join("")+
-    '</div>'+
-    '<div class="steps" id="steps">'+
-      '<div class="stp"><span class="stp__d">✓</span><span>קורא את המסמך…</span></div>'+
-      '<div class="stp"><span class="stp__d">✓</span><span>מזהה המלצות רפואיות…</span></div>'+
-      '<div class="stp"><span class="stp__d">✓</span><span>מארגן את המשך הטיפול…</span></div>'+
-    '</div><div id="scanOut"></div>';
-
-  var stps = $$("#steps .stp");
-  await wait(650);
-  for (var i=0;i<stps.length;i++){
-    stps[i].classList.add("on","run");
-    await wait(1050);
-    stps[i].classList.remove("run");
-    stps[i].classList.add("fin");
-    if (i===1){
-      sc.lines.forEach(function(l,j){
-        if (l.hit) setTimeout(function(){
-          var el = $('[data-l="'+j+'"]');
-          if (el) el.classList.add("hit");
-        }, reduced?0:j*150);
-      });
-      await wait(650);
-    }
-    await wait(180);
-  }
-  $("#paper").classList.remove("busy");
-
-  $("#scanOut").innerHTML =
-    '<div class="sect">פעולות שיצאו<span class="sect__n">'+sc.out.length+'</span></div>'+
-    '<div class="stack">'+ sc.out.map(function(o){
-      return '<div class="act" style="cursor:default">'+
-        '<span class="tick"></span>'+
-        '<span class="act__mid">'+
-          '<span class="act__title">'+esc(o.title)+'</span>'+
-          '<span class="act__meta">'+esc(o.due)+'</span>'+
-          '<span class="act__src">כתוב ב'+esc(sc.title)+' מ־'+esc(sc.date)+'</span>'+
-        '</span></div>';
-    }).join("") +'</div>'+
-    '<div class="stack" style="margin-top:14px">'+
-      '<button class="btn" id="accept">הוספת '+sc.out.length+' הפעולות</button>'+
-      '<button class="btn btn--ghost" id="again">מסמך אחר</button>'+
-    '</div>'+
-    '<p class="fine">ILANO הציעה. אתם מאשרים — שלב זה אינו ניתן לדילוג.</p>';
-
-  $("#accept").addEventListener("click", function(){
-    var n = 0;
-    sc.out.forEach(function(o,i){
-      if (S.acts.some(function(x){ return x.who===scanWho && x.title===o.title; })) return;
-      S.acts.push({
-        id:"s_"+Date.now()+"_"+i, who:scanWho, title:o.title, due:o.due,
-        status:"todo", kind:"confirm", focus:false,
-        doc:sc.title, src:"כתוב ב"+sc.title+" מ־"+sc.date,
-        note:"נוסף מסריקת מסמך. ILANO הציעה — אתם אישרתם.", cta:"סימון: בוצע"
-      });
-      n++;
-    });
-    if (n){
-      if (!S.docs.some(function(d){ return d.who===scanWho && d.name===sc.title && d.date===sc.date; })){
-        S.docs.push({id:"d_"+Date.now(), who:scanWho, name:sc.title, date:sc.date, out:n});
-      }
-      save();
-      toast(n+" פעולות נוספו · "+person(scanWho).name);
-    } else toast("הפעולות כבר קיימות");
-    drawAll();
-    show("scFam");
+  startCam("environment");
+  $("#snap").addEventListener("click", capture);
+  $("#pickFile").addEventListener("click", function(){ $("#fileIn").click(); });
+  $("#flipCam").addEventListener("click", function(){
+    startCam(camFacing === "environment" ? "user" : "environment");
   });
-  $("#again").addEventListener("click", drawDoc);
+  $("#fileIn").addEventListener("change", function(e){
+    var f = e.target.files && e.target.files[0];
+    if (f) useImage(f);
+  });
+}
+
+/* ---------- המצלמה ---------- */
+var camFacing = "environment";
+
+async function startCam(facing){
+  stopCam();
+  camFacing = facing;
+  var v = $("#cam");
+  if (!v) return;
+  try{
+    scanStream = await navigator.mediaDevices.getUserMedia({
+      video: {facingMode: facing, width:{ideal:1600}, height:{ideal:2000}},
+      audio: false
+    });
+    v.srcObject = scanStream;
+  }catch(e){
+    /* ⚠️ אין מצלמה או שהמשתמש סירב — נופלים לבחירת קובץ */
+    var box = $("#shotBox");
+    if (box){
+      box.innerHTML =
+        '<div style="padding:30px 20px;text-align:center;color:#fff">' +
+          '<div style="font-size:36px;margin-bottom:10px">🖼</div>' +
+          '<div style="font-size:13px;font-weight:700">אין גישה למצלמה</div>' +
+          '<div style="font-size:11px;opacity:.75;margin-top:6px;line-height:1.5">' +
+            'אפשר לבחור תמונה מהמכשיר במקום</div>' +
+        '</div>';
+    }
+  }
+}
+
+function stopCam(){
+  if (scanStream){
+    scanStream.getTracks().forEach(function(t){ t.stop(); });
+    scanStream = null;
+  }
+}
+
+/* ---------- צילום ---------- */
+function capture(){
+  var v = $("#cam");
+  if (!v || !v.videoWidth) { $("#fileIn").click(); return; }
+
+  var c = document.createElement("canvas");
+  /* מגבילים ל-1600px — איכות מספקת ל-OCR, בלי קבצים ענקיים */
+  var scale = Math.min(1, 1600 / Math.max(v.videoWidth, v.videoHeight));
+  c.width  = Math.round(v.videoWidth  * scale);
+  c.height = Math.round(v.videoHeight * scale);
+  c.getContext("2d").drawImage(v, 0, 0, c.width, c.height);
+
+  c.toBlob(function(b){
+    if (b) useImage(b);
+  }, "image/jpeg", 0.88);
+}
+
+/* ---------- אחרי שיש תמונה ---------- */
+function useImage(blob){
+  stopCam();
+  scanBlob = blob;
+  var url = URL.createObjectURL(blob);
+
+  $("#dNext").innerHTML =
+    '<div class="sect">המסמך שצולם</div>' +
+    '<div class="shot"><img class="shot__img" src="' + url + '" alt="המסמך"></div>' +
+    '<div class="stack" style="margin-top:14px">' +
+      '<button class="btn" id="doRead">קריאת המסמך</button>' +
+      '<button class="btn btn--ghost" id="reShoot">צילום מחדש</button>' +
+    '</div>';
+
+  $("#reShoot").addEventListener("click", showCapture);
+  $("#doRead").addEventListener("click", readDoc);
+}
+
+/* ---------- קריאת הטקסט ---------- */
+async function readDoc(){
+  $("#dNext").innerHTML =
+    '<div class="ocr">' +
+      '<div class="ocr__t" id="ocrT">מעלה את המסמך…</div>' +
+      '<div class="ocr__s" id="ocrS">שומר בתיק של ' + esc(person(scanWho2).name) + '</div>' +
+      '<div class="ocr__bar"><div class="ocr__fill" id="ocrF"></div></div>' +
+    '</div>';
+
+  var setP = function(pct, t, s){
+    var f = $("#ocrF"); if (f) f.style.width = pct + "%";
+    if (t){ var e = $("#ocrT"); if (e) e.textContent = t; }
+    if (s){ var e2 = $("#ocrS"); if (e2) e2.textContent = s; }
+  };
+
+  /* שלב 1 — העלאה לשרת */
+  setP(12);
+  var path = S.household.id + "/" + Date.now() + ".jpg";
+  var up = await sb.storage.from("docs").upload(path, scanBlob, {
+    contentType: "image/jpeg", upsert: false
+  });
+  if (up.error){
+    $("#dNext").innerHTML =
+      '<div class="fld__err">ההעלאה נכשלה: ' + esc(heb(up.error)) + '</div>' +
+      '<button class="btn btn--ghost" id="again2">ניסיון נוסף</button>';
+    $("#again2").addEventListener("click", showCapture);
+    return;
+  }
+
+  /* שלב 2 — קריאת הטקסט */
+  setP(35, "קורא את הטקסט…", "עברית ואנגלית · פועל במכשיר, לא בשרת");
+  scanText = "";
+  try{
+    scanText = await runOCR(function(p){
+      setP(35 + Math.round(p * 55));
+    });
+  }catch(e){
+    scanText = "";
+  }
+
+  setP(100, "הקריאה הסתיימה", "בדקו ותקנו לפני האישור");
+  await wait(400);
+  showReview(path);
+}
+
+/* ⚠️ Tesseract נטען רק כשצריך — לא מעכב את פתיחת האפליקציה */
+function loadTesseract(){
+  if (window.Tesseract) return Promise.resolve();
+  return new Promise(function(res, rej){
+    var s = document.createElement("script");
+    s.src = "https://cdn.jsdelivr.net/npm/tesseract.js@5.1.0/dist/tesseract.min.js";
+    s.onload = res;
+    s.onerror = function(){ rej(new Error("no-ocr")); };
+    document.head.appendChild(s);
+  });
+}
+
+async function runOCR(onProg){
+  await loadTesseract();
+  var r = await Tesseract.recognize(scanBlob, "heb+eng", {
+    logger: function(m){
+      if (m.status === "recognizing text" && onProg) onProg(m.progress || 0);
+    }
+  });
+  return (r && r.data && r.data.text) ? r.data.text.trim() : "";
+}
+
+/* ---------- אישור המשתמש ---------- */
+function showReview(path){
+  var p = person(scanWho2);
+  var today = new Date().toLocaleDateString("he-IL");
+
+  $("#dNext").innerHTML =
+    '<div class="sect">מה שנקרא מהמסמך</div>' +
+    (scanText
+      ? '<textarea class="read" id="readTxt" spellcheck="false">' + esc(scanText) + '</textarea>' +
+        '<p class="fld__h" style="margin-top:6px">הקריאה אוטומטית ולא תמיד מדויקת. ' +
+          'אפשר לתקן כאן לפני השמירה.</p>'
+      : '<div class="fld__err">לא זוהה טקסט. אפשר להקליד ידנית.</div>' +
+        '<textarea class="read" id="readTxt" spellcheck="false" ' +
+        'placeholder="מה כתוב במסמך?"></textarea>') +
+
+    '<div class="fld" style="margin-top:16px">' +
+      '<label class="fld__l" for="dTitle">שם המסמך</label>' +
+      '<input class="fld__i" id="dTitle" type="text" ' +
+        'value="סיכום ביקור" autocomplete="off">' +
+    '</div>' +
+    '<div class="fld">' +
+      '<label class="fld__l" for="dDate">תאריך המסמך</label>' +
+      '<input class="fld__i" id="dDate" type="text" value="' + today + '" autocomplete="off">' +
+    '</div>' +
+
+    '<div class="stack" style="margin-top:16px">' +
+      '<button class="btn" id="dSave">שמירה בתיק של ' + esc(p.name) + '</button>' +
+      '<button class="btn btn--ghost" id="dAddAct">+ הוספת פעולה מהמסמך</button>' +
+      '<button class="btn btn--ghost" id="dCancel">ביטול</button>' +
+    '</div>' +
+    '<p class="fine">🔴 ILANO קראה והציעה. אתם מאשרים — ' +
+      'שלב זה אינו ניתן לדילוג.</p>';
+
+  $("#dCancel").addEventListener("click", drawDoc);
+  $("#dSave").addEventListener("click", function(){ saveDoc(path); });
+  $("#dAddAct").addEventListener("click", async function(){
+    await saveDoc(path, true);
+    openAddAction(scanWho2);
+  });
+}
+
+async function saveDoc(path, quiet){
+  var title = $("#dTitle").value.trim() || "מסמך";
+  var dtxt  = $("#dDate").value.trim();
+  var body  = $("#readTxt") ? $("#readTxt").value.trim() : "";
+
+  var btn = $("#dSave");
+  if (btn){ btn.disabled = true; btn.textContent = "שומר…"; }
+
+  var r = await sb.from("documents").insert({
+    household_id: S.household.id,
+    member_id: scanWho2,
+    title: title,
+    doc_date: isoDate2(dtxt),
+    kind: "visit",
+    storage_path: path,
+    raw_text: body || null
+  }).select().single();
+
+  if (r.error){
+    if (btn){ btn.disabled = false; btn.textContent = "שמירה"; }
+    $("#dNext").insertAdjacentHTML("afterbegin",
+      '<div class="fld__err">' + esc(heb(r.error)) + '</div>');
+    return;
+  }
+
+  if (!quiet){
+    toast("המסמך נשמר · " + person(scanWho2).name);
+    await loadCloud();
+    drawAll();
+    drawDoc();
+    show("scFam");
+  }
+}
+
+/* "30.9.2026" → "2026-09-30" */
+function isoDate2(he){
+  var p = String(he).split(".");
+  if (p.length !== 3) return new Date().toISOString().slice(0, 10);
+  var d = p[0].trim(), m = p[1].trim(), y = p[2].trim();
+  if (d.length < 2) d = "0" + d;
+  if (m.length < 2) m = "0" + m;
+  if (y.length === 2) y = "20" + y;
+  return y + "-" + m + "-" + d;
 }
 
 /* ============================================================
