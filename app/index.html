@@ -1398,7 +1398,7 @@ img{
     <div class="gate__f">
       <label class="gate__l" for="gEmail">אימייל</label>
       <input class="gate__i" id="gEmail" type="email" dir="ltr"
-             value="eitankoch2004@gmail.com" autocomplete="email">
+             placeholder="you@example.com" autocomplete="email">
     </div>
     <div class="gate__f">
       <label class="gate__l" for="gPass">סיסמה</label>
@@ -3638,6 +3638,422 @@ async function firstRun(){
   return true;
 }
 
+
+/* ============================================================
+   בניית המשפחה — שאלון אחרי ההרשמה
+   ------------------------------------------------------------
+   ⚠️ רץ רק אחרי שהמשתמש נרשם ואישר. אוסף רק מה שנחוץ
+      כדי לבנות את המשפחה — בלי כתובת מלאה ובלי ת.ז.
+
+   🔴 בסוף השאלון נוצרים בני הבית בשרת, עם שורות הרשאה.
+   ============================================================ */
+
+var SU = {
+  step: 0,
+  me:      {name:"", year:"", hmo:""},
+  city:    "",
+  spouse:  null,          /* {name, year, hmo} או null */
+  kids:    [],            /* [{name, year, hmo}] */
+  parents: [],            /* [{name, rel, year, hmo}] */
+  inLaws:  []
+};
+
+var HMO_LIST = [
+  {id:"clalit",   name:"כללית"},
+  {id:"maccabi",  name:"מכבי"},
+  {id:"meuhedet", name:"מאוחדת"},
+  {id:"leumit",   name:"לאומית"}
+];
+
+function suHmoPicker(id, cur){
+  return '<div class="pick2" data-hmogroup="' + id + '">' +
+    HMO_LIST.map(function(h){
+      return '<button class="pk pk--' + h.id + (cur === h.id ? " on" : "") +
+        '" data-hmopick="' + h.id + '">' + esc(h.name) + '</button>';
+    }).join("") + '</div>';
+}
+
+function suBindHmo(onPick){
+  $$("[data-hmopick]").forEach(function(b){
+    b.addEventListener("click", function(){
+      var g = b.parentNode;
+      Array.prototype.forEach.call(g.children, function(x){ x.classList.remove("on"); });
+      b.classList.add("on");
+      onPick(b.dataset.hmopick);
+    });
+  });
+}
+
+function startSetup(){
+  SU.step = 0;
+  $("#quiz").classList.remove("off");
+  drawSetup();
+}
+
+function drawSetup(){
+  var steps = ["אתה", "מגורים", "בן/בת זוג", "ילדים", "הורים", "סיום"];
+  var bar = steps.map(function(_, i){
+    return '<span class="quiz__dot' + (i <= SU.step ? " on" : "") + '"></span>';
+  }).join("");
+
+  var body = "";
+  if (SU.step === 0) body = suMe();
+  if (SU.step === 1) body = suCity();
+  if (SU.step === 2) body = suSpouse();
+  if (SU.step === 3) body = suKids();
+  if (SU.step === 4) body = suParents();
+  if (SU.step === 5) body = suDone();
+
+  $("#quiz").querySelector(".quiz__box").innerHTML =
+    '<div class="quiz__bar">' + bar + '</div>' +
+    '<div class="quiz__step">שלב ' + (SU.step + 1) + ' מתוך ' + steps.length + '</div>' +
+    body;
+
+  if (SU.step === 0) bindMe();
+  if (SU.step === 1) bindCity();
+  if (SU.step === 2) bindSpouse();
+  if (SU.step === 3) bindKids();
+  if (SU.step === 4) bindParents();
+  if (SU.step === 5) bindDone();
+}
+
+function suNext(){ SU.step++; drawSetup(); }
+function suBack(){ if (SU.step > 0){ SU.step--; drawSetup(); } }
+
+/* ---------- 1. אתה ---------- */
+function suMe(){
+  return '<div class="quiz__q">נתחיל ממך</div>' +
+    '<div class="quiz__s">השם והגיל משמשים לחישוב מועדי מעקב. שום דבר לא נשלח לאף אחד.</div>' +
+    '<div class="fld"><label class="fld__l" for="suName">השם שלך</label>' +
+      '<input class="fld__i" id="suName" type="text" placeholder="השם שלך" ' +
+      'value="' + esc(SU.me.name) + '" autocomplete="given-name"></div>' +
+    '<div class="fld"><label class="fld__l" for="suYear">שנת לידה</label>' +
+      '<input class="fld__i" id="suYear" type="number" inputmode="numeric" ' +
+      'placeholder="1990" min="1900" max="2026" value="' + esc(SU.me.year) + '"></div>' +
+    '<div class="fld"><span class="fld__l">קופת חולים</span>' +
+      suHmoPicker("me", SU.me.hmo) + '</div>' +
+    '<div id="suErr"></div>' +
+    '<div class="stack" style="margin-top:14px">' +
+      '<button class="btn" id="suGo">המשך</button></div>';
+}
+function bindMe(){
+  suBindHmo(function(v){ SU.me.hmo = v; });
+  $("#suGo").addEventListener("click", function(){
+    SU.me.name = $("#suName").value.trim();
+    SU.me.year = $("#suYear").value.trim();
+    if (!SU.me.name) return formErr("suErr", "צריך למלא שם");
+    if (!SU.me.year || +SU.me.year < 1900 || +SU.me.year > 2026)
+      return formErr("suErr", "שנת לידה לא תקינה");
+    if (!SU.me.hmo) return formErr("suErr", "צריך לבחור קופה");
+    suNext();
+  });
+}
+
+/* ---------- 2. מגורים ---------- */
+function suCity(){
+  return '<div class="quiz__q">איפה אתם גרים?</div>' +
+    '<div class="quiz__s">רק העיר — כדי שנדע להציע מרפאות באזור. ' +
+      'לא נשמרת כתובת מלאה.</div>' +
+    '<div class="fld"><label class="fld__l" for="suCity">עיר</label>' +
+      '<input class="fld__i" id="suCity" type="text" placeholder="לדוגמה: חיפה" ' +
+      'value="' + esc(SU.city) + '" autocomplete="address-level2"></div>' +
+    '<div class="stack" style="margin-top:14px">' +
+      '<button class="btn" id="suGo">המשך</button>' +
+      '<button class="btn btn--ghost" id="suSkip">דלג</button>' +
+      '<button class="quiz__skip" id="suBack">חזרה</button></div>';
+}
+function bindCity(){
+  $("#suGo").addEventListener("click", function(){
+    SU.city = $("#suCity").value.trim(); suNext();
+  });
+  $("#suSkip").addEventListener("click", suNext);
+  $("#suBack").addEventListener("click", suBack);
+}
+
+/* ---------- 3. בן/בת זוג ---------- */
+function suSpouse(){
+  var has = !!SU.spouse;
+  return '<div class="quiz__q">יש בן או בת זוג?</div>' +
+    '<div class="quiz__s">אפשר להוסיף גם אחר כך.</div>' +
+    '<div class="pick2" style="margin-bottom:14px">' +
+      '<button class="pk' + (has ? " on" : "") + '" id="spYes">כן</button>' +
+      '<button class="pk' + (has ? "" : " on") + '" id="spNo">לא</button>' +
+    '</div>' +
+    '<div id="spBox">' + (has ? spouseFields() : "") + '</div>' +
+    '<div id="suErr"></div>' +
+    '<div class="stack" style="margin-top:14px">' +
+      '<button class="btn" id="suGo">המשך</button>' +
+      '<button class="quiz__skip" id="suBack">חזרה</button></div>';
+}
+function spouseFields(){
+  var s = SU.spouse || {name:"", year:"", hmo:""};
+  return '<div class="fld"><label class="fld__l" for="spName">שם</label>' +
+    '<input class="fld__i" id="spName" type="text" value="' + esc(s.name) + '"></div>' +
+    '<div class="fld"><label class="fld__l" for="spYear">שנת לידה</label>' +
+    '<input class="fld__i" id="spYear" type="number" inputmode="numeric" ' +
+    'placeholder="1990" value="' + esc(s.year) + '"></div>' +
+    '<div class="fld"><span class="fld__l">קופת חולים</span>' +
+    suHmoPicker("sp", s.hmo) + '</div>';
+}
+function bindSpouse(){
+  var redraw = function(){
+    $("#spBox").innerHTML = SU.spouse ? spouseFields() : "";
+    if (SU.spouse) suBindHmo(function(v){ SU.spouse.hmo = v; });
+  };
+  $("#spYes").addEventListener("click", function(){
+    if (!SU.spouse) SU.spouse = {name:"", year:"", hmo:""};
+    $("#spYes").classList.add("on"); $("#spNo").classList.remove("on");
+    redraw();
+  });
+  $("#spNo").addEventListener("click", function(){
+    SU.spouse = null;
+    $("#spNo").classList.add("on"); $("#spYes").classList.remove("on");
+    redraw();
+  });
+  if (SU.spouse) suBindHmo(function(v){ SU.spouse.hmo = v; });
+
+  $("#suGo").addEventListener("click", function(){
+    if (SU.spouse){
+      SU.spouse.name = $("#spName").value.trim();
+      SU.spouse.year = $("#spYear").value.trim();
+      if (!SU.spouse.name) return formErr("suErr", "צריך למלא שם");
+      if (!SU.spouse.hmo)  return formErr("suErr", "צריך לבחור קופה");
+    }
+    suNext();
+  });
+  $("#suBack").addEventListener("click", suBack);
+}
+
+/* ---------- 4. ילדים ---------- */
+function suKids(){
+  return '<div class="quiz__q">ילדים?</div>' +
+    '<div class="quiz__s">בגיל 18 המעקב במרפאת הילדים נגמר — ' +
+      'ILANO תזכיר לפני כן.</div>' +
+    '<div id="kidList">' + kidRows() + '</div>' +
+    '<button class="btn btn--ghost" id="kidAdd" style="margin-top:8px">+ הוספת ילד</button>' +
+    '<div id="suErr"></div>' +
+    '<div class="stack" style="margin-top:14px">' +
+      '<button class="btn" id="suGo">המשך</button>' +
+      '<button class="quiz__skip" id="suBack">חזרה</button></div>';
+}
+function kidRows(){
+  if (!SU.kids.length)
+    return '<p class="fld__h" style="text-align:center;padding:14px">אין ילדים ברשימה</p>';
+  return SU.kids.map(function(k, i){
+    return '<div class="box" style="padding:12px;margin-bottom:8px">' +
+      '<div class="fld" style="margin-bottom:8px">' +
+        '<input class="fld__i" data-kname="' + i + '" type="text" ' +
+        'placeholder="שם" value="' + esc(k.name) + '"></div>' +
+      '<div class="fld" style="margin-bottom:8px">' +
+        '<input class="fld__i" data-kyear="' + i + '" type="number" inputmode="numeric" ' +
+        'placeholder="שנת לידה" value="' + esc(k.year) + '"></div>' +
+      '<div class="pick2" data-hmogroup="k' + i + '">' +
+        HMO_LIST.map(function(h){
+          return '<button class="pk pk--' + h.id + (k.hmo === h.id ? " on" : "") +
+            '" data-khmo="' + i + '" data-hv="' + h.id + '">' + esc(h.name) + '</button>';
+        }).join("") + '</div>' +
+      '<button class="quiz__skip" data-kdel="' + i + '" ' +
+        'style="color:var(--late);padding:8px 0 0">הסרה</button>' +
+    '</div>';
+  }).join("");
+}
+function bindKids(){
+  var refresh = function(){
+    $("#kidList").innerHTML = kidRows();
+    wire();
+  };
+  var wire = function(){
+    $$("[data-kname]").forEach(function(el){
+      el.addEventListener("input", function(){ SU.kids[+el.dataset.kname].name = el.value; });
+    });
+    $$("[data-kyear]").forEach(function(el){
+      el.addEventListener("input", function(){ SU.kids[+el.dataset.kyear].year = el.value; });
+    });
+    $$("[data-khmo]").forEach(function(b){
+      b.addEventListener("click", function(){
+        var g = b.parentNode;
+        Array.prototype.forEach.call(g.children, function(x){ x.classList.remove("on"); });
+        b.classList.add("on");
+        SU.kids[+b.dataset.khmo].hmo = b.dataset.hv;
+      });
+    });
+    $$("[data-kdel]").forEach(function(b){
+      b.addEventListener("click", function(){
+        SU.kids.splice(+b.dataset.kdel, 1); refresh();
+      });
+    });
+  };
+  wire();
+  $("#kidAdd").addEventListener("click", function(){
+    SU.kids.push({name:"", year:"", hmo:SU.me.hmo}); refresh();
+  });
+  $("#suGo").addEventListener("click", function(){
+    SU.kids = SU.kids.filter(function(k){ return k.name.trim(); });
+    suNext();
+  });
+  $("#suBack").addEventListener("click", suBack);
+}
+
+/* ---------- 5. הורים ---------- */
+function suParents(){
+  return '<div class="quiz__q">ההורים</div>' +
+    '<div class="quiz__s">זה הדור שבו ILANO הכי עוזרת — ' +
+      'יותר רופאים, יותר תרופות, יותר מעקבים.</div>' +
+    '<div id="parList">' + parRows() + '</div>' +
+    '<div class="pick2" style="margin-top:8px">' +
+      '<button class="btn btn--ghost" id="parAddM">+ אמא</button>' +
+      '<button class="btn btn--ghost" id="parAddF">+ אבא</button>' +
+    '</div>' +
+    '<div class="stack" style="margin-top:14px">' +
+      '<button class="btn" id="suGo">המשך</button>' +
+      '<button class="quiz__skip" id="suBack">חזרה</button></div>';
+}
+function parRows(){
+  if (!SU.parents.length)
+    return '<p class="fld__h" style="text-align:center;padding:14px">אין הורים ברשימה</p>';
+  return SU.parents.map(function(p, i){
+    return '<div class="box" style="padding:12px;margin-bottom:8px">' +
+      '<div style="font-size:11px;font-weight:800;color:var(--ink-soft);margin-bottom:7px">' +
+        esc(p.rel) + '</div>' +
+      '<div class="fld" style="margin-bottom:8px">' +
+        '<input class="fld__i" data-pname="' + i + '" type="text" ' +
+        'placeholder="שם" value="' + esc(p.name) + '"></div>' +
+      '<div class="fld" style="margin-bottom:8px">' +
+        '<input class="fld__i" data-pyear="' + i + '" type="number" inputmode="numeric" ' +
+        'placeholder="שנת לידה" value="' + esc(p.year) + '"></div>' +
+      '<div class="pick2" data-hmogroup="p' + i + '">' +
+        HMO_LIST.map(function(h){
+          return '<button class="pk pk--' + h.id + (p.hmo === h.id ? " on" : "") +
+            '" data-phmo="' + i + '" data-hv="' + h.id + '">' + esc(h.name) + '</button>';
+        }).join("") + '</div>' +
+      '<button class="quiz__skip" data-pdel="' + i + '" ' +
+        'style="color:var(--late);padding:8px 0 0">הסרה</button>' +
+    '</div>';
+  }).join("");
+}
+function bindParents(){
+  var refresh = function(){ $("#parList").innerHTML = parRows(); wire(); };
+  var wire = function(){
+    $$("[data-pname]").forEach(function(el){
+      el.addEventListener("input", function(){ SU.parents[+el.dataset.pname].name = el.value; });
+    });
+    $$("[data-pyear]").forEach(function(el){
+      el.addEventListener("input", function(){ SU.parents[+el.dataset.pyear].year = el.value; });
+    });
+    $$("[data-phmo]").forEach(function(b){
+      b.addEventListener("click", function(){
+        var g = b.parentNode;
+        Array.prototype.forEach.call(g.children, function(x){ x.classList.remove("on"); });
+        b.classList.add("on");
+        SU.parents[+b.dataset.phmo].hmo = b.dataset.hv;
+      });
+    });
+    $$("[data-pdel]").forEach(function(b){
+      b.addEventListener("click", function(){
+        SU.parents.splice(+b.dataset.pdel, 1); refresh();
+      });
+    });
+  };
+  wire();
+  $("#parAddM").addEventListener("click", function(){
+    SU.parents.push({name:"", rel:"אמא", year:"", hmo:""}); refresh();
+  });
+  $("#parAddF").addEventListener("click", function(){
+    SU.parents.push({name:"", rel:"אבא", year:"", hmo:""}); refresh();
+  });
+  $("#suGo").addEventListener("click", function(){
+    SU.parents = SU.parents.filter(function(p){ return p.name.trim(); });
+    suNext();
+  });
+  $("#suBack").addEventListener("click", suBack);
+}
+
+/* ---------- 6. סיום ---------- */
+function suDone(){
+  var n = 1 + (SU.spouse ? 1 : 0) + SU.kids.length + SU.parents.length;
+  return '<div class="quiz__q">מוכן</div>' +
+    '<div class="quiz__s">נבנה משק בית עם <b>' + n + ' בני בית</b>. ' +
+      'אפשר לשנות ולהוסיף בכל רגע.</div>' +
+    '<div class="box" style="padding:14px;margin-top:4px;text-align:start">' +
+      '<p style="font-size:12px;color:var(--ink-mid);font-weight:600;line-height:1.8">' +
+        '• ' + esc(SU.me.name) + ' <span style="color:var(--ink-soft)">(את/ה)</span><br>' +
+        (SU.spouse ? '• ' + esc(SU.spouse.name) + ' <span style="color:var(--ink-soft)">(בן/בת זוג)</span><br>' : '') +
+        SU.kids.map(function(k){
+          return '• ' + esc(k.name) + ' <span style="color:var(--ink-soft)">(ילד/ה)</span><br>';
+        }).join("") +
+        SU.parents.map(function(p){
+          return '• ' + esc(p.name) + ' <span style="color:var(--ink-soft)">(' + esc(p.rel) + ')</span><br>';
+        }).join("") +
+      '</p></div>' +
+    '<div id="suErr"></div>' +
+    '<div class="stack" style="margin-top:16px">' +
+      '<button class="btn" id="suGo">יצירת המשפחה</button>' +
+      '<button class="quiz__skip" id="suBack">חזרה</button></div>';
+}
+
+function bindDone(){
+  $("#suBack").addEventListener("click", suBack);
+  $("#suGo").addEventListener("click", async function(){
+    var btn = $("#suGo");
+    btn.disabled = true;
+    btn.textContent = "בונה…";
+
+    var u = await sb.auth.getUser();
+    var uid = u.data.user.id;
+
+    /* משק בית */
+    if (!S.household){
+      var mk = await sb.from("households")
+        .insert({name:"משפחת " + SU.me.name, created_by:uid})
+        .select().single();
+      if (mk.error){
+        btn.disabled = false; btn.textContent = "יצירת המשפחה";
+        return formErr("suErr", heb(mk.error));
+      }
+      S.household = mk.data;
+    }
+    var hh = S.household.id;
+
+    var rows = [];
+    rows.push({name:SU.me.name, relation:"אני", year:SU.me.year,
+               gen:2, hmo:SU.me.hmo, me:true});
+    if (SU.spouse)
+      rows.push({name:SU.spouse.name, relation:"בן/בת זוג", year:SU.spouse.year,
+                 gen:2, hmo:SU.spouse.hmo});
+    SU.kids.forEach(function(k){
+      rows.push({name:k.name, relation:"ילד/ה", year:k.year, gen:3, hmo:k.hmo || SU.me.hmo});
+    });
+    SU.parents.forEach(function(p){
+      rows.push({name:p.name, relation:p.rel, year:p.year, gen:1, hmo:p.hmo || SU.me.hmo});
+    });
+
+    for (var i = 0; i < rows.length; i++){
+      var r = rows[i];
+      var ins = {
+        household_id: hh, name: r.name, relation: r.relation,
+        generation: r.gen, hmo: r.hmo,
+        birth_year: r.year ? parseInt(r.year, 10) : null,
+        note: (i === 0 && SU.city) ? SU.city : null
+      };
+      if (r.me) ins.user_id = uid;
+      var res = await sb.from("members").insert(ins).select().single();
+      if (res.error) continue;
+      /* ⚠️ בלי שורת הרשאה ה-RLS לא יחזיר אותם */
+      await sb.from("consents").insert({
+        household_id: hh, subject_id: res.data.id, viewer_id: uid
+      });
+    }
+
+    try{ localStorage.setItem("ilano-setup", "1"); }catch(e){}
+    $("#quiz").classList.add("off");
+    hideWelcome();
+    toast("המשפחה נוצרה");
+    await loadCloud();
+    drawAll(); drawDoc();
+    show("scFam");
+  });
+}
+
 function showWelcome(preCode){
   $("#gate").classList.add("off");
   show("scHome");
@@ -3658,7 +4074,8 @@ function showWelcome(preCode){
     '</div>' +
 
     '<div class="stack" style="margin-top:20px">' +
-      '<button class="btn" id="wcAdd">הוספת בן בית ראשון</button>' +
+      '<button class="btn" id="wcSetup">בוא נבנה את המשפחה שלך</button>' +
+      '<button class="btn btn--ghost" id="wcAdd">הוספת בן בית בודד</button>' +
       '<button class="btn btn--ghost" id="wcSample">טעינת משפחה לדוגמה</button>' +
       '<button class="btn btn--ghost" id="wcJoin">קיבלתי קוד הזמנה</button>' +
     '</div>' +
@@ -3675,6 +4092,7 @@ function showWelcome(preCode){
   var sc = document.getElementById("scHome");
   sc.insertBefore(w, sc.firstChild);
 
+  document.getElementById("wcSetup").addEventListener("click", startSetup);
   document.getElementById("wcAdd").addEventListener("click", function(){
     openAddMember();
   });
