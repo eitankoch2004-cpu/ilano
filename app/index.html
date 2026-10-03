@@ -3557,32 +3557,292 @@ function drawAll(){
 var gateMode = "in";
 
 function gateErr(m){
-  var e = $("#gateErr");
+  var e = document.getElementById("gateErr");
+  if (!e) return;
   if (!m){ e.hidden = true; return; }
   e.textContent = m; e.hidden = false;
 }
+
 function gateBusy(on){
-  $("#gEmail").disabled = on; $("#gPass").disabled = on;
-  $("#gateGo").disabled = on; $("#gateSwap").disabled = on;
-  $("#gateGo").textContent = on ? "רגע…" : (gateMode==="in" ? "כניסה" : "הרשמה");
+  /* ⚠️ המסך משתנה בין שלבים — לא כל שדה קיים תמיד */
+  ["gEmail","gPass","gateGo","toSignup","gateJoin"].forEach(function(id){
+    var el = document.getElementById(id);
+    if (el) el.disabled = on;
+  });
+  var g = document.getElementById("gateGo");
+  if (g) g.textContent = on ? "רגע…" : "כניסה";
 }
 
-$("#gateJoin").addEventListener("click", function(){
-  gateErr("קודם צריך לפתוח חשבון או להיכנס — ואז להזין את הקוד.");
-  gateMode = "up";
-  $("#gateT").textContent = "פתיחת חשבון";
-  $("#gateGo").textContent = "הרשמה";
-  $("#gateSwap").textContent = "כבר יש לי חשבון — כניסה";
-});
-$("#gateSwap").addEventListener("click", function(){
-  gateMode = (gateMode==="in" ? "up" : "in");
+/* ⚠️ קוד הזמנה דורש חשבון. במקום רק להחליף טקסט,
+   פותחים שדה קוד שנשמר — וממומש מיד אחרי ההרשמה. */
+var pendingCode = "";
+
+/* ============================================================
+   הרשמה בשלבים
+   ------------------------------------------------------------
+   שם → מייל → סיסמה → אישור → (אחרי כניסה) טלפון ומשפחה
+
+   🔴 טלפון ומצב משפחתי נאספים רק אחרי שיש חשבון.
+      אי אפשר לשמור אותם לפני — ובלי הסכמה זה גם לא נכון.
+   ============================================================ */
+var SG = {step:0, first:"", last:"", email:"", pass:""};
+
+function gateStep(n){
+  SG.step = n;
+  var box = $("#gate").querySelector(".gate__box");
+  var logo = box.querySelector(".gate__logo").outerHTML;
+
+  if (n === 0){
+    /* ---------- כניסה רגילה ---------- */
+    box.innerHTML = logo +
+      '<div class="gate__t">כניסה לחשבון</div>' +
+      '<div class="gate__s">המנהל הרפואי של הבית</div>' +
+      '<div class="gate__f">' +
+        '<label class="gate__l" for="gEmail">אימייל</label>' +
+        '<input class="gate__i" id="gEmail" type="email" dir="ltr" ' +
+          'placeholder="you@example.com" autocomplete="email"></div>' +
+      '<div class="gate__f">' +
+        '<label class="gate__l" for="gPass">סיסמה</label>' +
+        '<input class="gate__i" id="gPass" type="password" dir="ltr" ' +
+          'autocomplete="current-password" placeholder="לפחות 6 תווים"></div>' +
+      '<div class="gate__err" id="gateErr" hidden></div>' +
+      '<button class="btn" id="gateGo">כניסה</button>' +
+      '<button class="btn btn--ghost" id="toSignup">אין לי חשבון — הרשמה</button>' +
+      '<button class="quiz__skip" id="gateJoin" style="margin-top:2px">' +
+        'קיבלתי קוד הזמנה מהמשפחה</button>' +
+      '<p class="gate__fine">ILANO אינה מאבחנת ואינה מספקת ייעוץ רפואי.<br>' +
+        'היא מציעה — האדם מאשר.</p>';
+
+    gateMode = "in";
+    $("#gateGo").addEventListener("click", doGate);
+    $("#gPass").addEventListener("keydown", function(e){ if (e.key==="Enter") doGate(); });
+    $("#toSignup").addEventListener("click", function(){ gateStep(1); });
+    $("#gateJoin").addEventListener("click", openGateCode);
+    return;
+  }
+
+  if (n === 1){
+    /* ---------- שלב 1: שם ---------- */
+    box.innerHTML = logo +
+      gateBar(1) +
+      '<div class="gate__t">איך קוראים לך?</div>' +
+      '<div class="gate__s">כדי שנדע איך לפנות אליך.</div>' +
+      '<div class="gate__f">' +
+        '<label class="gate__l" for="sgFirst">שם פרטי</label>' +
+        '<input class="gate__i" id="sgFirst" type="text" autocomplete="given-name" ' +
+          'value="' + esc(SG.first) + '"></div>' +
+      '<div class="gate__f">' +
+        '<label class="gate__l" for="sgLast">שם משפחה</label>' +
+        '<input class="gate__i" id="sgLast" type="text" autocomplete="family-name" ' +
+          'value="' + esc(SG.last) + '"></div>' +
+      '<div class="gate__err" id="gateErr" hidden></div>' +
+      '<button class="btn" id="sgNext">המשך</button>' +
+      '<button class="quiz__skip" id="sgBack">כבר יש לי חשבון</button>';
+
+    $("#sgNext").addEventListener("click", function(){
+      SG.first = $("#sgFirst").value.trim();
+      SG.last  = $("#sgLast").value.trim();
+      if (!SG.first) return gateErr("צריך למלא שם פרטי");
+      gateStep(2);
+    });
+    $("#sgBack").addEventListener("click", function(){ gateStep(0); });
+    $("#sgFirst").focus();
+    return;
+  }
+
+  if (n === 2){
+    /* ---------- שלב 2: מייל ---------- */
+    box.innerHTML = logo +
+      gateBar(2) +
+      '<div class="gate__t">מה האימייל שלך?</div>' +
+      '<div class="gate__s">נשלח לשם קישור אישור. ' +
+        'זה גם יהיה שם המשתמש שלך.</div>' +
+      '<div class="gate__f">' +
+        '<label class="gate__l" for="sgEmail">אימייל</label>' +
+        '<input class="gate__i" id="sgEmail" type="email" dir="ltr" ' +
+          'autocomplete="email" placeholder="you@example.com" ' +
+          'value="' + esc(SG.email) + '"></div>' +
+      '<div class="gate__err" id="gateErr" hidden></div>' +
+      '<button class="btn" id="sgNext">המשך</button>' +
+      '<button class="quiz__skip" id="sgBack">חזרה</button>';
+
+    $("#sgNext").addEventListener("click", function(){
+      SG.email = $("#sgEmail").value.trim();
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(SG.email))
+        return gateErr("כתובת אימייל לא תקינה");
+      gateStep(3);
+    });
+    $("#sgBack").addEventListener("click", function(){ gateStep(1); });
+    $("#sgEmail").addEventListener("keydown", function(e){
+      if (e.key==="Enter") $("#sgNext").click();
+    });
+    $("#sgEmail").focus();
+    return;
+  }
+
+  if (n === 3){
+    /* ---------- שלב 3: סיסמה ---------- */
+    box.innerHTML = logo +
+      gateBar(3) +
+      '<div class="gate__t">בחר סיסמה</div>' +
+      '<div class="gate__s">לפחות 8 תווים. עדיף שתהיה שונה ' +
+        'מסיסמאות אחרות שלך.</div>' +
+      '<div class="gate__f">' +
+        '<label class="gate__l" for="sgPass">סיסמה</label>' +
+        '<input class="gate__i" id="sgPass" type="password" dir="ltr" ' +
+          'autocomplete="new-password"></div>' +
+      '<div class="gate__f">' +
+        '<label class="gate__l" for="sgPass2">שוב, לוודא</label>' +
+        '<input class="gate__i" id="sgPass2" type="password" dir="ltr" ' +
+          'autocomplete="new-password"></div>' +
+      '<div class="gate__err" id="gateErr" hidden></div>' +
+      '<button class="btn" id="sgGo">יצירת החשבון</button>' +
+      '<button class="quiz__skip" id="sgBack">חזרה</button>' +
+      '<p class="gate__fine">בהרשמה את/ה מאשר/ת שהמידע כאן ' +
+        'הוא תזכורת בלבד ואינו ייעוץ רפואי.</p>';
+
+    $("#sgGo").addEventListener("click", doSignup);
+    $("#sgBack").addEventListener("click", function(){ gateStep(2); });
+    $("#sgPass2").addEventListener("keydown", function(e){
+      if (e.key==="Enter") doSignup();
+    });
+    $("#sgPass").focus();
+    return;
+  }
+
+  if (n === 4){
+    /* ---------- שלב 4: ממתין לאישור ---------- */
+    box.innerHTML = logo +
+      '<div style="font-size:44px;text-align:center;margin-bottom:10px">📬</div>' +
+      '<div class="gate__t">שלחנו לך מייל</div>' +
+      '<div class="gate__s">' +
+        'שלחנו קישור אישור אל<br>' +
+        '<b style="color:var(--ink)" dir="ltr">' + esc(SG.email) + '</b><br><br>' +
+        'לחץ על הקישור שבמייל, וחזור לכאן להיכנס.' +
+      '</div>' +
+      '<div class="box" style="padding:13px;margin-top:4px;text-align:start">' +
+        '<p style="font-size:11.5px;color:var(--ink-mid);font-weight:500;line-height:1.7">' +
+          '<b style="color:var(--ink);font-weight:800">לא הגיע?</b><br>' +
+          '• בדוק בתיקיית הספאם<br>' +
+          '• המייל יכול לקחת כמה דקות<br>' +
+          '• ודא שהכתובת נכונה' +
+        '</p></div>' +
+      '<div class="gate__err" id="gateErr" hidden></div>' +
+      '<button class="btn" id="sgDone" style="margin-top:14px">אישרתי — כניסה</button>' +
+      '<button class="btn btn--ghost" id="sgResend">שליחה חוזרת</button>' +
+      '<button class="quiz__skip" id="sgBack">שינוי כתובת</button>';
+
+    $("#sgDone").addEventListener("click", function(){
+      gateStep(0);
+      setTimeout(function(){
+        var e = $("#gEmail"); if (e) e.value = SG.email;
+        var p = $("#gPass");  if (p) p.focus();
+      }, 60);
+    });
+    $("#sgResend").addEventListener("click", async function(){
+      var b = $("#sgResend");
+      b.disabled = true; b.textContent = "שולח…";
+      var r = await sb.auth.resend({type:"signup", email:SG.email});
+      b.disabled = false; b.textContent = "שליחה חוזרת";
+      if (r.error) gateErr(heb(r.error));
+      else gateErr("נשלח שוב. בדוק גם בספאם.");
+    });
+    $("#sgBack").addEventListener("click", function(){ gateStep(2); });
+    return;
+  }
+}
+
+function gateBar(n){
+  var d = "";
+  for (var i = 1; i <= 3; i++)
+    d += '<span class="quiz__dot' + (i <= n ? " on" : "") + '"></span>';
+  return '<div class="quiz__bar" style="margin-bottom:14px">' + d + '</div>';
+}
+
+/* ---------- יצירת החשבון ---------- */
+async function doSignup(){
+  var p1 = $("#sgPass").value;
+  var p2 = $("#sgPass2").value;
   gateErr(null);
-  $("#gateT").textContent    = gateMode==="in" ? "כניסה לחשבון" : "פתיחת חשבון";
-  $("#gateGo").textContent   = gateMode==="in" ? "כניסה" : "הרשמה";
-  $("#gateSwap").textContent = gateMode==="in" ? "אין לי חשבון — הרשמה" : "כבר יש לי חשבון — כניסה";
-});
-$("#gateGo").addEventListener("click", doGate);
-$("#gPass").addEventListener("keydown", function(e){ if (e.key==="Enter") doGate(); });
+
+  if (p1.length < 8)  return gateErr("הסיסמה חייבת להיות 8 תווים לפחות");
+  if (p1 !== p2)      return gateErr("הסיסמאות לא זהות");
+
+  var btn = $("#sgGo");
+  btn.disabled = true;
+  btn.textContent = "יוצר…";
+
+  try{
+    var r = await sb.auth.signUp({
+      email: SG.email,
+      password: p1,
+      options: {
+        data: {
+          first_name: SG.first,
+          last_name:  SG.last,
+          full_name:  (SG.first + " " + SG.last).trim()
+        }
+      }
+    });
+
+    if (r.error){
+      btn.disabled = false;
+      btn.textContent = "יצירת החשבון";
+      /* כבר רשום? מציעים להיכנס */
+      if (/already/i.test(r.error.message)){
+        gateErr("האימייל הזה כבר רשום. אפשר להיכנס איתו.");
+        setTimeout(function(){
+          gateStep(0);
+          setTimeout(function(){
+            var e = $("#gEmail"); if (e) e.value = SG.email;
+          }, 60);
+        }, 1600);
+        return;
+      }
+      return gateErr(heb(r.error));
+    }
+
+    SG.pass = p1;
+    /* יש session? אישור מייל כבוי — נכנסים ישר */
+    if (r.data.session){ await enter(); return; }
+    gateStep(4);
+
+  }catch(e){
+    btn.disabled = false;
+    btn.textContent = "יצירת החשבון";
+    gateErr("שגיאה: " + (e && e.message ? e.message : e));
+  }
+}
+
+/* ---------- קוד הזמנה ---------- */
+function openGateCode(){
+  var box = document.getElementById("gateCodeBox");
+  if (box){ box.remove(); pendingCode = ""; return; }
+
+  var d = document.createElement("div");
+  d.id = "gateCodeBox";
+  d.className = "gate__f";
+  d.innerHTML =
+    '<label class="gate__l" for="gCode">קוד ההזמנה</label>' +
+    '<input class="gate__i" id="gCode" type="text" dir="ltr" ' +
+      'placeholder="ABC123" maxlength="6" autocomplete="off" ' +
+      'style="text-align:center;font-size:21px;font-weight:900;letter-spacing:.2em">' +
+    '<span class="fld__h" style="margin-top:5px">' +
+      'היכנס או הירשם — הקוד ימומש אוטומטית.</span>';
+
+  var anchor = document.getElementById("gateJoin");
+  anchor.parentNode.insertBefore(d, anchor);
+
+  var inp = document.getElementById("gCode");
+  inp.addEventListener("input", function(){
+    this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, "");
+    pendingCode = this.value;
+  });
+
+  var j = (location.search.match(/[?&]join=([A-Z0-9]{6})/i) || [])[1];
+  if (j){ inp.value = j.toUpperCase(); pendingCode = inp.value; }
+  inp.focus();
+}
 
 async function doGate(){
   var em = $("#gEmail").value.trim(), pw = $("#gPass").value;
@@ -3592,18 +3852,10 @@ async function doGate(){
 
   gateBusy(true);
   try{
-    var r = gateMode==="in"
-      ? await sb.auth.signInWithPassword({email:em, password:pw})
-      : await sb.auth.signUp({email:em, password:pw});
-
-    /* כבר רשום? לנסות כניסה */
-    if (r.error && gateMode==="up" && /already/i.test(r.error.message)){
-      r = await sb.auth.signInWithPassword({email:em, password:pw});
-    }
+    var r = await sb.auth.signInWithPassword({email:em, password:pw});
     if (r.error){ gateErr(heb(r.error)); return; }
     if (!r.data.session){
-      gateErr("נשלח מייל אישור. לאשר, ואז להיכנס.");
-      gateMode = "in"; $("#gateGo").textContent = "כניסה";
+      gateErr("צריך לאשר את המייל קודם.");
       return;
     }
     await enter();
@@ -4173,12 +4425,15 @@ async function loadSample(){
 async function enter(){
   /* ⚠️ הגיע עם קוד הזמנה? ממשים אותו לפני שטוענים,
      אחרת לא יהיו לו בני בית והמסך ייראה ריק. */
-  var j = (location.search.match(/[?&]join=([A-Z0-9]{6})/i) || [])[1];
+  var j = (typeof pendingCode === "string" && pendingCode.length === 6)
+    ? pendingCode
+    : (location.search.match(/[?&]join=([A-Z0-9]{6})/i) || [])[1];
   if (j && !DEMO){
     var rj = await redeemCode(j.toUpperCase());
     if (rj.ok){
       toast("הצטרפת כ" + rj.name);
       history.replaceState(null, "", location.pathname);
+      pendingCode = "";
     }
   }
 
@@ -4224,6 +4479,8 @@ setInterval(tick, 30000);
     return;
   }
   sb = window.supabase.createClient(SB_URL, SB_KEY);
+  /* בונים את מסך הכניסה מהקוד */
+  gateStep(0);
   try{
     var u = await sb.auth.getUser();
     if (u.data && u.data.user) await enter();
