@@ -249,6 +249,27 @@ button{font-family:inherit;border:0;background:none;color:inherit;cursor:pointer
 }
 
 /* ---------- טפסים ---------- */
+/* מסך פתיחה למשתמש חדש */
+.welcome{
+  background:var(--card);
+  border:1px solid var(--line-soft);
+  border-radius:var(--r-xl);
+  padding:26px 20px 22px;
+  box-shadow:var(--sh-2);
+  text-align:center;
+  margin-bottom:14px;
+}
+.welcome__ic{font-size:46px;line-height:1;margin-bottom:12px}
+.welcome__t{
+  font-size:21px;font-weight:900;letter-spacing:-.025em;
+  color:var(--ink);line-height:1.2;
+}
+.welcome__s{
+  font-size:13px;color:var(--ink-soft);font-weight:500;
+  line-height:1.7;margin-top:10px;
+}
+.welcome__s b{color:var(--ink);font-weight:800}
+
 /* שדה החיפוש — גדול ונוח */
 .sqBig{
   font-size:17px!important;
@@ -3593,6 +3614,144 @@ async function doGate(){
   }
 }
 
+
+/* ============================================================
+   מסך פתיחה — משתמש חדש בלי משפחה
+   ------------------------------------------------------------
+   ⚠️ בלי זה, מי שנרשם רואה מסך ריק ולא מבין מה לעשות.
+   ============================================================ */
+async function firstRun(){
+  /* יוצרים משק בית, אם אין */
+  var u = await sb.auth.getUser();
+  var uid = u.data && u.data.user ? u.data.user.id : null;
+  if (!uid) return false;
+
+  var hh = await sb.from("households").select("*").limit(1).maybeSingle();
+  if (!hh.data){
+    var mk = await sb.from("households")
+      .insert({name: "המשפחה שלי", created_by: uid})
+      .select().single();
+    if (mk.error) return false;
+    hh = {data: mk.data};
+  }
+  S.household = hh.data;
+  return true;
+}
+
+function showWelcome(preCode){
+  $("#gate").classList.add("off");
+  show("scHome");
+
+  var box = document.getElementById("welcomeBox");
+  if (box) box.remove();
+
+  var w = document.createElement("div");
+  w.id = "welcomeBox";
+  w.className = "welcome";
+  w.innerHTML =
+    '<div class="welcome__ic">🌱</div>' +
+    '<div class="welcome__t">ברוך הבא ל-ILANO</div>' +
+    '<div class="welcome__s">' +
+      'כאן מנהלים את הבריאות של כל המשפחה — תורים, בדיקות ומסמכים, ' +
+      'במקום אחד.<br><br>' +
+      '<b>נתחיל ממך ומבני הבית שלך.</b>' +
+    '</div>' +
+
+    '<div class="stack" style="margin-top:20px">' +
+      '<button class="btn" id="wcAdd">הוספת בן בית ראשון</button>' +
+      '<button class="btn btn--ghost" id="wcSample">טעינת משפחה לדוגמה</button>' +
+      '<button class="btn btn--ghost" id="wcJoin">קיבלתי קוד הזמנה</button>' +
+    '</div>' +
+
+    '<div class="box" style="padding:13px;margin-top:18px;text-align:start">' +
+      '<p style="font-size:11.5px;color:var(--ink-mid);font-weight:500;line-height:1.7">' +
+        '<b style="color:var(--ink);font-weight:800">שלושה דברים שכדאי לדעת:</b><br>' +
+        '• כל פעולה כאן היא <b>תזכורת</b>, לא הוראה רפואית.<br>' +
+        '• <b>אף אחד לא רואה אף אחד</b> בלי אישור מפורש.<br>' +
+        '• המידע נשמר בענן — אפשר להיכנס מכל מכשיר.' +
+      '</p>' +
+    '</div>';
+
+  var sc = document.getElementById("scHome");
+  sc.insertBefore(w, sc.firstChild);
+
+  document.getElementById("wcAdd").addEventListener("click", function(){
+    openAddMember();
+  });
+  document.getElementById("wcJoin").addEventListener("click", function(){
+    openJoin(preCode || "");
+  });
+  document.getElementById("wcSample").addEventListener("click", loadSample);
+}
+
+function hideWelcome(){
+  var box = document.getElementById("welcomeBox");
+  if (box) box.remove();
+}
+
+/* ---------- משפחה לדוגמה ---------- */
+/* ⚠️ נכתבת לשרת באמת, כדי שאפשר יהיה למחוק ולשנות.
+   לא הדמיה — נתוני פתיחה. */
+async function loadSample(){
+  var btn = document.getElementById("wcSample");
+  if (btn){ btn.disabled = true; btn.textContent = "טוען…"; }
+
+  var u = await sb.auth.getUser();
+  var uid = u.data.user.id;
+  var hh = S.household.id;
+  var yr = new Date().getFullYear();
+
+  var fam = [
+    {name:"אני",  rel:"את",    gen:2, hmo:"clalit",   age:40, me:true},
+    {name:"אמא",  rel:"אמא",   gen:1, hmo:"clalit",   age:70},
+    {name:"אבא",  rel:"אבא",   gen:1, hmo:"meuhedet", age:72},
+    {name:"בן",   rel:"בן",    gen:3, hmo:"clalit",   age:12}
+  ];
+
+  var ids = {};
+  for (var i = 0; i < fam.length; i++){
+    var f = fam[i];
+    var row = {
+      household_id: hh, name: f.name, relation: f.rel,
+      birth_year: yr - f.age, generation: f.gen, hmo: f.hmo
+    };
+    if (f.me) row.user_id = uid;
+    var r = await sb.from("members").insert(row).select().single();
+    if (r.error) continue;
+    ids[f.name] = r.data.id;
+    /* הרשאה — בלעדיה ה-RLS לא יחזיר אותם */
+    await sb.from("consents").insert({
+      household_id: hh, subject_id: r.data.id, viewer_id: uid
+    });
+  }
+
+  var acts = [
+    {who:"אבא", title:"לקבוע תור לרופא המשפחה", due:"בתוך חודש",
+     kind:"book", focus:true, src:"נוסף כדוגמה — אפשר למחוק"},
+    {who:"אמא", title:"חידוש מרשם", due:"עד סוף החודש",
+     kind:"confirm", focus:true, src:"נוסף כדוגמה — אפשר למחוק"},
+    {who:"בן",  title:"בדיקת ראייה", due:"בעוד 3 חודשים",
+     kind:"book", focus:false, src:"נוסף כדוגמה — אפשר למחוק"}
+  ];
+
+  for (var j = 0; j < acts.length; j++){
+    var a = acts[j];
+    if (!ids[a.who]) continue;
+    await sb.from("actions").insert({
+      household_id: hh, member_id: ids[a.who],
+      title: a.title, due_text: a.due,
+      status: "todo", kind: a.kind, is_focus: a.focus,
+      source_text: a.src, origin: "manual",
+      approved_by: uid, approved_at: new Date().toISOString()
+    });
+  }
+
+  hideWelcome();
+  toast("נטענה משפחה לדוגמה — אפשר לשנות הכול");
+  await loadCloud();
+  drawAll();
+}
+
 async function enter(){
   /* ⚠️ הגיע עם קוד הזמנה? ממשים אותו לפני שטוענים,
      אחרת לא יהיו לו בני בית והמסך ייראה ריק. */
@@ -3607,11 +3766,10 @@ async function enter(){
 
   var ok = await loadCloud();
   if (!ok){
-    /* אין בני בית — אולי הוא הוזמן ולא הזין קוד */
-    $("#gate").classList.add("off");
-    var bt = document.getElementById("brandTag"); if (bt) bt.textContent = SCREEN_TAG.scHome;
-    drawAll(); drawDoc(); show("scHome");
-    setTimeout(function(){ openJoin(j || ""); }, 400);
+    /* 🔴 משתמש חדש בלי משפחה — מסך פתיחה, לא מסך ריק */
+    await firstRun();
+    drawAll(); drawDoc();
+    showWelcome(j || "");
     return;
   }
   $("#gate").classList.add("off");
@@ -4091,6 +4249,7 @@ function openAddMember(){
     });
 
     closeSheet();
+    hideWelcome();
     toast(name + " נוסף למשפחה");
     await loadCloud();
     drawAll();
