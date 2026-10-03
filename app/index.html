@@ -3981,22 +3981,32 @@ async function openInvite(p){
   }
 
   var link = location.origin + location.pathname + "?join=" + code;
-  var msg = "היי " + p.name + ", הוספתי אותך ל-ILANO — " +
+  var msg = "היי " + p.name + ", צירפתי אותך ל-ILANO — " +
             "האפליקציה שמנהלת את הבריאות של המשפחה.\n\n" +
             "הקוד שלך: " + code + "\n" + link;
 
+  /* ⚠️ בטלפון יש שיתוף מערכת — הוא נותן את כל האפליקציות
+     בבת אחת (וואטסאפ, הודעות, מייל, טלגרם). במחשב אין, ואז
+     נופלים לכפתורים נפרדים. */
+  var hasShare = !!(navigator.share);
+
   $("#sheetIn").innerHTML =
     '<div class="sheet__grab"></div>' +
-    '<div class="sheet__t">הזמנת ' + esc(p.name) + '</div>' +
-    '<div class="sheet__s">שלחו לו את הקוד. תקף שבועיים.</div>' +
+    '<div class="sheet__t">צירוף ' + esc(p.name) + '</div>' +
+    '<div class="sheet__s">שלחו את הקוד. תקף שבועיים.</div>' +
 
     '<div class="codebox">' + esc(code) + '</div>' +
 
     '<div class="stack" style="margin-top:14px">' +
-      '<a class="btn" id="invWa" href="https://wa.me/?text=' +
-        encodeURIComponent(msg) + '" target="_blank" rel="noopener">' +
-        'שליחה בוואטסאפ</a>' +
-      '<button class="btn btn--ghost" id="invCopy">העתקת הקוד</button>' +
+      (hasShare
+        ? '<button class="btn" id="invShare">📤 שיתוף</button>'
+        : '') +
+      '<a class="btn' + (hasShare ? ' btn--ghost' : '') + '" id="invWa" ' +
+        'href="https://wa.me/?text=' + encodeURIComponent(msg) +
+        '" target="_blank" rel="noopener">שליחה בוואטסאפ</a>' +
+      '<a class="btn btn--ghost" id="invSms" ' +
+        'href="sms:?&body=' + encodeURIComponent(msg) + '">שליחה בהודעה</a>' +
+      '<button class="btn btn--ghost" id="invCopy">העתקת הקישור</button>' +
       '<button class="btn btn--ghost" id="invClose">סגירה</button>' +
     '</div>' +
 
@@ -4005,20 +4015,32 @@ async function openInvite(p){
         '<b style="color:var(--ink);font-weight:800">מה יקרה אחר כך:</b><br>' +
         esc(p.name) + ' ייכנס לקישור, יפתח חשבון, ויזין את הקוד. ' +
         'הוא יתחבר לכרטיס שכבר קיים כאן.<br><br>' +
-        '🔴 <b style="color:var(--ink)">ההזמנה לא נותנת לך גישה אליו.</b> ' +
+        '🔴 <b style="color:var(--ink)">הצירוף לא נותן לך גישה אליו.</b> ' +
         'רק הוא יכול להחליט מה לשתף איתך — במסך הפרטיות שלו.' +
       '</p>' +
     '</div>';
 
   $("#invClose").addEventListener("click", closeSheet);
+
+  if (hasShare){
+    $("#invShare").addEventListener("click", async function(){
+      try{
+        await navigator.share({
+          title: "ILANO — צירוף למשפחה",
+          text: msg
+        });
+      }catch(e){ /* המשתמש ביטל — לא שגיאה */ }
+    });
+  }
+
   $("#invCopy").addEventListener("click", function(){
     var ta = document.createElement("textarea");
-    ta.value = code;
+    ta.value = msg;
     ta.style.position = "fixed";
     ta.style.opacity = "0";
     document.body.appendChild(ta);
     ta.select();
-    try{ document.execCommand("copy"); toast("הקוד הועתק"); }
+    try{ document.execCommand("copy"); toast("ההודעה הועתקה"); }
     catch(e){ toast("לא הצלחתי להעתיק"); }
     document.body.removeChild(ta);
   });
@@ -4076,6 +4098,71 @@ function openJoin(preCode){
     await loadCloud();
     drawAll();
     show("scHome");
+  });
+}
+
+
+/* ============================================================
+   התחלה מחדש — מחיקת כל המשפחה
+   ------------------------------------------------------------
+   🔴 מחיקה אמיתית ובלתי הפיכה מהשרת.
+      נועד למי שרוצה להיפטר מנתוני הדוגמה ולהתחיל נקי.
+   ============================================================ */
+function confirmWipe(){
+  var n = S.people.length;
+  var a = S.acts.length;
+  var d = S.docs.length;
+
+  $("#sheetIn").innerHTML =
+    '<div class="sheet__grab"></div>' +
+    '<div class="sheet__t">למחוק הכול ולהתחיל מחדש?</div>' +
+    '<div class="sheet__s">' +
+      'יימחקו <b>' + n + ' בני בית</b>, <b>' + a + ' פעולות</b> ו-<b>' +
+      d + ' מסמכים</b>. לא ניתן לשחזר.' +
+    '</div>' +
+    '<div class="box" style="padding:13px;margin-top:14px;' +
+      'background:rgba(209,74,60,.05);border-color:rgba(209,74,60,.2)">' +
+      '<p style="font-size:11.5px;color:var(--ink-mid);font-weight:600;line-height:1.65">' +
+        'החשבון שלך נשאר — רק התוכן נמחק. ' +
+        'אחרי המחיקה תתחיל ממסך פתיחה ריק.' +
+      '</p>' +
+    '</div>' +
+    '<div class="stack" style="margin-top:18px">' +
+      '<button class="btn btn--danger" id="wipeYes">כן, למחוק הכול</button>' +
+      '<button class="btn btn--ghost" id="wipeNo">ביטול</button>' +
+    '</div>';
+
+  $("#sheet").classList.add("on");
+  $("#wipeNo").addEventListener("click", closeSheet);
+
+  $("#wipeYes").addEventListener("click", async function(){
+    if (DEMO){
+      closeSheet();
+      toast("במצב הדגמה אין מה למחוק");
+      return;
+    }
+    var btn = $("#wipeYes");
+    btn.disabled = true;
+    btn.textContent = "מוחק…";
+
+    var hh = S.household ? S.household.id : null;
+    if (!hh){ closeSheet(); return; }
+
+    /* ⚠️ סדר המחיקה חשוב — מפתחות זרים */
+    var ids = S.acts.map(function(x){ return x.id; });
+    if (ids.length) await sb.from("reminders").delete().in("action_id", ids);
+    await sb.from("actions").delete().eq("household_id", hh);
+    await sb.from("documents").delete().eq("household_id", hh);
+    await sb.from("invites").delete().eq("household_id", hh);
+    await sb.from("consents").delete().eq("household_id", hh);
+    await sb.from("members").delete().eq("household_id", hh);
+
+    closeSheet();
+    toast("הכול נמחק — אפשר להתחיל מחדש");
+
+    S.people = []; S.acts = []; S.docs = []; S.timeline = []; S.me = null;
+    drawAll(); drawDoc();
+    showWelcome("");
   });
 }
 
@@ -4671,6 +4758,12 @@ function drawSettings(){
       '<span class="set__t"><span class="set__n">מה ILANO לא עושה</span></span>' +
       '<span class="act__go">‹</span></button>' +
 
+    '<div class="sect">החשבון</div>' +
+    '<button class="set" id="setWipe"><span class="set__ic">🗑</span>' +
+      '<span class="set__t"><span class="set__n" style="color:var(--late)">מחיקת כל המשפחה</span>' +
+      '<span class="set__d">להתחיל מחדש עם משפחה ריקה</span></span>' +
+      '<span class="act__go">‹</span></button>' +
+
     '<div class="disclaim" style="margin-top:20px">' +
       '<div class="disclaim__t">⚠️ הכול בגדר המלצה בלבד</div>' +
       '<div class="disclaim__b">' +
@@ -4692,6 +4785,7 @@ function drawSettings(){
     b.addEventListener("click", function(){ openInfo(b.dataset.info); });
   });
   if ($("#setNotif")) $("#setNotif").addEventListener("click", askNotif);
+  if ($("#setWipe")) $("#setWipe").addEventListener("click", confirmWipe);
 }
 
 $("#setBack").addEventListener("click", function(){ show("scHome"); });
