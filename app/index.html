@@ -249,6 +249,48 @@ button{font-family:inherit;border:0;background:none;color:inherit;cursor:pointer
 }
 
 /* ---------- טפסים ---------- */
+/* ---------- מצב טעינה ----------
+   ⚡ במקום מסך ריק — שלד שמראה שמשהו קורה.
+   תחושת המהירות חשובה כמו המהירות עצמה. */
+.loading{
+  position:absolute;inset:0;z-index:120;
+  background:var(--paper);
+  display:grid;place-items:center;
+  opacity:0;pointer-events:none;
+  transition:opacity .2s var(--ease);
+}
+.loading.on{opacity:1;pointer-events:auto}
+.loading__in{display:grid;justify-items:center;gap:14px}
+.loading__ring{
+  width:38px;height:38px;border-radius:50%;
+  border:3px solid var(--line);
+  border-top-color:var(--brand);
+  animation:spin .7s linear infinite;
+}
+.loading__t{font-size:12.5px;font-weight:700;color:var(--ink-soft)}
+
+/* שלד של כרטיסים — נראה כמו תוכן שעוד לא הגיע */
+.skel{
+  background:var(--card);
+  border:1px solid var(--line-soft);
+  border-radius:var(--r-md);
+  padding:13px;margin-bottom:8px;
+  display:flex;gap:11px;align-items:flex-start;
+}
+.skel__c{
+  width:26px;height:26px;border-radius:50%;flex:none;
+  background:var(--line);
+}
+.skel__l{flex:1;display:grid;gap:7px}
+.skel__b{height:11px;border-radius:5px;background:var(--line)}
+.skel__b.w70{width:70%}
+.skel__b.w45{width:45%}
+.skel,.skel__c,.skel__b{animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{
+  0%,100%{opacity:1}
+  50%{opacity:.55}
+}
+
 /* מסך פתיחה למשתמש חדש */
 .welcome{
   background:var(--card);
@@ -1667,6 +1709,12 @@ img{
       <div class="win__t" id="winT"></div>
       <div class="win__s" id="winS"></div>
     </div>
+    <div class="loading" id="loading">
+      <div class="loading__in">
+        <div class="loading__ring"></div>
+        <div class="loading__t">טוען את המשפחה…</div>
+      </div>
+    </div>
     <div class="toast" id="toast"><span class="toast__i">✓</span><span id="toastT"></span></div>
   </div>
 
@@ -2023,21 +2071,33 @@ function demoBanner(){
     b, document.querySelector(".brandbar"));
 }
 
+/* טעינת כל הנתונים מהשרת
+   ------------------------------------------------------------
+   ⚡ שלוש הקריאות האחרונות אינן תלויות זו בזו, ולכן הן
+   רצות **במקביל** ב-Promise.all. בטור זה היה פי-3 זמן
+   המתנה — בטלפון סלולרי זה ההבדל בין מיידי לאיטי. */
 async function loadCloud(){
   var ur = await sb.auth.getUser();
   var u = ur.data ? ur.data.user : null;
   if (!u) return false;
 
-  var hh = await sb.from("households").select("*").limit(1).maybeSingle();
-  S.household = hh.data || null;
+  /* שלוש בבת אחת */
+  var res = await Promise.all([
+    sb.from("households").select("*").limit(1).maybeSingle(),
+    sb.from("members").select("*").order("generation"),
+    sb.from("actions").select("*").order("is_focus", {ascending:false}),
+    sb.from("documents").select("*").order("doc_date", {ascending:false})
+  ]);
 
-  var mm = await sb.from("members").select("*").order("generation");
+  var hh = res[0], mm = res[1], aa = res[2], dd = res[3];
+
+  S.household = hh.data || null;
   if (mm.error) return false;
 
   S.people = (mm.data||[]).map(function(r){
     return {
       id:r.id, name:r.name,
-      rel:(r.user_id && r.user_id===u.id) ? "את" : r.relation,
+      rel:(r.user_id && r.user_id===u.id) ? "אני" : r.relation,
       sub:r.note||"",
       age:r.birth_year ? (new Date().getFullYear()-r.birth_year) : null,
       gen:r.generation, hmo:r.hmo||"clalit",
@@ -2050,8 +2110,6 @@ async function loadCloud(){
   var me = S.people.filter(function(p){ return p.user_id===u.id; })[0];
   S.me = me ? me.id : S.people[0].id;
 
-  var aa = await sb.from("actions").select("*")
-            .order("is_focus",{ascending:false});
   S.acts = (aa.data||[]).map(function(r){
     return {
       id:r.id, who:r.member_id, title:r.title, due:r.due_text,
@@ -2060,14 +2118,10 @@ async function loadCloud(){
       src:r.source_text, note:r.source_note||"",
       booked:r.booked_at, place:r.place,
       cta:(r.kind==="read" ? "הבנתי" : "סימון: בוצע"),
-      slots:(r.kind==="book" ? [
-        {d:"ראשון 4.10",t:"08:15"},{d:"ראשון 4.10",t:"10:30"},
-        {d:"שני 5.10",t:"12:00"},{d:"רביעי 7.10",t:"09:45"}
-      ] : null)
+      slots:(r.kind==="book" ? nextSlots() : null)
     };
   });
 
-  var dd = await sb.from("documents").select("*").order("doc_date",{ascending:false});
   S.docs = (dd.data||[]).map(function(r){
     return {id:r.id, who:r.member_id, name:r.title,
             date:new Date(r.doc_date).toLocaleDateString("he-IL"), out:1};
@@ -2075,6 +2129,25 @@ async function loadCloud(){
 
   S.timeline = buildTimeline();
   return true;
+}
+
+/* ⚠️ המועדים היו קבועים בקוד ונשארו בעבר.
+   עכשיו נגזרים מהתאריך של היום. */
+function nextSlots(){
+  var DAYS_HE = ["ראשון","שני","שלישי","רביעי","חמישי","שישי","שבת"];
+  var out = [];
+  var d = new Date();
+  var times = ["08:15","10:30","12:00","09:45"];
+  var i = 0;
+  while (out.length < 4){
+    d.setDate(d.getDate() + 1 + (out.length ? 1 : 2));
+    if (d.getDay() === 6) continue;          /* לא שבת */
+    out.push({
+      d: DAYS_HE[d.getDay()] + " " + d.getDate() + "." + (d.getMonth()+1),
+      t: times[i++ % times.length]
+    });
+  }
+  return out;
 }
 
 
@@ -3851,6 +3924,7 @@ async function doGate(){
   if (pw.length < 6){ gateErr("הסיסמה חייבת להיות 6 תווים לפחות"); return; }
 
   gateBusy(true);
+  showLoading(true);
   try{
     var r = await sb.auth.signInWithPassword({email:em, password:pw});
     if (r.error){ gateErr(heb(r.error)); return; }
@@ -3862,6 +3936,7 @@ async function doGate(){
   }catch(e){
     gateErr("שגיאה: " + (e && e.message ? e.message : e));
   }finally{
+    showLoading(false);
     gateBusy(false);
   }
 }
@@ -4420,6 +4495,11 @@ async function loadSample(){
   toast("נטענה משפחה לדוגמה — אפשר לשנות הכול");
   await loadCloud();
   drawAll();
+}
+
+function showLoading(on){
+  var el = document.getElementById("loading");
+  if (el) el.classList.toggle("on", !!on);
 }
 
 async function enter(){
