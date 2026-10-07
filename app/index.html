@@ -99,7 +99,10 @@ button{font-family:inherit;border:0;background:none;color:inherit;cursor:pointer
 
 .device{
   position:relative;z-index:2;
-  width:min(390px,100vw);height:min(844px,100vh);
+  /* ⚠️ 100dvh ולא 100vh — בטלפון vh כולל את שורת הכתובת
+     של הדפדפן גם כשהיא מוצגת, והתחתית נחתכת.
+     dvh מתעדכן לפי הגובה הזמין באמת. */
+  width:min(390px,100vw);height:min(844px,100vh);height:min(844px,100dvh);
   background:var(--paper);overflow:hidden;
   display:flex;flex-direction:column;
 }
@@ -348,7 +351,8 @@ button{font-family:inherit;border:0;background:none;color:inherit;cursor:pointer
   padding:6px 11px;border-radius:99px;
   border:1.5px solid var(--line);
   background:var(--card);color:var(--ink-mid);
-  transition:all .18s var(--ease);
+  transition:background-color .18s var(--ease),border-color .18s var(--ease),
+             color .18s var(--ease),transform .18s var(--ease);
 }
 .chip2.on,.chip2:active{
   border-color:var(--brand);background:rgba(46,134,171,.09);color:var(--brand-deep);
@@ -404,7 +408,8 @@ button{font-family:inherit;border:0;background:none;color:inherit;cursor:pointer
   border:1.5px solid var(--line);border-radius:10px;
   padding:11px 6px;text-align:center;background:var(--card);
   font-size:12.5px;font-weight:700;color:var(--ink-mid);
-  transition:all .2s var(--ease);
+  transition:background-color .2s var(--ease),border-color .2s var(--ease),
+             color .2s var(--ease),transform .2s var(--ease);
 }
 .pk:active{transform:scale(.97)}
 .pk.on{
@@ -601,7 +606,9 @@ button{font-family:inherit;border:0;background:none;color:inherit;cursor:pointer
   border:1.5px solid var(--line);border-radius:12px;
   padding:14px 15px;background:var(--card);
   text-align:start;
-  transition:all .2s var(--ease);
+  transition:background-color .2s var(--ease),border-color .2s var(--ease),
+             color .2s var(--ease),transform .2s var(--ease),
+             box-shadow .2s var(--ease);
 }
 .quiz__o:active{transform:scale(.985)}
 .quiz__o.on{
@@ -806,8 +813,15 @@ input,textarea,.read,.page__b,.act__title,.act__src{
   from{opacity:0;transform:translate3d(0,8px,0)}
   to{opacity:1;transform:translate3d(0,0,0)}
 }
+/* ⚠️ מסך עומק נכנס מהכיוון שממנו נפתח. בעברית (RTL) זה
+   מימין — translate חיובי. אחרת התנועה מרגישה הפוכה. */
 .screen.deep.on{animation:dIn .28s cubic-bezier(.22,.9,.3,1)}
 @keyframes dIn{
+  from{opacity:0;transform:translate3d(16px,0,0)}
+  to{opacity:1;transform:translate3d(0,0,0)}
+}
+[dir="ltr"] .screen.deep.on{animation-name:dInLtr}
+@keyframes dInLtr{
   from{opacity:0;transform:translate3d(-16px,0,0)}
   to{opacity:1;transform:translate3d(0,0,0)}
 }
@@ -946,7 +960,8 @@ img{
   width:26px;height:26px;flex:none;border-radius:50%;
   display:grid;place-items:center;border:2px solid var(--todo);
   color:transparent;font-size:14px;font-weight:900;
-  transition:all .3s var(--ease);margin-top:1px;
+  transition:background-color .3s var(--ease),border-color .3s var(--ease),
+             color .3s var(--ease),transform .3s var(--ease);margin-top:1px;
 }
 .tick--sched{border-color:var(--sched);color:var(--sched);font-size:11px}
 .tick--done{background:var(--done);border-color:var(--done);color:#fff;animation:tPop .45s var(--ease-out)}
@@ -1199,11 +1214,25 @@ img{
   border:1px solid var(--line-soft);
   box-shadow:var(--sh-2);
   overflow:hidden;
-  max-height:0;opacity:0;
-  transition:max-height .4s var(--ease),opacity .3s var(--ease),margin .3s var(--ease);
+  /* ⚠️ grid-template-rows במקום max-height: נפתח לגובה האמיתי
+     של התוכן, בלי מספר קסם שחותך אותו, ובלי לחשב פריסה
+     מחדש בכל פריים. */
+  display:grid;grid-template-rows:0fr;
+  opacity:0;
+  transition:grid-template-rows .4s var(--ease),opacity .3s var(--ease);
 }
-.panel.open{max-height:1400px;opacity:1}
-.panel__in{padding:14px}
+.panel.open{grid-template-rows:1fr;opacity:1}
+.panel__in{padding:14px;min-height:0;overflow:hidden}
+
+/* דפדפנים שלא מנפישים grid-template-rows (ספארי < 16, כרום < 117):
+   חוזרים ל-max-height כדי שהפתיחה תהיה מונפשת ולא קופצת */
+@supports not (transition-property:grid-template-rows){
+  .panel{
+    display:block;max-height:0;
+    transition:max-height .4s var(--ease),opacity .3s var(--ease);
+  }
+  .panel.open{max-height:1400px}
+}
 .panel__h{display:flex;align-items:center;gap:11px;margin-bottom:12px}
 .panel__t{flex:1;min-width:0}
 .panel__n{font-size:16px;font-weight:900;line-height:1.2}
@@ -1223,7 +1252,8 @@ img{
 .seg__b{
   padding:8px;border-radius:8px;text-align:center;
   font-size:12px;font-weight:800;color:var(--ink-soft);
-  transition:all .25s var(--ease);
+  transition:background-color .25s var(--ease),color .25s var(--ease),
+             box-shadow .25s var(--ease);
 }
 .seg__b.on{background:var(--card);color:var(--brand-deep);box-shadow:var(--sh-1)}
 
@@ -1241,7 +1271,8 @@ img{
 .drop{
   border:2px dashed rgba(47,174,142,.4);border-radius:var(--r-lg);
   background:rgba(47,174,142,.05);padding:26px 18px;text-align:center;
-  transition:all .3s var(--ease);width:100%;
+  transition:background-color .3s var(--ease),border-color .3s var(--ease),
+             transform .3s var(--ease);width:100%;
 }
 .drop:active{background:rgba(47,174,142,.11);transform:scale(.99)}
 .drop__ic{font-size:34px;display:block;margin-bottom:9px}
@@ -1254,7 +1285,8 @@ img{
   display:grid;justify-items:center;gap:5px;padding:10px 4px;
   background:var(--card);border:1.5px solid var(--line-soft);
   border-radius:var(--r-sm);box-shadow:var(--sh-1);
-  transition:all .2s var(--ease);
+  transition:background-color .2s var(--ease),border-color .2s var(--ease),
+             transform .2s var(--ease),box-shadow .2s var(--ease);
 }
 .pickB__n{font-size:10px;font-weight:800;text-align:center;line-height:1.2}
 .pickB.on{border-color:var(--brand);background:rgba(47,174,142,.07);box-shadow:0 0 0 2.5px rgba(47,174,142,.13)}
@@ -1272,7 +1304,7 @@ img{
 }
 .paper__t{font-size:12px;font-weight:900;color:var(--ink)}
 .paper__d{font-size:10px;color:var(--ink-soft);font-weight:600}
-.paper__l{display:block;transition:all .4s var(--ease)}
+.paper__l{display:block;transition:opacity .4s var(--ease),transform .4s var(--ease)}
 .paper__l.hit{
   background:linear-gradient(90deg,rgba(47,174,142,.16),transparent);
   border-inline-start:2.5px solid var(--brand);
@@ -1288,13 +1320,15 @@ img{
 @keyframes scanRun{from{transform:translateY(-90px)}to{transform:translateY(calc(100% + 90px))}}
 
 .steps{display:flex;flex-direction:column;gap:11px;margin-top:16px}
-.stp{display:flex;align-items:center;gap:10px;font-size:12.5px;font-weight:600;color:var(--ink-soft);opacity:.35;transition:all .4s var(--ease)}
+.stp{display:flex;align-items:center;gap:10px;font-size:12.5px;font-weight:600;color:var(--ink-soft);opacity:.35;transition:opacity .4s var(--ease),color .4s var(--ease)}
 .stp.on{opacity:1}
 .stp.fin{color:var(--brand-deep);font-weight:800}
 .stp__d{
   width:19px;height:19px;flex:none;border-radius:50%;
   border:2px solid rgba(133,147,168,.4);display:grid;place-items:center;
-  font-size:10px;color:transparent;transition:all .3s var(--ease);
+  font-size:10px;color:transparent;
+  transition:background-color .3s var(--ease),border-color .3s var(--ease),
+             color .3s var(--ease);
 }
 .stp.fin .stp__d{background:var(--done);border-color:var(--done);color:#fff}
 .stp.run .stp__d{border-color:var(--brand);border-top-color:transparent;animation:spin .75s linear infinite}
@@ -1305,7 +1339,8 @@ img{
 .slot{
   border:1.5px solid var(--line);border-radius:var(--r-sm);
   padding:11px 8px;text-align:center;background:var(--card);
-  transition:all .22s var(--ease);
+  transition:background-color .22s var(--ease),border-color .22s var(--ease),
+             color .22s var(--ease),transform .22s var(--ease);
 }
 .slot:active{transform:scale(.97)}
 .slot.pick{border-color:var(--brand);background:rgba(47,174,142,.09);box-shadow:0 0 0 3px rgba(47,174,142,.13)}
@@ -1409,10 +1444,21 @@ img{
   border-top:1px solid var(--line-soft);margin-top:20px;
 }
 
-@media (prefers-reduced-motion:reduce){
-  *,*::before,*::after{
-    animation-duration:.01ms!important;animation-iteration-count:1!important;
-    transition-duration:.01ms!important;
+/* ⚠️ מי שהגדיר במערכת "פחות שקיפות" — בדרך כלל בגלל קשיי
+   ראייה — צריך רקע אטום. שקיפות פוגעת בקריאות של הטקסט. */
+@media (prefers-reduced-transparency:reduce){
+  .nav,.brandbar,.sheet,.gate,.win__wrap,.side{
+    backdrop-filter:none!important;
+    -webkit-backdrop-filter:none!important;
+  }
+  .nav,.brandbar{background:var(--card)!important}
+  .sheet,.gate,.win__wrap{background:rgba(10,30,56,.82)!important}
+}
+
+/* ניגודיות גבוהה — גבול מוגדר במקום הצללה עדינה */
+@media (prefers-contrast:more){
+  .card,.box,.act,.kin,.set,.panel{
+    border:1.5px solid var(--ink-mid)!important;
   }
 }
 :focus-visible{outline:2.5px solid var(--brand);outline-offset:2px;border-radius:6px}
@@ -3091,6 +3137,8 @@ var scanWho2 = null;      /* למי שייך המסמך */
 var scanBlob = null;      /* התמונה שצולמה */
 var scanStream = null;    /* המצלמה הפעילה */
 var scanText = "";        /* הטקסט שנקרא */
+var ocrFailed = false;    /* האם הקריאה נכשלה (שונה מ"לא נמצא") */
+var ocrFailReason = "";   /* download = המנוע לא ירד · engine = קרס */
 
 /* ---------- מסך 1: בחירת בן בית ---------- */
 function drawDoc(){
@@ -3162,25 +3210,70 @@ async function startCam(facing){
   camFacing = facing;
   var v = $("#cam");
   if (!v) return;
+
+  /* ⚠️ getUserMedia קיים רק בהקשר מאובטח (https או localhost).
+     בלי הבדיקה הזאת הקוד קורס עם TypeError ולא מגיע ל-catch. */
+  var hasAPI = navigator.mediaDevices &&
+               typeof navigator.mediaDevices.getUserMedia === "function";
+
+  if (!hasAPI){
+    camFallback(window.isSecureContext === false ? "insecure" : "unsupported");
+    return;
+  }
+
   try{
     scanStream = await navigator.mediaDevices.getUserMedia({
       video: {facingMode: facing, width:{ideal:1600}, height:{ideal:2000}},
       audio: false
     });
     v.srcObject = scanStream;
+
+    /* ⚠️ iOS Safari לא מתחיל לנגן לבד גם עם autoplay —
+       בלי play() מפורש ה-video נשאר שחור. */
+    try{ await v.play(); }catch(e){ /* autoplay נחסם — לא קריטי */ }
+
   }catch(e){
-    /* ⚠️ אין מצלמה או שהמשתמש סירב — נופלים לבחירת קובץ */
-    var box = $("#shotBox");
-    if (box){
-      box.innerHTML =
-        '<div style="padding:30px 20px;text-align:center;color:#fff">' +
-          '<div style="font-size:36px;margin-bottom:10px">🖼</div>' +
-          '<div style="font-size:13px;font-weight:700">אין גישה למצלמה</div>' +
-          '<div style="font-size:11px;opacity:.75;margin-top:6px;line-height:1.5">' +
-            'אפשר לבחור תמונה מהמכשיר במקום</div>' +
-        '</div>';
-    }
+    /* NotAllowedError = סירוב · NotFoundError = אין מצלמה */
+    var why = "other";
+    if (e && (e.name === "NotAllowedError" ||
+              e.name === "PermissionDeniedError")) why = "denied";
+    else if (e && (e.name === "NotFoundError" ||
+                   e.name === "DevicesNotFoundError")) why = "nocam";
+    camFallback(why);
   }
+}
+
+/* המצלמה לא זמינה — מסבירים למה, ופותחים דרך חלופית */
+function camFallback(why){
+  var box = $("#shotBox");
+  if (!box) return;
+
+  var msg = {
+    denied:     ["אין הרשאה למצלמה",
+                 "אפשר לאשר בהגדרות הדפדפן, או לבחור תמונה מהמכשיר"],
+    nocam:      ["לא נמצאה מצלמה",
+                 "אפשר לבחור תמונה או קובץ מהמכשיר"],
+    insecure:   ["המצלמה דורשת חיבור מאובטח",
+                 "פתחו את האפליקציה בכתובת https, או בחרו תמונה מהמכשיר"],
+    unsupported:["הדפדפן לא תומך בצילום",
+                 "אפשר לבחור תמונה או קובץ מהמכשיר"],
+    other:      ["המצלמה לא נפתחה",
+                 "אפשר לבחור תמונה או קובץ מהמכשיר"]
+  }[why] || ["המצלמה לא נפתחה", "אפשר לבחור תמונה מהמכשיר"];
+
+  box.innerHTML =
+    '<div style="padding:28px 20px;text-align:center;color:#fff">' +
+      '<div style="font-size:36px;margin-bottom:10px">🖼</div>' +
+      '<div style="font-size:13px;font-weight:700">' + esc(msg[0]) + '</div>' +
+      '<div style="font-size:11px;opacity:.75;margin-top:6px;line-height:1.5">' +
+        esc(msg[1]) + '</div>' +
+      '<button class="btn btn--ghost" id="camPick" ' +
+        'style="margin-top:14px">בחירת תמונה מהמכשיר</button>' +
+    '</div>';
+
+  if ($("#camPick")) $("#camPick").addEventListener("click", function(){
+    if ($("#fileIn")) $("#fileIn").click();
+  });
 }
 
 function stopCam(){
@@ -3276,12 +3369,18 @@ async function readDoc(skipOCR){
 
   /* ⚠️ בהדגמה אין שרת — מדלגים על ההעלאה */
   if (DEMO){
+    ocrFailed = false;
     if (!skipOCR && !isPdf){
       setP(35, "קורא את הטקסט…", "עברית ואנגלית · פועל במכשיר");
       try{ scanText = await runOCR(function(p){ setP(35 + Math.round(p*55)); }); }
-      catch(e){ scanText = ""; }
+      catch(e){
+        scanText = "";
+        ocrFailed = true;
+        ocrFailReason = (e && e.message === "no-ocr") ? "download" : "engine";
+      }
     } else { scanText = ""; }
-    setP(100, "הקריאה הסתיימה", "בדקו ותקנו לפני האישור");
+    setP(100, ocrFailed ? "הקריאה לא הצליחה" : "הקריאה הסתיימה",
+         ocrFailed ? "אפשר לשמור ולהוסיף ידנית" : "בדקו ותקנו לפני האישור");
     await wait(400);
     showReview("demo/" + Date.now() + ext);
     return;
@@ -3308,15 +3407,22 @@ async function readDoc(skipOCR){
   }
   setP(35, "קורא את הטקסט…", "עברית ואנגלית · פועל במכשיר, לא בשרת");
   scanText = "";
+  ocrFailed = false;
   try{
     scanText = await runOCR(function(p){
       setP(35 + Math.round(p * 55));
     });
   }catch(e){
+    /* ⚠️ כשל אמיתי — לא "לא נמצאו פעולות".
+       ברוב המקרים: ההורדה של מנוע הקריאה נכשלה. */
     scanText = "";
+    ocrFailed = true;
+    ocrFailReason = (e && e.message === "no-ocr")
+      ? "download" : "engine";
   }
 
-  setP(100, "הקריאה הסתיימה", "בדקו ותקנו לפני האישור");
+  setP(100, ocrFailed ? "הקריאה לא הצליחה" : "הקריאה הסתיימה",
+       ocrFailed ? "אפשר לשמור ולהוסיף ידנית" : "בדקו ותקנו לפני האישור");
   await wait(400);
   showReview(path);
 }
@@ -3333,9 +3439,65 @@ function loadTesseract(){
   });
 }
 
+/* ⚠️ הכנת התמונה ל-OCR — זה מה שקובע אם הטקסט ייצא נקי.
+   צילום צבעוני של דף מבלבל את המנוע; גווני אפור עם ניגודיות
+   מוגברת מחדדים את האותיות. קריטי בעברית, שבה ב/כ ו-ד/ר
+   מתחלפות בקלות. */
+function prepForOCR(blob){
+  return new Promise(function(res){
+    var img = new Image();
+    var url = URL.createObjectURL(blob);
+
+    img.onload = function(){
+      try{
+        /* מגדילים תמונות קטנות — Tesseract רוצה גובה אות של 20px+ */
+        var scale = Math.min(2, Math.max(1, 1800 / Math.max(img.width, img.height)));
+        var c = document.createElement("canvas");
+        c.width  = Math.round(img.width  * scale);
+        c.height = Math.round(img.height * scale);
+
+        var ctx = c.getContext("2d");
+        ctx.drawImage(img, 0, 0, c.width, c.height);
+
+        var d = ctx.getImageData(0, 0, c.width, c.height);
+        var px = d.data;
+
+        /* ממוצע בהירות — כדי לדעת סביב מה למתוח את הניגודיות */
+        var sum = 0;
+        for (var i = 0; i < px.length; i += 4){
+          sum += (px[i] * 0.299 + px[i+1] * 0.587 + px[i+2] * 0.114);
+        }
+        var mean = sum / (px.length / 4);
+
+        /* גווני אפור + מתיחת ניגודיות סביב הממוצע */
+        for (var j = 0; j < px.length; j += 4){
+          var g = px[j] * 0.299 + px[j+1] * 0.587 + px[j+2] * 0.114;
+          g = (g - mean) * 1.6 + mean;
+          g = g < 0 ? 0 : (g > 255 ? 255 : g);
+          px[j] = px[j+1] = px[j+2] = g;
+        }
+        ctx.putImageData(d, 0, 0);
+
+        URL.revokeObjectURL(url);
+        c.toBlob(function(b){ res(b || blob); }, "image/png");
+      }catch(e){
+        /* עיבוד נכשל — ממשיכים עם התמונה המקורית */
+        URL.revokeObjectURL(url);
+        res(blob);
+      }
+    };
+
+    img.onerror = function(){ URL.revokeObjectURL(url); res(blob); };
+    img.src = url;
+  });
+}
+
 async function runOCR(onProg){
   await loadTesseract();
-  var r = await Tesseract.recognize(scanBlob, "heb+eng", {
+
+  var prepped = await prepForOCR(scanBlob);
+
+  var r = await Tesseract.recognize(prepped, "heb+eng", {
     logger: function(m){
       if (m.status === "recognizing text" && onProg) onProg(m.progress || 0);
     }
@@ -3378,7 +3540,26 @@ function showReview(path){
           '</button>';
         }).join("") +
       '</div>';
+  } else if (ocrFailed){
+    /* ⚠️ הקריאה נכשלה — לא לומר "לא נמצאו פעולות".
+       המשתמש צריך לדעת שאפשר לנסות שוב. */
+    body =
+      '<div class="sect">הקריאה לא הצליחה</div>' +
+      '<div class="box" style="padding:14px">' +
+        '<p style="font-size:12.5px;font-weight:700;color:var(--ink);line-height:1.5">' +
+          (ocrFailReason === "download"
+            ? 'מנוע קריאת הטקסט לא הצליח לירד.'
+            : 'קריאת הטקסט נתקלה בתקלה.') + '</p>' +
+        '<p style="font-size:11.5px;color:var(--ink-soft);font-weight:500;line-height:1.6;margin-top:7px">' +
+          (ocrFailReason === "download"
+            ? 'בפעם הראשונה צריך חיבור טוב — המנוע שוקל כ-15MB ' +
+              'ונשמר במכשיר אחרי הורדה אחת.<br>המסמך עצמו נשמר בתיק.'
+            : 'המסמך נשמר בתיק. אפשר להוסיף פעולה ידנית.') + '</p>' +
+        '<button class="btn btn--ghost" id="retryOCR" ' +
+          'style="margin-top:12px;width:100%">ניסיון קריאה נוסף</button>' +
+      '</div>';
   } else {
+    /* קראנו בהצלחה — פשוט לא היו מונחים מוכרים */
     body =
       '<div class="sect">לא זוהו פעולות</div>' +
       '<div class="box" style="padding:14px">' +
@@ -3431,6 +3612,24 @@ function showReview(path){
   $("#dCancel").addEventListener("click", drawDoc);
   $("#dSave").addEventListener("click", function(){
     saveDoc(path, chosen);
+  });
+
+  /* ניסיון קריאה נוסף — המסמך כבר הועלה, רק הקריאה נכשלה */
+  if ($("#retryOCR")) $("#retryOCR").addEventListener("click", async function(){
+    var b = $("#retryOCR");
+    b.disabled = true;
+    b.textContent = "קורא…";
+    ocrFailed = false;
+    try{
+      scanText = await runOCR(function(p){
+        b.textContent = "קורא… " + Math.round(p * 100) + "%";
+      });
+    }catch(e){
+      scanText = "";
+      ocrFailed = true;
+      ocrFailReason = (e && e.message === "no-ocr") ? "download" : "engine";
+    }
+    showReview(path);
   });
 }
 

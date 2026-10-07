@@ -1,73 +1,111 @@
 <!DOCTYPE html><html lang="he" dir="rtl"><head><meta charset="utf-8">
-<title>בניית אייקוני ILANO</title><style>
-body{font-family:system-ui;background:#0A1E38;color:#fff;padding:30px;margin:0;text-align:center}
-h1{font-size:20px;margin:0 0 6px}
-p{color:#8FD9D4;font-size:13px;margin:0 0 24px;line-height:1.6}
-canvas{border-radius:22.5%;margin:8px;box-shadow:0 10px 26px -8px rgba(0,0,0,.7)}
-#prev{display:flex;gap:16px;justify-content:center;align-items:flex-end;flex-wrap:wrap}
-.ok{color:#7FE6A8;font-weight:700;font-size:15px;margin-top:22px;line-height:1.7}
-.note{color:#9FB4CC;font-size:12px;margin-top:10px;line-height:1.6}
+<title>סמל ILANO — בנייה</title><style>
+body{font-family:system-ui;background:#F4F7FA;color:#14365F;padding:30px;margin:0;text-align:center}
+h1{font-size:21px;margin:0 0 6px}
+.sub{color:#5A7A9A;font-size:13px;margin:0 0 26px;line-height:1.6}
+.row{display:flex;gap:26px;justify-content:center;align-items:flex-end;flex-wrap:wrap;margin-bottom:24px}
+.cell{background:#fff;border:1px solid #DCE7F0;border-radius:18px;padding:18px}
+.cell h3{font-size:12px;margin:12px 0 0;color:#5A7A9A;font-weight:700}
+canvas{border-radius:22.5%;display:block;margin:0 auto;box-shadow:0 8px 22px -8px rgba(20,54,95,.3)}
+.dark{background:#0A1E38}
+button{background:#2A7FB8;color:#fff;border:0;padding:13px 28px;border-radius:10px;
+font-size:15px;font-weight:700;cursor:pointer;margin:6px}
+.ok{color:#2E9E63;font-weight:800;font-size:15px;margin-top:16px;min-height:22px}
 </style></head><body>
-<h1>הנץ — אייקון ILANO</h1>
-<p>שלושה קבצים יירדו. אחר כך אעביר אותם לתיקייה.</p>
-<div id="prev"></div>
+<h1>הסמל נטו — בלי כיתוב</h1>
+<p class="sub">הצלב, האדם והעלה. ככה זה ייראה כאייקון במסך הבית.</p>
+
+<div class="row" id="prev"></div>
+
+<button id="go">הורדת שלושת האייקונים</button>
 <div class="ok" id="done"></div>
-<div class="note" id="note"></div>
+
 <script>
-var DEFS = `
-<linearGradient id="leaf" x1="0" y1="1" x2="1" y2="0">
-<stop offset="0" stop-color="#2E86AB"/><stop offset="1" stop-color="#6FD4C4"/></linearGradient>
-<linearGradient id="paper" x1="0" y1="0" x2="0" y2="1">
-<stop offset="0" stop-color="#F4F7FA"/><stop offset="1" stop-color="#DCE7F0"/></linearGradient>`;
+/* הסמל — זהה לקובץ mark.svg */
+var MARK = `
+<defs>
+<linearGradient id="cross" x1="0.15" y1="0.9" x2="0.9" y2="0.1">
+<stop offset="0" stop-color="#1B5FA8"/><stop offset="0.45" stop-color="#2A7FB8"/>
+<stop offset="1" stop-color="#35A86B"/></linearGradient>
+<linearGradient id="leafG" x1="0.1" y1="1" x2="0.95" y2="0.05">
+<stop offset="0" stop-color="#2E9E63"/><stop offset="1" stop-color="#6FC44A"/></linearGradient>
+<mask id="cut"><rect width="512" height="512" fill="#fff"/>
+<circle cx="256" cy="186" r="46" fill="#000"/>
+<path d="M268 206c14 28 34 48 58 60 -24 20 -44 48 -56 82 -10 -36 -16 -82 -2 -142z" fill="#000"/>
+</mask></defs>
+<g mask="url(#cut)"><path fill="url(#cross)" d="M196 96h120a36 36 0 0 1 36 36v64h64a36 36 0 0 1 36 36v120a36 36 0 0 1 -36 36h-64v64a36 36 0 0 1 -36 36h-120a36 36 0 0 1 -36 -36v-64h-64a36 36 0 0 1 -36 -36v-120a36 36 0 0 1 36 -36h64v-64a36 36 0 0 1 36 -36z"/></g>
+<circle cx="256" cy="186" r="30" fill="url(#cross)"/>
+<path fill="url(#cross)" d="M232 222c-4 44 2 86 16 124 10 28 14 52 12 74h-44c2 -30 -4 -64 -16 -100 -14 -42 -18 -76 -10 -102 8 -4 26 -4 42 4z"/>
+<path fill="url(#leafG)" d="M300 330c-6 -62 22 -112 62 -142 24 -18 50 -28 74 -32 4 34 -2 72 -22 108 -24 44 -64 70 -114 66z"/>
+<path fill="none" stroke="#fff" stroke-width="11" stroke-linecap="round" opacity="0.92" d="M430 162c-40 22 -74 54 -96 92 -18 30 -28 62 -32 94"/>`;
 
-var SPROUT = `
-<path d="M96 400h320" stroke="#14365F" stroke-width="13" stroke-linecap="round" opacity=".28"/>
-<path d="M256 400V196" stroke="#2E86AB" stroke-width="19" stroke-linecap="round"/>
-<path d="M248 264c-72-4-116-72-116-72s68-34 116 12c38 36 0 60 0 60z" fill="url(#leaf)"/>
-<path d="M264 216c62-20 92-88 92-88s-72-18-110 34c-28 40 18 54 18 54z" fill="#6FD4C4"/>
-<path d="M340 146c-42 30-66 62-80 100" stroke="#F4F7FA" stroke-width="7" fill="none" opacity=".5" stroke-linecap="round"/>
-<circle cx="256" cy="176" r="19" fill="#14365F"/>`;
+function svg(bg, scale){
+  var s = scale || 1;
+  var inner = s === 1 ? MARK :
+    MARK.replace(/(<g mask|<circle cx="256" cy="186" r="30"|<path fill="url\(#cross\)" d="M232|<path fill="url\(#leafG\)"|<path fill="none")/g, '$1');
+  var body = s === 1 ? MARK :
+    '<g transform="translate(256,256) scale(' + s + ') translate(-256,-256)">' + MARK + '</g>';
+  return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">' +
+    '<rect width="512" height="512" fill="' + bg + '"/>' + body + '</svg>';
+}
 
-var ART = '<rect width="512" height="512" fill="url(#paper)"/>' + SPROUT;
-
-/* maskable — אנדרואיד חותך פינות, לכן הציור מוקטן ל-76% */
-var ART_MASK =
- '<rect width="512" height="512" fill="#F4F7FA"/>' +
- '<g transform="translate(256,256) scale(.76) translate(-256,-256)">' + SPROUT + '</g>';
-
-function draw(art, size, name){
+function draw(markup, size, box){
   return new Promise(function(res){
-    var svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><defs>'+DEFS+'</defs>'+art+'</svg>';
     var img = new Image();
-    var url = URL.createObjectURL(new Blob([svg],{type:"image/svg+xml"}));
+    var url = URL.createObjectURL(new Blob([markup], {type:"image/svg+xml"}));
     img.onload = function(){
       var c = document.createElement("canvas");
       c.width = size; c.height = size;
       c.getContext("2d").drawImage(img, 0, 0, size, size);
-      c.style.width  = Math.min(size,150)+"px";
-      c.style.height = Math.min(size,150)+"px";
-      document.getElementById("prev").appendChild(c);
-      c.toBlob(function(b){
-        var a = document.createElement("a");
-        a.href = URL.createObjectURL(b);
-        a.download = name;
-        a.click();
-        URL.revokeObjectURL(url);
-        res();
-      }, "image/png");
+      if (box){
+        var d = document.createElement("div");
+        d.className = "cell" + (box.dark ? " dark" : "");
+        var shown = document.createElement("canvas");
+        shown.width = size; shown.height = size;
+        shown.getContext("2d").drawImage(c, 0, 0);
+        shown.style.width = box.w + "px";
+        shown.style.height = box.w + "px";
+        d.appendChild(shown);
+        var h = document.createElement("h3");
+        h.textContent = box.label;
+        d.appendChild(h);
+        document.getElementById("prev").appendChild(d);
+      }
+      URL.revokeObjectURL(url);
+      res(c);
     };
     img.src = url;
   });
 }
 
+/* תצוגה */
 (async function(){
-  await draw(ART, 192, "icon-192.png");
-  await new Promise(r=>setTimeout(r,600));
-  await draw(ART, 512, "icon-512.png");
-  await new Promise(r=>setTimeout(r,600));
-  await draw(ART_MASK, 512, "icon-maskable.png");
-  document.getElementById("done").textContent = "✓ שלושת הקבצים ירדו";
-  document.getElementById("note").textContent =
-    "השמאלי 192 · האמצעי 512 · הימני maskable (מוקטן לחיתוך אנדרואיד)";
+  await draw(svg("#F4F7FA"), 512, {w:170, label:"רקע בהיר"});
+  await draw(svg("#FFFFFF"), 192, {w:74,  label:"192"});
+  await draw(svg("#FFFFFF"), 192, {w:46,  label:"בגודל אמיתי"});
 })();
+
+/* הורדה */
+document.getElementById("go").addEventListener("click", async function(){
+  this.disabled = true;
+  var files = [
+    {m: svg("#F4F7FA"),      s:192, n:"icon-192.png"},
+    {m: svg("#F4F7FA"),      s:512, n:"icon-512.png"},
+    {m: svg("#F4F7FA", .76), s:512, n:"icon-maskable.png"}
+  ];
+  for (var i = 0; i < files.length; i++){
+    var c = await draw(files[i].m, files[i].s, null);
+    await new Promise(function(r){
+      c.toBlob(function(b){
+        var a = document.createElement("a");
+        a.href = URL.createObjectURL(b);
+        a.download = files[i].n;
+        a.click();
+        setTimeout(r, 500);
+      }, "image/png");
+    });
+  }
+  document.getElementById("done").textContent = "✓ שלושת הקבצים ירדו לתיקיית ההורדות";
+  this.disabled = false;
+});
 </script></body></html>

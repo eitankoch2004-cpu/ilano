@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <!-- כחול → ירוק, משמאל־למטה לימין־למעלה, כמו בלוגו -->
+    <linearGradient id="cross" x1="0.15" y1="0.9" x2="0.9" y2="0.1">
+      <stop offset="0"   stop-color="#1B5FA8"/>
+      <stop offset="0.45" stop-color="#2A7FB8"/>
+      <stop offset="1"   stop-color="#35A86B"/>
+    </linearGradient>
+    <linearGradient id="leafG" x1="0.1" y1="1" x2="0.95" y2="0.05">
+      <stop offset="0"   stop-color="#2E9E63"/>
+      <stop offset="1"   stop-color="#6FC44A"/>
+    </linearGradient>
+
+    <!-- החיתוך שיוצר את דמות האדם בתוך הצלב -->
+    <mask id="cut">
+      <rect width="512" height="512" fill="#fff"/>
+      <!-- הפער סביב הראש -->
+      <circle cx="256" cy="186" r="46" fill="#000"/>
+      <!-- הפער שמפריד בין הגוף לזרוע הימנית -->
+      <path d="M268 206c14 28 34 48 58 60 -24 20 -44 48 -56 82
+               -10 -36 -16 -82 -2 -142z" fill="#000"/>
+    </mask>
+  </defs>
+
+  <!-- ===== הצלב ===== -->
+  <g mask="url(#cut)">
+    <path fill="url(#cross)" d="
+      M196 96h120a36 36 0 0 1 36 36v64h64a36 36 0 0 1 36 36v120
+      a36 36 0 0 1 -36 36h-64v64a36 36 0 0 1 -36 36h-120
+      a36 36 0 0 1 -36 -36v-64h-64a36 36 0 0 1 -36 -36v-120
+      a36 36 0 0 1 36 -36h64v-64a36 36 0 0 1 36 -36z"/>
+  </g>
+
+  <!-- ===== הראש ===== -->
+  <circle cx="256" cy="186" r="30" fill="url(#cross)"/>
+
+  <!-- ===== הגוף — קו זורם מהכתפיים למטה ===== -->
+  <path fill="url(#cross)" d="
+    M232 222c-4 44 2 86 16 124 10 28 14 52 12 74h-44
+    c2 -30 -4 -64 -16 -100 -14 -42 -18 -76 -10 -102 8 -4 26 -4 42 4z"/>
+
+  <!-- ===== העלה ===== -->
+  <path fill="url(#leafG)" d="
+    M300 330c-6 -62 22 -112 62 -142 24 -18 50 -28 74 -32
+    4 34 -2 72 -22 108 -24 44 -64 70 -114 66z"/>
+
+  <!-- גיד העלה -->
+  <path fill="none" stroke="#fff" stroke-width="11" stroke-linecap="round" opacity="0.92" d="
+    M430 162c-40 22 -74 54 -96 92 -18 30 -28 62 -32 94"/>
+</svg>
