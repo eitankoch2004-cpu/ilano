@@ -202,7 +202,7 @@ comment on view public.admin_users is
 insert into public.admins (user_id, note)
 select id, 'owner'
   from auth.users
- where email = 'eitankoch2004@gmail.com'
+ where email in ('eitank2004@gmail.com', 'eitankoch2004@gmail.com')
 on conflict (user_id) do nothing;
 
 
