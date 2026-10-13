@@ -339,21 +339,28 @@ async function open(user){
 
 async function load(){
   note("#msg","info","טוען…");
-  var r = await sb.from("admin_users")
-                 .select("*")
-                 .order("signed_up_at", {ascending:false});
+  /* ⚠️ rpc ולא from() — admin_users היא פונקציה, לא תצוגה.
+     Supabase חוסמת גישה ישירה ל-auth.users מהדפדפן, אז
+     הפונקציה רצה בהרשאות גבוהות ובודקת is_admin() בעצמה. */
+  var r = await sb.rpc("admin_users");
 
   if (r.error){
-    note("#msg","bad","שגיאה: " + r.error.message +
-      " — ייתכן שטרם הרצת את admin-setup.sql");
+    var m = r.error.message || "";
+    if (/not authorized/i.test(m)){
+      note("#msg","bad",
+        "החשבון הזה אינו רשום כאדמין. יש להוסיף אותו לטבלת admins.");
+    } else if (/function|does not exist|schema cache/i.test(m)){
+      note("#msg","bad",
+        "הפונקציה admin_users חסרה — יש להריץ את docs/admin-fix.sql");
+    } else {
+      note("#msg","bad","שגיאה: " + m);
+    }
     return;
   }
 
   DATA = r.data || [];
   if (!DATA.length){
-    note("#msg","bad",
-      "אין נתונים. או שאין עוד משתמשים, או שהחשבון הזה אינו " +
-      "רשום בטבלת admins — יש להריץ את docs/admin-setup.sql.");
+    note("#msg","info","אין עדיין משתמשים רשומים.");
   } else {
     note("#msg","",null);
   }
