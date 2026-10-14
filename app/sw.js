@@ -8,7 +8,9 @@
    כאן נשמר רק "השלד": העמוד, הספרייה, האייקונים.
    ============================================================ */
 
-var CACHE = "ilano-v2";
+/* ⚠️ להעלות את המספר רק כשמשנים את הקובץ הזה עצמו.
+   v3 = מוחק מכל המכשירים עותקים ישנים של admin.html */
+var CACHE = "ilano-v3";
 var SHELL = [
   "./",
   "./index.html",
@@ -77,7 +79,39 @@ self.addEventListener("fetch", function(e){
     return;
   }
 
-  /* השלד — קודם מהמטמון, ומתעדכן ברקע */
+  /* 🔒 פאנל הניהול — לעולם לא נשמר. אדמין חייב לראות קוד עדכני,
+     ואין סיבה שהפאנל יעבוד בלי אינטרנט. */
+  if (url.indexOf("admin.html") > -1){
+    return;
+  }
+
+  /* 📄 עמודים (HTML) — קודם מהרשת, כדי שכל תיקון יגיע מיד.
+     no-cache = לבדוק מול GitHub אם יש גרסה חדשה, ולא לחכות
+     10 דקות. אם אין רשת, או שהיא לא עונה תוך 4 שניות — מהמטמון. */
+  if (e.request.mode === "navigate"){
+    e.respondWith(
+      caches.match(e.request).then(function(hit){
+        var live = fetch(url, {cache: "no-cache"}).then(function(res){
+          if (res && res.status === 200){
+            var copy = res.clone();
+            caches.open(CACHE).then(function(c){ c.put(e.request, copy); });
+          }
+          return res;
+        });
+        if (!hit) return live;
+        var slow = new Promise(function(done){
+          setTimeout(function(){ done(hit); }, 4000);
+        });
+        return Promise.race([
+          live.catch(function(){ return hit; }),
+          slow
+        ]);
+      })
+    );
+    return;
+  }
+
+  /* השלד (ספרייה, אייקונים) — קודם מהמטמון, ומתעדכן ברקע */
   e.respondWith(
     caches.match(e.request).then(function(hit){
       var live = fetch(e.request).then(function(res){
