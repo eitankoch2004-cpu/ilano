@@ -17,9 +17,9 @@
         במקום סיסמה: כפתור "שליחת קישור איפוס".
 
      🔴 ההגנה האמיתית היא ב-Supabase (RLS), לא כאן.
-        התצוגה admin_users מחזירה אפס שורות למי שאינו
-        רשום בטבלת admins. גם אם מישהו יפתח את העמוד הזה,
-        הוא לא יראה כלום.
+        הפונקציה admin_users() והטבלה app_errors עונות רק
+        למי שרשום בטבלת admins. גם אם מישהו יפתח את העמוד
+        הזה, הוא לא יראה כלום.
      ============================================================ -->
 
 <style>
@@ -169,6 +169,27 @@ tr:last-child td{border-bottom:none}
   background:var(--card);color:var(--ink);width:100%;
 }
 
+/* --- לשוניות --- */
+.tabs{display:flex;gap:4px;margin-bottom:16px;border-bottom:1.5px solid var(--line)}
+.tab{
+  font:800 13px/1 var(--font);color:var(--ink-soft);
+  padding:12px 14px;background:none;border:none;
+  border-bottom:2.5px solid transparent;margin-bottom:-1.5px;
+  cursor:pointer;touch-action:manipulation;
+  transition:color .18s var(--ease),border-color .18s var(--ease);
+}
+.tab[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--brand)}
+.tab .pill{margin-inline-start:6px;vertical-align:1px}
+
+/* --- תקלות --- */
+.errmsg{font-weight:700;color:var(--ink);word-break:break-word;max-width:440px}
+.stack{
+  direction:ltr;text-align:left;margin:0;
+  white-space:pre-wrap;word-break:break-word;
+  font:500 11px/1.55 ui-monospace,Consolas,monospace;color:var(--ink-mid);
+  max-height:260px;overflow:auto;
+}
+
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{
     animation-duration:.01ms!important;transition-duration:.01ms!important;
@@ -216,8 +237,48 @@ tr:last-child td{border-bottom:none}
   </div>
 
   <div class="wrap">
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" id="tabUsers" aria-selected="true">משתמשים</button>
+      <button class="tab" role="tab" id="tabErrors" aria-selected="false">תקלות<span id="errBadge"></span></button>
+    </div>
+
     <div id="msg"></div>
 
+    <!-- ===== לשונית: תקלות ===== -->
+    <div class="hide" id="viewErrors">
+      <div class="tools">
+        <select class="sel" id="errApp" style="max-width:170px">
+          <option value="">כל האפליקציות</option>
+        </select>
+        <div class="spacer"></div>
+        <button class="btn btn--ghost btn--sm" id="errClear">מחיקת כל התקלות</button>
+      </div>
+
+      <div class="tbl__wrap">
+        <table>
+          <thead><tr>
+            <th>אפליקציה</th>
+            <th>שגיאה</th>
+            <th>פעמים</th>
+            <th>משתמשים</th>
+            <th>ראשונה</th>
+            <th>אחרונה</th>
+            <th>עמוד</th>
+            <th></th>
+          </tr></thead>
+          <tbody id="errRows"></tbody>
+        </table>
+      </div>
+
+      <p class="mut" style="margin-top:14px;line-height:1.6">
+        כל שגיאה שקרתה אצל משתמש, מקובצת לפי ההודעה. אחרי שתיקנתם —
+        <strong>טופל</strong> מוחק אותה מהרשימה. אם היא חוזרת, התיקון לא עבד.
+        🔒 נשמרים רק הודעה, מיקום בקוד, עמוד ודפדפן — לא תוכן ולא מידע רפואי.
+      </p>
+    </div>
+
+    <!-- ===== לשונית: משתמשים ===== -->
+    <div id="viewUsers">
     <div class="stats" id="stats"></div>
 
     <div class="tools">
@@ -256,6 +317,7 @@ tr:last-child td{border-bottom:none}
       כ-hash חד-כיווני — לא ניתן לשחזר סיסמה, רק לאפס אותה.
       לעזרה למשתמש: כפתור <strong>איפוס</strong> בשורה שלו.
     </p>
+    </div><!-- /viewUsers -->
   </div>
 </div>
 
@@ -304,10 +366,18 @@ function dt(s){
     await sb.auth.signOut();
     location.reload();
   });
-  $("#refresh").addEventListener("click", load);
+  $("#refresh").addEventListener("click", function(){ load(); loadErrors(); });
   $("#csv").addEventListener("click", exportCSV);
   $("#q").addEventListener("input", render);
   $("#filt").addEventListener("change", render);
+  $("#tabUsers").addEventListener("click", function(){ showTab("users"); });
+  $("#tabErrors").addEventListener("click", function(){ showTab("errors"); });
+  $("#errApp").addEventListener("change", renderErrors);
+  $("#errClear").addEventListener("click", function(){
+    var ids = [];
+    ERR_GROUPS.forEach(function(g){ ids = ids.concat(g.ids); });
+    markDone(ids, this);
+  });
 
   /* כבר מחובר? */
   sb.auth.getUser().then(function(r){
@@ -337,6 +407,16 @@ async function open(user){
   $("#panel").classList.remove("hide");
   $("#who").textContent = user.email;
   load();
+  loadErrors();
+}
+
+function showTab(t){
+  var u = (t === "users");
+  $("#tabUsers").setAttribute("aria-selected", u ? "true" : "false");
+  $("#tabErrors").setAttribute("aria-selected", u ? "false" : "true");
+  $("#viewUsers").classList.toggle("hide", !u);
+  $("#viewErrors").classList.toggle("hide", u);
+  $("#csv").classList.toggle("hide", !u);   /* ה-CSV הוא של המשתמשים */
 }
 
 async function load(){
@@ -580,6 +660,7 @@ async function save(uid, rows){
 
   if (r.error){
     note("#msg","bad","השמירה נכשלה: " + r.error.message);
+    if (window.logIssue) logIssue("פאנל ניהול, שמירת מנוי: " + r.error.message);
     return;
   }
   editing = null;
@@ -601,6 +682,179 @@ async function sendReset(email, btn){
 
   if (r.error) note("#msg","bad","השליחה נכשלה: " + r.error.message);
   else         note("#msg","ok","קישור איפוס נשלח ל-" + email);
+}
+
+/* ============================================================
+   תקלות — מה שנשמר ב-app_errors (ראו monitor.js)
+   🔴 רק אדמין רואה: RLS בשרת. כאן רק מציגים.
+   ============================================================ */
+var ERRS = [], ERR_GROUPS = [], errOpen = null;
+
+function dtt(s){
+  if (!s) return "—";
+  var d = new Date(s);
+  return d.toLocaleDateString("he-IL", {day:"2-digit",month:"2-digit"}) + " " +
+         d.toLocaleTimeString("he-IL", {hour:"2-digit",minute:"2-digit"});
+}
+
+/* הודעות שגיאה מערבבות עברית ("שגיאת שרת:") ואנגלית מהשרת.
+   בלי בידוד, סוגריים ומירכאות בסוף מתהפכים. החלק האנגלי
+   מוצג משמאל לימין, בנפרד. */
+function fmtMsg(m){
+  m = String(m || "");
+  var i = m.search(/[A-Za-z]/);
+  if (i === -1) return esc(m);
+  return esc(m.slice(0, i)) + '<bdi dir="ltr">' + esc(m.slice(i)) + '</bdi>';
+}
+
+function pathOnly(p){
+  try{ return new URL(p).pathname; }catch(e){ return p || "—"; }
+}
+
+async function loadErrors(){
+  var r = await sb.from("app_errors")
+    .select("id,created_at,app,message,stack,page,user_agent,user_id")
+    .order("created_at", {ascending:false})
+    .limit(1000);
+
+  if (r.error){
+    var m = r.error.message || "";
+    var why = /permission denied/i.test(m)
+      ? "חסרה הרשאה לקרוא תקלות — יש להריץ את שורת ה-grant מ-docs/error-monitoring.sql"
+      : /does not exist|schema cache/i.test(m)
+        ? "טבלת התקלות חסרה — יש להריץ את docs/error-monitoring.sql"
+        : "שגיאה בטעינת תקלות: " + m;
+    ERRS = []; ERR_GROUPS = [];
+    $("#errBadge").innerHTML = "";
+    $("#errRows").innerHTML =
+      '<tr><td colspan="8" class="mut" style="padding:24px;text-align:center">' +
+      esc(why) + '</td></tr>';
+    return;
+  }
+
+  ERRS = r.data || [];
+  appOptions();
+  renderErrors();
+}
+
+/* מקבצים לפי אפליקציה + הודעה. ERRS כבר ממוין מהחדש לישן,
+   אז הפעם הראשונה שפוגשים קבוצה = המופע האחרון שלה. */
+function groupErrors(app){
+  var map = {}, list = [];
+  ERRS.forEach(function(e){
+    if (app && e.app !== app) return;
+    var k = e.app + "|" + e.message;
+    var g = map[k];
+    if (!g){
+      g = map[k] = {key:k, app:e.app, message:e.message, ids:[], users:{},
+                    first:e.created_at, last:e.created_at, latest:e};
+      list.push(g);
+    }
+    g.ids.push(e.id);
+    g.users[e.user_id || "guest"] = 1;
+    g.first = e.created_at;
+  });
+  return list;
+}
+
+function appOptions(){
+  var sel = $("#errApp"), cur = sel.value, apps = {};
+  ERRS.forEach(function(e){ apps[e.app] = 1; });
+  sel.innerHTML = '<option value="">כל האפליקציות</option>' +
+    Object.keys(apps).sort().map(function(a){
+      return '<option value="' + esc(a) + '"' + (a === cur ? " selected" : "") +
+             '>' + esc(a) + '</option>';
+    }).join("");
+}
+
+function renderErrors(){
+  var day = Date.now() - 24*3600*1000;
+  var isNew = function(g){ return new Date(g.last).getTime() > day; };
+
+  /* תגית על הלשונית — כמה סוגי תקלות ב-24 שעות האחרונות */
+  var all = groupErrors("");
+  var fresh = all.filter(isNew).length;
+  $("#errBadge").innerHTML = fresh
+    ? '<span class="pill pill--bad">' + fresh + '</span>'
+    : (all.length ? '<span class="pill pill--mut">' + all.length + '</span>' : "");
+
+  ERR_GROUPS = groupErrors($("#errApp").value);
+  $("#errClear").disabled = !ERR_GROUPS.length;
+
+  if (!ERR_GROUPS.length){
+    $("#errRows").innerHTML =
+      '<tr><td colspan="8" class="mut" style="padding:24px;text-align:center">' +
+      'אין תקלות. מצוין.</td></tr>';
+    return;
+  }
+
+  $("#errRows").innerHTML = ERR_GROUPS.map(function(g, i){
+    var open = (errOpen === g.key);
+    var row =
+      '<tr' + (open ? ' class="row-edit"' : '') + '>' +
+        '<td><span class="pill pill--mut">' + esc(g.app) + '</span></td>' +
+        '<td><div class="errmsg">' + fmtMsg(g.message) + '</div></td>' +
+        '<td class="num">' + g.ids.length + '</td>' +
+        '<td class="num">' + Object.keys(g.users).length + '</td>' +
+        '<td class="mut">' + dtt(g.first) + '</td>' +
+        '<td>' + dtt(g.last) +
+          (isNew(g) ? '<br><span class="pill pill--bad">24 שעות</span>' : '') + '</td>' +
+        '<td class="em">' + esc(pathOnly(g.latest.page)) + '</td>' +
+        '<td style="white-space:nowrap">' +
+          '<button class="btn btn--ghost btn--sm" data-eopen="' + i + '">' +
+            (open ? 'סגירה' : 'פרטים') + '</button> ' +
+          '<button class="btn btn--ghost btn--sm" data-edone="' + i + '">טופל</button>' +
+        '</td>' +
+      '</tr>';
+
+    if (open){
+      row +=
+        '<tr class="row-edit"><td colspan="8">' +
+          '<div class="fld__l">איפה בקוד (המופע האחרון)</div>' +
+          '<pre class="stack">' + esc(g.latest.stack || "אין פירוט — הדיווח נשלח ידנית") + '</pre>' +
+          '<div class="fld__l" style="margin-top:10px">דפדפן</div>' +
+          '<div class="em">' + esc(g.latest.user_agent || "—") + '</div>' +
+        '</td></tr>';
+    }
+    return row;
+  }).join("");
+
+  document.querySelectorAll("[data-eopen]").forEach(function(b){
+    b.addEventListener("click", function(){
+      var g = ERR_GROUPS[+b.dataset.eopen];
+      errOpen = (errOpen === g.key) ? null : g.key;
+      renderErrors();
+    });
+  });
+  document.querySelectorAll("[data-edone]").forEach(function(b){
+    b.addEventListener("click", function(){
+      markDone(ERR_GROUPS[+b.dataset.edone].ids, b);
+    });
+  });
+}
+
+/* "טופל" = מחיקת הרשומות. אם התקלה חוזרת — התיקון לא עבד. */
+async function markDone(ids, btn){
+  if (!ids.length) return;
+  if (!confirm("למחוק " + ids.length + " רשומות תקלה?\nכדאי רק אחרי שהתקלה תוקנה.")) return;
+
+  btn.disabled = true;
+  /* select אחרי delete — כדי לדעת כמה באמת נמחקו.
+     RLS שחוסם מחיקה לא מחזיר שגיאה, רק אפס שורות. */
+  var r = await sb.from("app_errors").delete().in("id", ids).select("id");
+  btn.disabled = false;
+
+  if (r.error){
+    note("#msg","bad","המחיקה נכשלה: " + r.error.message);
+    return;
+  }
+  if (!r.data || !r.data.length){
+    note("#msg","bad","לא נמחק כלום — כנראה חסרה הרשאת מחיקה (grant ב-docs/error-monitoring.sql)");
+    return;
+  }
+  note("#msg","ok","נמחקו " + r.data.length + " רשומות");
+  errOpen = null;
+  loadErrors();
 }
 
 /* ---------- CSV ---------- */
