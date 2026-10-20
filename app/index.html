@@ -2,6 +2,8 @@
 <html lang="he" dir="rtl">
 <head>
 <meta charset="utf-8">
+<!-- ⚠️ ניטור תקלות — חייב להיות ראשון, לפני כל קוד אחר -->
+<script src="monitor.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
 <title>ILANO — ניהול משפחתי</title>
 <meta name="description" content="שלושה דורות, תשעה בני בית, ארבע קופות — מסך אחד. כל פעולה עם תאריך, בעלים ומקור.">
@@ -1986,6 +1988,9 @@ function heb(e){
   if (/not confirmed/i.test(m))          return "צריך לאשר את האימייל";
   if (/rate limit|Too many/i.test(m))    return "יותר מדי ניסיונות — לחכות דקה";
   if (/Failed to fetch|NetworkError/i.test(m)) return "אין חיבור לאינטרנט";
+  /* 📡 שגיאה שלא צפינו — זה באג. מדווחים רק את ההודעה, לא את
+     הנתונים שנשלחו (e.details יכול להכיל ערכים — לא נשלח). */
+  if (window.logIssue) logIssue("שגיאת שרת: " + m);
   return m || "שגיאה";
 }
 

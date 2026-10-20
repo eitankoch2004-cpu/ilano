@@ -84,8 +84,17 @@ begin
     end
 
   from auth.users u
-  left join public.households h
-         on h.created_by = u.id
+  -- משפחה אחת לכל משתמש: זו שיצר, ואם אין — זו שהצטרף אליה
+  -- בהזמנה (דרך members.user_id). limit 1 = שורה אחת למשתמש,
+  -- גם אם יצר כמה משפחות.
+  left join lateral (
+    select h2.* from public.households h2
+     where h2.created_by = u.id
+        or h2.id in (select m.household_id from public.members m
+                      where m.user_id = u.id)
+     order by (h2.created_by = u.id) desc, h2.id
+     limit 1
+  ) h on true
   left join lateral (
     select * from public.subscriptions s2
      where s2.user_id = u.id
@@ -104,6 +113,7 @@ comment on function public.admin_users() is
 
 
 -- ============================================================
---  בדיקה — אמור להחזיר את 7 המשתמשים
+--  בדיקה — רק מהפאנל בדפדפן. ב-SQL Editor זה ייכשל עם
+--  not authorized, כי שם אין משתמש מחובר. זה תקין.
 -- ============================================================
 -- select email, full_name, members_count, plan, amount_ils from public.admin_users();
